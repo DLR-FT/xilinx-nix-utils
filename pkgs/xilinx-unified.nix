@@ -107,4 +107,12 @@ stdenv.mkDerivation
     dontPruneLibtoolFiles = true;
     dontStrip = true;
     noAuditTmpdir = true;
+
+    meta = {
+      description = "AMD/Xilinx toolchain";
+      homepage = "https://www.xilinx.com/products/design-tools/vivado.html";
+      license = lib.licenses.unfree;
+      maintainers = with lib.maintainers; [ wucke13 ];
+      platforms = lib.platforms.unix;
+    };
   })

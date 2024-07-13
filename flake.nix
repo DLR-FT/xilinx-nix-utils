@@ -1,5 +1,5 @@
 {
-  description = "A collection of scripts for Xilinx Vitis/Vivado";
+  description = "A collection of scripts for AMD/Xilinx Vitis/Vivado";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
@@ -17,6 +17,7 @@
           # checkout of the nixpkgs
           pkgs = import nixpkgs {
             inherit system;
+            config.allowUnfree = true;
             overlays = [
               # https://github.com/NixOS/nixpkgs/pull/42637
               (final: prev: {

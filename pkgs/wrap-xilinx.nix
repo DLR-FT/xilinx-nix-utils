@@ -21,4 +21,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       done < <(find "$dir" -maxdepth 2 -path '*/bin/*' -type f -executable -print0)
     done < <(find ${inputDerivation}/ -maxdepth 3 -type f -name 'settings64.sh' -printf '%h\0')
   '';
+
+  meta = inputDerivation.meta // {
+    mainProgram = "vivado";
+  };
 })

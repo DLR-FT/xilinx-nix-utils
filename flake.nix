@@ -68,7 +68,7 @@
                   build-hw-config = "generate a hw config for given platform";
                   build-bootloader = "build the bootloader for a script";
                   jtag-boot = "deploy a firmware via jtag";
-                  launc-picocom = "launc the picocom serial monitor";
+                  launch-picocom = "launch the picocom serial monitor";
                 };
               in
               [

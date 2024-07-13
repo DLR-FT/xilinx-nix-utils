@@ -96,7 +96,17 @@
           };
 
           # just add every package as a hydra job
-          hydraJobs = packages;
+          hydraJobs = checks // packages // (
+            let
+              cc = pkgs.checkCommands;
+            in
+            {
+              check-commands-coraz7 = cc { platform = "coraz7"; };
+              check-commands-ultrascale = cc { platform = "ultrascale"; };
+              check-commands-zerdboard = cc { platform = "zerdboard"; };
+              check-commands-zynq7000 = cc { platform = "zynq7000"; };
+            }
+          );
         }
       ) // {
       overlays.default = import ./overlay.nix;

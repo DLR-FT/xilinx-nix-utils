@@ -36,6 +36,13 @@
           packages = {
             xilinx-unified-unwraped = pkgs.xilinx-unified-unwrapped;
             xilinx-unified = pkgs.xilinx-unified;
+
+            xilinx-unified-2023-1-unwraped = pkgs.xilinx-unified-unwrapped;
+            xilinx-unified-2023-1 = pkgs.xilinx-unified;
+
+            xilinx-vivado-2019-2-unwraped = pkgs.xilinx-vivado-2019-2-unwrapped;
+            xilinx-vivado-2019-2 = pkgs.xilinx-vivado-2019-2;
+
             xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
           };
 
@@ -47,7 +54,7 @@
               pkgs.glow
               pkgs.python3
               pkgs.unzip
-              pkgs.xilinx-unified
+              pkgs.xilinx-vivado-2019-2
             ];
             git.hooks = {
               enable = true;
@@ -101,10 +108,28 @@
               cc = pkgs.checkCommands;
             in
             {
-              check-commands-coraz7 = cc { platform = "coraz7"; };
-              check-commands-ultrascale = cc { platform = "ultrascale"; };
-              check-commands-zerdboard = cc { platform = "zerdboard"; };
-              check-commands-zynq7000 = cc { platform = "zynq7000"; };
+              # TODO all checks are defunct, as no .xsa is created
+
+              # check-commands-2019-2-coraz7 = cc {
+              #   toolchain = pkgs.xilinx-vivado-2019-2;
+              #   platform = "coraz7";
+              # };
+
+              # check-commands-2019-2-ultrascale = cc {
+              #   toolchain = pkgs.xilinx-vivado-2019-2;
+              #   platform = "ultrascale";
+              # };
+
+              # check-commands-2019-2-zerdboard = cc {
+              #   toolchain = pkgs.xilinx-vivado-2019-2;
+              #   platform = "zerdboard";
+              # };
+
+              # check-commands-2019-2-zynq7000 = cc {
+              #   toolchain = pkgs.xilinx-vivado-2019-2;
+              #   platform = "zynq7000";
+              # };
+
             }
           );
         }

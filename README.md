@@ -1,16 +1,16 @@
 # Getting started
 
 First, checkout the outputs provided by this flake: `nix flake show`. It
-contains builds for both __Vitis__ and __Vivado__. Note that typically the
-__Vitis__ package include a version of vivado, so choose __Vitis__ if you want
+contains builds for both **Vitis** and **Vivado**. Note that typically the
+**Vitis** package include a version of vivado, so choose **Vitis** if you want
 both.
 
-__Note__: If you experience an issue, pay the
- [troubleshooting section](docs/TROUBLESHOOTING.md) a visit!
+**Note**: If you experience an issue, pay the
+[troubleshooting section](docs/TROUBLESHOOTING.md) a visit!
 
 # Example usage
 
-__Note__: this presumes that your current environment contains various
+**Note**: this presumes that your current environment contains various
 software. One way of entering an environment that fulfills this requirement
 would be to enter a nix development shell via `nix develop`.
 
@@ -27,4 +27,3 @@ build-hw-config target/zynq7000_example
 build-bootloader zynq7000 target/zynq7000_example
 jtag-boot zynq7000_init.tcl target app.elf
 ```
-

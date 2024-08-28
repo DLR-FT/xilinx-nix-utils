@@ -37,8 +37,13 @@
             xilinx-unified-unwraped = pkgs.xilinx-unified-unwrapped;
             xilinx-unified = pkgs.xilinx-unified;
 
-            xilinx-unified-2023-1-unwraped = pkgs.xilinx-unified-unwrapped;
-            xilinx-unified-2023-1 = pkgs.xilinx-unified;
+            # Add future version here
+
+            xilinx-unified-2023-2-unwraped = pkgs.xilinx-unified-2023-2-unwrapped;
+            xilinx-unified-2023-2 = pkgs.xilinx-unified-2023-2;
+
+            xilinx-unified-2023-1-unwraped = pkgs.xilinx-unified-2023-1-unwrapped;
+            xilinx-unified-2023-1 = pkgs.xilinx-unified-2023-1;
 
             xilinx-vivado-2019-2-unwraped = pkgs.xilinx-vivado-2019-2-unwrapped;
             xilinx-vivado-2019-2 = pkgs.xilinx-vivado-2019-2;

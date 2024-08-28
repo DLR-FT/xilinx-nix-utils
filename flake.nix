@@ -1,155 +1,118 @@
 {
-  description = "A collection of scripts for AMD/Xilinx Vitis/Vivado";
+  description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
 
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
-    devshell.inputs.flake-utils.follows = "flake-utils";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
-    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    treefmt.url = "github:numtide/treefmt-nix";
+    treefmt.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      flake-utils,
-      treefmt-nix,
-      ...
-    }@inputs:
-    flake-utils.lib.eachSystem [ "x86_64-linux" ] (
-      system:
-      let
-        # checkout of the nixpkgs
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-          overlays = [
-            # https://github.com/NixOS/nixpkgs/pull/42637
-            (final: prev: {
-              requireFile =
-                args:
-                (prev.requireFile args).overrideAttrs (_: {
-                  allowSubstitutes = true;
-                });
-            })
+      devshell,
+      treefmt,
+    }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
 
-            self.overlays.default
+        overlays = [
+          # https://github.com/NixOS/nixpkgs/pull/42637
+          (final: prev: {
+            requireFile =
+              args:
+              (prev.requireFile args).overrideAttrs (_: {
+                allowSubstitutes = true;
+              });
+          })
 
-            inputs.devshell.overlays.default
-          ];
-        };
+          (final: prev: {
+            pkgsCross = prev.pkgsCross // {
+              armhf-embedded = import nixpkgs {
+                localSystem = system;
+                crossSystem = {
+                  config = "arm-none-eabihf";
+                  gcc.arch = "armv7-a+fp";
+                  gcc.tune = "cortex-a9";
+                };
 
-        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-      in
-      rec {
-        packages = {
-          xilinx-unified-unwraped = pkgs.xilinx-unified-unwrapped;
-          xilinx-unified = pkgs.xilinx-unified;
-
-          xilinx-unified-2023-2-unwraped = pkgs.xilinx-unified-2023-2-unwrapped;
-          xilinx-unified-2023-2 = pkgs.xilinx-unified-2023-2;
-
-          xilinx-unified-2023-1-unwraped = pkgs.xilinx-unified-unwrapped-2023-1;
-          xilinx-unified-2023-1 = pkgs.xilinx-unified-2023-1;
-
-          xilinx-vivado-2019-2-unwraped = pkgs.xilinx-vivado-2019-2-unwrapped;
-          xilinx-vivado-2019-2 = pkgs.xilinx-vivado-2019-2;
-
-          xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
-        };
-
-        devShells.default = pkgs.devshell.mkShell {
-          imports = [ "${inputs.devshell}/extra/git/hooks.nix" ];
-          name = "xilinx-dev-shell";
-          packages = [
-            pkgs.coreutils
-            pkgs.glow
-            pkgs.python3
-            pkgs.unzip
-            pkgs.xilinx-vivado-2019-2
-          ];
-          git.hooks = {
-            enable = true;
-            pre-commit.text = ''
-              nix flake check
-            '';
-          };
-          commands =
-            let
-              commandTemplate = command: ''
-                set +u
-                exec ${./.}/commands/${command} "''${@}"
-              '';
-              commands = {
-                create-project = "creates a new project based on a template";
-                store = "create a restore script for a given project";
-                restore = "restore a project using a generated restore script";
-                build-hw-config = "generate a hw config for given platform";
-                build-bootloader = "build the bootloader for a script";
-                jtag-boot = "deploy a firmware via jtag";
-                launch-picocom = "launch the picocom serial monitor";
+                overlays = [
+                  self.overlays.zynq-srcs
+                  self.overlays.zynq-utils
+                ];
               };
-            in
-            [
-              {
-                name = "show-readme";
-                command = ''glow "$PRJ_ROOT/README.md"'';
-                help = "";
-              }
-            ]
-            ++ (pkgs.lib.mapAttrsToList (name: help: {
-              inherit name help;
-              command = commandTemplate name;
-            }) commands);
+            };
+          })
+
+          self.overlays.default
+          self.overlays.zynq-srcs
+          self.overlays.zynq-utils
+          self.overlays.zynq-boards
+
+          (final: prev: {
+            zynq-srcs = prev.zynq-srcs // {
+              uboot-src = pkgs.fetchFromGitHub {
+                owner = "Xilinx";
+                repo = "u-boot-xlnx";
+                rev = "xlnx_rebase_v2025.01";
+                hash = "sha256-ToA+ossw2pSX5FXq3N9DjVR6MEhZUsYKCp4Q9BZ46h4=";
+              };
+            };
+          })
+
+          devshell.overlays.default
+        ];
+      };
+
+      treefmtEval = treefmt.lib.evalModule pkgs ./treefmt.nix;
+    in
+    {
+      packages.${system} =
+        let
+          example = pkgs.zynq-boards.kria-kr260;
+        in
+        {
+          xilinx-unified = pkgs.xilinx-unified;
+          xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
+
+          fw = example.boot-image;
+          boot = example.boot-jtag;
+          flash = example.flash-qspi;
         };
 
-        # for `nix fmt`
-        formatter = treefmtEval.config.build.wrapper;
-        # for `nix flake check`
-        checks = {
-          formatting = treefmtEval.config.build.check self;
-          shellcheck = pkgs.runCommand "shellcheck" {
-            nativeBuildInputs = [ pkgs.shellcheck ];
-          } "cd ${./.} && shellcheck commands/*; touch $out";
+      devShells.${system}.default = pkgs.devshell.mkShell {
+        name = "xilinx-dev-shell";
+
+        imports = [ "${devshell}/extra/git/hooks.nix" ];
+
+        packages = [
+          pkgs.xilinx-unified
+        ];
+
+        git.hooks = {
+          enable = true;
+          pre-commit.text = ''
+            nix fmt
+            nix flake check
+          '';
         };
+      };
 
-        # just add every package as a hydra job
-        hydraJobs =
-          checks
-          // packages
-          // (
-            let
-              cc = pkgs.checkCommands;
-            in
-            {
-              # TODO all checks are defunct, as no .xsa is created
+      # for `nix fmt`
+      formatter.${system} = treefmtEval.config.build.wrapper;
 
-              # check-commands-2019-2-coraz7 = cc {
-              #   toolchain = pkgs.xilinx-vivado-2019-2;
-              #   platform = "coraz7";
-              # };
+      # for `nix flake check`
+      checks.${system}.formatting = treefmtEval.config.build.check self;
 
-              # check-commands-2019-2-ultrascale = cc {
-              #   toolchain = pkgs.xilinx-vivado-2019-2;
-              #   platform = "ultrascale";
-              # };
-
-              # check-commands-2019-2-zerdboard = cc {
-              #   toolchain = pkgs.xilinx-vivado-2019-2;
-              #   platform = "zerdboard";
-              # };
-
-              # check-commands-2019-2-zynq7000 = cc {
-              #   toolchain = pkgs.xilinx-vivado-2019-2;
-              #   platform = "zynq7000";
-              # };
-            }
-          );
-      }
-    )
-    // {
-      overlays.default = import ./overlay.nix;
+      overlays.default = import ./xilinx-unified.nix;
+      overlays.zynq-srcs = import ./zynq-srcs.nix;
+      overlays.zynq-utils = import ./zynq-utils.nix;
+      overlays.zynq-boards = import ./zynq-boards.nix;
     };
 }

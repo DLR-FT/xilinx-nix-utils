@@ -10,6 +10,21 @@ final: prev: {
 
   # Add future version here
 
+  xilinx-unified-2024-1-unwrapped =
+    (final.callPackage ./pkgs/xilinx-unified.nix { }).overrideAttrs
+      (old: rec {
+        pname = "xilinx-unified";
+        version = "2024.1_0522_2023";
+        src = final.requireFile {
+          name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar.gz";
+          url = "https://www.xilinx.com/";
+          hash = "sha256-AH7MJNhTMnaCCENluF26orxVCiZU/RF9bNbaHAnH8QM=";
+        };
+      });
+  xilinx-unified-2024-1 = final.callPackage ./pkgs/wrap-xilinx.nix {
+    inputDerivation = final.xilinx-unified-2024-1-unwrapped;
+  };
+
   xilinx-unified-2023-2-unwrapped =
     (final.callPackage ./pkgs/xilinx-unified.nix { }).overrideAttrs
       (old: rec {

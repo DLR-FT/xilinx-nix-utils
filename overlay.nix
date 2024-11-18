@@ -3,7 +3,9 @@ final: prev: {
 
   genXilinxFhs = final.callPackage ./pkgs/xilinx-fhs.nix { };
 
-  xilinx-unified-unwrapped = final.xilinx-unified-2023-2-unwrapped;
+  # Set default version here
+  
+  xilinx-unified-unwrapped = final.xilinx-unified-2024-1-unwrapped;
   xilinx-unified = final.callPackage ./pkgs/wrap-xilinx.nix {
     inputDerivation = final.xilinx-unified-unwrapped;
   };

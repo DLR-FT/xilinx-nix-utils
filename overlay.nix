@@ -13,7 +13,9 @@ final: prev: {
   # Add future version here
 
   xilinx-unified-2024-1-unwrapped =
-    (final.callPackage ./pkgs/xilinx-unified.nix { }).overrideAttrs
+    (final.callPackage ./pkgs/xilinx-unified.nix {
+      install_config = ./install-configs/xlnx-unified-2024-1.txt;
+    }).overrideAttrs
       (old: rec {
         pname = "xilinx-unified";
         version = "2024.1_0522_2023";

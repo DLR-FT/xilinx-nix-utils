@@ -10,6 +10,7 @@
     "3rdPartyEULA"
     "XilinxEULA"
   ],
+  install_config ? null,
 }:
 
 stdenv.mkDerivation (
@@ -71,10 +72,20 @@ stdenv.mkDerivation (
       Xvfb $DISPLAY &
       xvfb_pid=$!
 
-      echo -e "1\n1\n" | xilinx-fhs xsetup \
-        --agree ${lib.strings.escapeShellArg agreedLicenses} \
-        --batch ConfigGen
-      INSTALL_CONFIG="$HOME/.Xilinx/install_config.txt"
+      ${
+        if !(builtins.isNull install_config) then
+          ''
+            INSTALL_CONFIG=${install_config}
+          ''
+        else
+          ''
+            echo -e "1\n1\n" | xilinx-fhs xsetup \
+              --agree ${lib.strings.escapeShellArg agreedLicenses} \
+              --batch ConfigGen
+            INSTALL_CONFIG="$HOME/.Xilinx/install_config.txt"
+          ''
+      }
+
       echo "### Begin of Install Config ###"
       cat "$INSTALL_CONFIG"
       echo "### End of Install Config ###"

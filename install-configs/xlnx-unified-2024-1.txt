@@ -1,4 +1,3 @@
-### Begin of Install Config ###
 #### Vitis Unified Software Platform Install Configuration ####
 Edition=Vitis Unified Software Platform
 
@@ -31,5 +30,3 @@ CreateFileAssociation=1
 
 # Choose whether disk usage will be optimized (reduced) after installation
 EnableDiskUsageOptimization=1
-
-### End of Install Config ###

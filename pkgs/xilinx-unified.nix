@@ -75,7 +75,10 @@ stdenv.mkDerivation (
       ${
         if !(builtins.isNull install_config) then
           ''
-            INSTALL_CONFIG=${install_config}
+            mkdir -p $HOME/.Xilinx
+            cp -- ${install_config} $HOME/.Xilinx/install_config.txt
+            chmod u=rw $HOME/.Xilinx/install_config.txt
+            INSTALL_CONFIG="$HOME/.Xilinx/install_config.txt"
           ''
         else
           ''

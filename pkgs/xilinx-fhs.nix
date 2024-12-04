@@ -49,6 +49,7 @@ buildFHSUserEnv {
       xorg.libXtst
       xorg.libxcb
       xorg.xorgserver
+      xorg.xlsclients
       libxcrypt-legacy # required for Vivado
       python3
       (libidn.overrideAttrs (_old: {

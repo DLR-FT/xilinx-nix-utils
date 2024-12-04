@@ -1,4 +1,9 @@
-{ stdenvNoCC, makeWrapper, genXilinxFhs, inputDerivation }:
+{
+  stdenvNoCC,
+  makeWrapper,
+  genXilinxFhs,
+  inputDerivation,
+}:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = inputDerivation.pname + "-wrapped";

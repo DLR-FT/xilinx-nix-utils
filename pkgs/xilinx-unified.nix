@@ -1,18 +1,19 @@
-{ lib
-, stdenv
-, requireFile
-, genXilinxFhs
-, rapidgzip
-, ripgrep
-, xorg
-, agreements ? [
+{
+  lib,
+  stdenv,
+  requireFile,
+  genXilinxFhs,
+  rapidgzip,
+  ripgrep,
+  xorg,
+  agreements ? [
     "3rdPartyEULA"
     "XilinxEULA"
-  ]
+  ],
 }:
 
-stdenv.mkDerivation
-  (finalAttrs:
+stdenv.mkDerivation (
+  finalAttrs:
   let
     # nameLowercase = lib.strings.toLower name;
 
@@ -24,13 +25,11 @@ stdenv.mkDerivation
 
     # licenses that the user agreed to
     agreedLicenses = lib.strings.concatStringsSep "," agreements;
-
-    # Formats a str bool pair to a format understood by Xilinx' installer config parser
-    #toColonInt = name: value: if value then "${name}:1" else "${name}:0";
-
-    # List of products and their state (enabled/disabled) for the installer config
-    #selectedProducts = lib.strings.concatStringsSep "," (lib.attrsets.mapAttrsToList toColonInt products);
   in
+  # Formats a str bool pair to a format understood by Xilinx' installer config parser
+  #toColonInt = name: value: if value then "${name}:1" else "${name}:0";
+  # List of products and their state (enabled/disabled) for the installer config
+  #selectedProducts = lib.strings.concatStringsSep "," (lib.attrsets.mapAttrsToList toColonInt products);
   {
     pname = "xilinx-unified";
     version = "2023.1_0507_1903";
@@ -41,7 +40,12 @@ stdenv.mkDerivation
       hash = "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=";
     };
 
-    nativeBuildInputs = [ rapidgzip ripgrep xorg.xorgserver (genXilinxFhs { }) ];
+    nativeBuildInputs = [
+      rapidgzip
+      ripgrep
+      xorg.xorgserver
+      (genXilinxFhs { })
+    ];
 
     # the installer puts stuff to $HOME/.Xilinx
     preUnpack = ''
@@ -74,7 +78,7 @@ stdenv.mkDerivation
       echo "### Begin of Install Config ###"
       cat "$INSTALL_CONFIG"
       echo "### End of Install Config ###"
-      
+
       substituteInPlace "$INSTALL_CONFIG" \
         --replace-fail /tools/Xilinx ${lib.strings.escapeShellArg uniqueTargetDir}
 
@@ -115,4 +119,5 @@ stdenv.mkDerivation
       maintainers = with lib.maintainers; [ wucke13 ];
       platforms = lib.platforms.unix;
     };
-  })
+  }
+)

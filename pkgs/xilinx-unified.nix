@@ -1,22 +1,20 @@
 {
   lib,
   stdenv,
-  requireFile,
   genXilinxFhs,
   rapidgzip,
   ripgrep,
   xorg,
+
+  name,
+  version,
+  installTar,
+  install_config ? null,
   agreements ? [
     "3rdPartyEULA"
     "XilinxEULA"
   ],
-  version ? "2023.1_0507_1903",
-  hash ? "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=",
-  filename ?
-    _:
-    builtins.abort "Please set the filename function, a function that maps a version to a filename string",
 }:
-
 stdenv.mkDerivation (
   finalAttrs:
   let
@@ -36,14 +34,10 @@ stdenv.mkDerivation (
   # List of products and their state (enabled/disabled) for the installer config
   #selectedProducts = lib.strings.concatStringsSep "," (lib.attrsets.mapAttrsToList toColonInt products);
   {
-    pname = "xilinx-unified";
+    pname = name;
     inherit version;
 
-    src = requireFile {
-      name = filename finalAttrs.version;
-      url = "https://www.xilinx.com/";
-      hash = hash;
-    };
+    src = installTar;
 
     nativeBuildInputs = [
       rapidgzip
@@ -59,7 +53,11 @@ stdenv.mkDerivation (
 
     # for the 100+ GB normal gzip takes forever to decompress
     unpackCmd = ''
-      rapidgzip --decompress --stdout "$src" | tar --extract
+      if [[ $src == *.tar.gz ]]; then
+        rapidgzip --decompress --stdout "$src" | tar --extract
+      elif [[ $src == *.tar ]]; then
+        cat $src | tar --extract
+      fi
     '';
 
     # 1. launch a fake X server, the installer needs it even in batch mode
@@ -76,10 +74,23 @@ stdenv.mkDerivation (
       Xvfb $DISPLAY &
       xvfb_pid=$!
 
-      echo -e "1\n1\n" | xilinx-fhs xsetup \
-        --agree ${lib.strings.escapeShellArg agreedLicenses} \
-        --batch ConfigGen
-      INSTALL_CONFIG="$HOME/.Xilinx/install_config.txt"
+      ${
+        if !(builtins.isNull install_config) then
+          ''
+            mkdir -p $HOME/.Xilinx
+            cp -- ${install_config} $HOME/.Xilinx/install_config.txt
+            chmod u=rw $HOME/.Xilinx/install_config.txt
+            INSTALL_CONFIG="$HOME/.Xilinx/install_config.txt"
+          ''
+        else
+          ''
+            echo -e "1\n1\n" | xilinx-fhs xsetup \
+              --agree ${lib.strings.escapeShellArg agreedLicenses} \
+              --batch ConfigGen
+            INSTALL_CONFIG="$HOME/.Xilinx/install_config.txt"
+          ''
+      }
+
       echo "### Begin of Install Config ###"
       cat "$INSTALL_CONFIG"
       echo "### End of Install Config ###"

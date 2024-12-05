@@ -5,12 +5,29 @@ final: prev: {
 
   # Set default version here
 
-  xilinx-unified-unwrapped = final.xilinx-unified-2024-1-unwrapped;
+  xilinx-unified-unwrapped = final.xilinx-unified-2024-2-unwrapped;
   xilinx-unified = final.callPackage ./pkgs/wrap-xilinx.nix {
     inputDerivation = final.xilinx-unified-unwrapped;
   };
 
   # Add future version here
+
+  xilinx-unified-2024-2-unwrapped =
+    (final.callPackage ./pkgs/xilinx-unified.nix {
+      install_config = ./install-configs/xlnx-unified-2024-2.txt;
+    }).overrideAttrs
+      (old: rec {
+        pname = "xilinx-unified";
+        version = "2024.2_1113_1001";
+        src = final.requireFile {
+          name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar";
+          url = "https://www.xilinx.com/";
+          hash = "sha256-l0+S90m9FeOMRdhwfEWznvkDgZMQ3Blryq+2brFsjzw=";
+        };
+      });
+  xilinx-unified-2024-2 = final.callPackage ./pkgs/wrap-xilinx.nix {
+    inputDerivation = final.xilinx-unified-2024-2-unwrapped;
+  };
 
   xilinx-unified-2024-1-unwrapped =
     (final.callPackage ./pkgs/xilinx-unified.nix {

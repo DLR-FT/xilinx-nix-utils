@@ -50,6 +50,9 @@
 
           # Add future version here
 
+          xilinx-unified-2024-2-unwraped = pkgs.xilinx-unified-2024-2-unwrapped;
+          xilinx-unified-2024-2 = pkgs.xilinx-unified-2024-2;
+
           xilinx-unified-2024-1-unwraped = pkgs.xilinx-unified-2024-1-unwrapped;
           xilinx-unified-2024-1 = pkgs.xilinx-unified-2024-1;
 

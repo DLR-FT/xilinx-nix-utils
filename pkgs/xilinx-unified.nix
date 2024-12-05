@@ -55,7 +55,11 @@ stdenv.mkDerivation (
 
     # for the 100+ GB normal gzip takes forever to decompress
     unpackCmd = ''
-      rapidgzip --decompress --stdout "$src" | tar --extract
+      if [[ $src == *.tar.gz ]]; then
+        rapidgzip --decompress --stdout "$src" | tar --extract
+      elif [[ $src == *.tar ]]; then
+        cat $src | tar --extract
+      fi
     '';
 
     # 1. launch a fake X server, the installer needs it even in batch mode

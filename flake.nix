@@ -76,7 +76,7 @@
             pkgs.glow
             pkgs.python3
             pkgs.unzip
-            pkgs.xilinx-vivado-2019-2
+            pkgs.xilinx-unified
           ];
           git.hooks = {
             enable = true;

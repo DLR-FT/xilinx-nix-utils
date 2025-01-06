@@ -1,7 +1,0 @@
-workspace/*
-*.jou
-*.log
-*.str
-hardware_configuration/*
-bootloader_configuration/*
-bootloader_export/*

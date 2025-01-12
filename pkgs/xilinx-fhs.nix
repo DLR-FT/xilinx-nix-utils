@@ -27,6 +27,7 @@ buildFHSUserEnv {
     (ncurses'.override { unicodeSupport = false; })
     stdenv.cc.cc
     zlib
+    libyaml
 
     # gui libraries
     fontconfig

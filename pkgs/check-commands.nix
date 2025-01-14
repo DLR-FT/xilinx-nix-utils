@@ -1,11 +1,18 @@
-{ lib, stdenvNoCC, coreutils-full }:
+{
+  lib,
+  stdenvNoCC,
+  coreutils-full,
+}:
 
 { toolchain, platform }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   name = "check-commands-${toolchain.name}-${platform}";
 
-  nativeBuildInputs = [ coreutils-full toolchain ];
+  nativeBuildInputs = [
+    coreutils-full
+    toolchain
+  ];
 
   dontUnpack = true;
 

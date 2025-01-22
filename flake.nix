@@ -2,7 +2,7 @@
   description = "A collection of scripts for AMD/Xilinx Vitis/Vivado";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?rev=release-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     treefmt-nix.url = "github:numtide/treefmt-nix";

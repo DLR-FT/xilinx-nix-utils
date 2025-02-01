@@ -8,9 +8,22 @@ final: prev: {
     inputDerivation = final.xilinx-unified-unwrapped;
   };
 
-  xilinx-unified-2023-1-unwrapped = final.callPackage ./pkgs/xilinx-unified.nix { };
+  xilinx-unified-2023-1-unwrapped = final.callPackage ./pkgs/xilinx-unified.nix {
+    filename = v: "Xilinx_Unified_${v}.tar.gz";
+    version = "2023.1_0507_1903";
+    hash = "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=";
+  };
   xilinx-unified-2023-1 = final.callPackage ./pkgs/wrap-xilinx.nix {
     inputDerivation = final.xilinx-unified-2023-1-unwrapped;
+  };
+
+  xilinx-unified-2023-2-unwrapped = final.callPackage ./pkgs/xilinx-unified.nix {
+    filename = v: "FPGAs_AdaptiveSoCs_Unified_${v}.tar.gz";
+    version = "2023.2_1013_2256";
+    hash = "sha256-SCRztYAKux101RudvueXp19EPUBfxGqQMfMMIBa2r6o=";
+  };
+  xilinx-unified-2023-2 = final.callPackage ./pkgs/wrap-xilinx.nix {
+    inputDerivation = final.xilinx-unified-2023-2-unwrapped;
   };
 
   xilinx-vivado-2019-2-unwrapped =

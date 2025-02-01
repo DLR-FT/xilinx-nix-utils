@@ -10,6 +10,11 @@
     "3rdPartyEULA"
     "XilinxEULA"
   ],
+  version ? "2023.1_0507_1903",
+  hash ? "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=",
+  filename ?
+    _:
+    builtins.abort "Please set the filename function, a function that maps a version to a filename string",
 }:
 
 stdenv.mkDerivation (
@@ -32,12 +37,12 @@ stdenv.mkDerivation (
   #selectedProducts = lib.strings.concatStringsSep "," (lib.attrsets.mapAttrsToList toColonInt products);
   {
     pname = "xilinx-unified";
-    version = "2023.1_0507_1903";
+    inherit version;
 
     src = requireFile {
-      name = "Xilinx_Unified_${finalAttrs.version}.tar.gz";
+      name = filename finalAttrs.version;
       url = "https://www.xilinx.com/";
-      hash = "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=";
+      hash = hash;
     };
 
     nativeBuildInputs = [

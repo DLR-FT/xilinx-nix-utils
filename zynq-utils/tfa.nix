@@ -1,14 +1,10 @@
-{ fetchFromGitHub, arm-trusted-firmware }:
+{
+  arm-trusted-firmware,
+  zynq-utils,
+}:
 
 {
-  atf-src ? (
-    fetchFromGitHub {
-      owner = "Xilinx";
-      repo = "arm-trusted-firmware";
-      rev = "xilinx-v2024.1";
-      hash = "sha256-XEFHS2hZWdJEB7b0Zdci/PtNc7csn+zQWljiG9Tx0mM=";
-    }
-  ),
+  atf-src ? zynq-utils.tfa-src,
 }:
 (arm-trusted-firmware.buildArmTrustedFirmware {
   platform = "zynqmp";

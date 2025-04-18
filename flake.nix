@@ -59,6 +59,7 @@
         git.hooks = {
           enable = true;
           pre-commit.text = ''
+            nix fmt
             nix flake check
           '';
         };

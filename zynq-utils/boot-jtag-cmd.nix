@@ -9,7 +9,6 @@
   pmufw,
   sdt,
   uboot,
-
   forceBootmodeJtag ? true,
 }:
 writeScript "boot-jtag.tcl" ''

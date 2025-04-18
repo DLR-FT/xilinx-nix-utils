@@ -3,7 +3,6 @@
 {
   boot-image,
   fsbl,
-
   flashType,
   flashDensity,
   verify ? true,

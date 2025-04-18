@@ -1,23 +1,15 @@
 {
-  stdenv,
   buildPackages,
   cmake,
   libclang,
-  fetchFromGitHub,
+  stdenv,
+  zynq-utils,
 }:
 
 {
   prjName,
-
   sdt,
-  embeddedsw-src ? (
-    fetchFromGitHub {
-      owner = "Xilinx";
-      repo = "embeddedsw";
-      rev = "xilinx_v2024.1";
-      hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
-    }
-  ),
+  embeddedsw-src ? zynq-utils.embeddedsw-src,
 }:
 stdenv.mkDerivation (finalAttrs: {
   name = "${prjName}-fsbl";

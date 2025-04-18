@@ -13,5 +13,33 @@ final: prev: {
     flash-qspi-cmd = prev.callPackage ./zynq-utils/flash-qspi-cmd.nix { };
 
     python-lopper = prev.python3Packages.callPackage ./zynq-utils/lopper.nix { };
+
+    embeddedsw-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "embeddedsw";
+      rev = "xilinx_v2024.1";
+      hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
+    };
+
+    dt-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "device-tree-xlnx";
+      rev = "xilinx_v2024.1";
+      hash = "sha256-dja+JwbXwiBRJwg/6GNOdONp/vrihmfPBnpjEA/xxnk=";
+    };
+
+    tfa-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "arm-trusted-firmware";
+      rev = "xilinx-v2024.1";
+      hash = "sha256-XEFHS2hZWdJEB7b0Zdci/PtNc7csn+zQWljiG9Tx0mM=";
+    };
+
+    uboot-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "u-boot-xlnx";
+      rev = "xlnx_rebase_v2024.01_2024.1";
+      hash = "sha256-G6GOcazwY4A/muG2hh4pj8i9jm536kYhirrOzcn77WE=";
+    };
   };
 }

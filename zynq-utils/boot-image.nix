@@ -6,7 +6,6 @@
 
 {
   prjName,
-
   fsbl,
   hwplat,
   pmufw,

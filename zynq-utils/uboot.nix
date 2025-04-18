@@ -1,20 +1,14 @@
 {
   lib,
   buildUBoot,
-  fetchFromGitHub,
+  zynq-utils,
 }:
 
 {
   extraConfig ? "",
   extraEnv ? { },
   boot2el2 ? true,
-
-  uboot-src ? fetchFromGitHub {
-    owner = "Xilinx";
-    repo = "u-boot-xlnx";
-    rev = "xlnx_rebase_v2024.01_2024.1";
-    hash = "sha256-G6GOcazwY4A/muG2hh4pj8i9jm536kYhirrOzcn77WE=";
-  },
+  uboot-src ? zynq-utils.uboot-src,
 }:
 (buildUBoot {
   extraMeta.platforms = [ "aarch64-linux" ];

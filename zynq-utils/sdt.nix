@@ -1,10 +1,10 @@
 {
   lib,
   stdenv,
-  fetchFromGitHub,
   xilinx-unified,
   dtc,
   xlsclients,
+  zynq-utils,
 }:
 
 {
@@ -12,15 +12,7 @@
 
   hwplat,
   dt-overlays ? null,
-  dt-src ? (
-    fetchFromGitHub {
-      owner = "Xilinx";
-      repo = "device-tree-xlnx";
-      rev = "xilinx_v2024.1";
-      hash = "sha256-dja+JwbXwiBRJwg/6GNOdONp/vrihmfPBnpjEA/xxnk=";
-    }
-  ),
-  ...
+  dt-src ? zynq-utils.dt-src,
 }:
 let
   genSdtTcl = ''

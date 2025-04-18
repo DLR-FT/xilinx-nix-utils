@@ -8,6 +8,7 @@
   extraConfig ? "",
   extraEnv ? { },
   boot2el2 ? true,
+
   uboot-src ? fetchFromGitHub {
     owner = "Xilinx";
     repo = "u-boot-xlnx";

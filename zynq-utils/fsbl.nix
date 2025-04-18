@@ -7,7 +7,8 @@
 }:
 
 {
-  prj-name,
+  prjName,
+
   sdt,
   embeddedsw-src ? (
     fetchFromGitHub {
@@ -17,10 +18,9 @@
       hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
     }
   ),
-  ...
 }:
 stdenv.mkDerivation (finalAttrs: {
-  name = "${prj-name}-fsbl";
+  name = "${prjName}-fsbl";
   srcs = [
     sdt
     embeddedsw-src

@@ -1,13 +1,14 @@
 {
-  stdenv,
   buildPackages,
   cmake,
-  libclang,
   fetchFromGitHub,
+  libclang,
+  stdenv,
 }:
 
 {
-  prj-name,
+  prjName,
+
   sdt,
   embeddedsw-src ? (
     fetchFromGitHub {
@@ -17,10 +18,9 @@
       hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
     }
   ),
-  ...
 }:
 stdenv.mkDerivation (finalAttrs: {
-  name = "${prj-name}-pmufw";
+  name = "${prjName}-pmufw";
   srcs = [
     sdt
     embeddedsw-src

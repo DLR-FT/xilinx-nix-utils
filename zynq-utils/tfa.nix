@@ -9,7 +9,6 @@
       hash = "sha256-XEFHS2hZWdJEB7b0Zdci/PtNc7csn+zQWljiG9Tx0mM=";
     }
   ),
-  ...
 }:
 (arm-trusted-firmware.buildArmTrustedFirmware {
   platform = "zynqmp";

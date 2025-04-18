@@ -1,5 +1,5 @@
 {
-  description = "A collection of scripts for AMD/Xilinx Vitis/Vivado";
+  description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
@@ -33,6 +33,8 @@
           })
 
           self.overlays.default
+          self.overlays.zynq-utils
+
           devshell.overlays.default
         ];
       };
@@ -69,5 +71,6 @@
       checks.${system}.formatting = treefmtEval.config.build.check self;
 
       overlays.default = import ./xilinx-unified.nix;
+      overlays.zynq-utils = import ./zynq-utils.nix;
     };
 }

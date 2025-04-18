@@ -1,4 +1,3 @@
-# treefmt.nix
 { ... }:
 {
   # Used to find the project root

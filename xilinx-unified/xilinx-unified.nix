@@ -1,18 +1,20 @@
 {
   lib,
   stdenv,
-  requireFile,
   genXilinxFhs,
   rapidgzip,
   ripgrep,
   xorg,
+
+  name,
+  version,
+  installTar,
+  install_config ? null,
   agreements ? [
     "3rdPartyEULA"
     "XilinxEULA"
   ],
-  install_config ? null,
 }:
-
 stdenv.mkDerivation (
   finalAttrs:
   let
@@ -32,14 +34,10 @@ stdenv.mkDerivation (
   # List of products and their state (enabled/disabled) for the installer config
   #selectedProducts = lib.strings.concatStringsSep "," (lib.attrsets.mapAttrsToList toColonInt products);
   {
-    pname = "xilinx-unified";
-    version = "2023.1_0507_1903";
+    pname = name;
+    inherit version;
 
-    src = requireFile {
-      name = "Xilinx_Unified_${finalAttrs.version}.tar.gz";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=";
-    };
+    src = installTar;
 
     nativeBuildInputs = [
       rapidgzip

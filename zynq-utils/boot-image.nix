@@ -5,12 +5,13 @@
 }:
 
 {
-  prj-name,
-  hw,
-  sdt,
-  pmufw,
+  prjName,
+
   fsbl,
-  atf,
+  hwplat,
+  pmufw,
+  sdt,
+  tfa,
   uboot,
 }:
 let
@@ -19,15 +20,15 @@ let
     {
       [bootloader, destination_cpu = a53-0] ${fsbl.elf}
       [pmufw_image] ${pmufw.elf}
-      [destination_device = pl]  ${hw.bit}
-      [destination_cpu = a53-0, exception_level = el-3, trustzone] ${atf.elf}
+      [destination_device = pl]  ${hwplat.bit}
+      [destination_cpu = a53-0, exception_level = el-3, trustzone] ${tfa.elf}
       [destination_cpu = a53-0, exception_level = el-2] ${uboot.elf}
       [destination_cpu = a53-0,load = 0x00100000] ${sdt.dtb}
     }
   '';
 in
 stdenv.mkDerivation (finalAttrs: {
-  name = "${prj-name}-fw";
+  name = "${prjName}-fw";
 
   nativeBuildInputs = [ xilinx-unified ];
 
@@ -42,11 +43,11 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     mkdir $out
 
-    cp -- ${hw.bit} $out/
+    cp -- ${hwplat.bit} $out/
     cp -r -- ${sdt}/dt $out/dt
     cp -- ${pmufw.elf} $out/
     cp -- ${fsbl.elf} $out/
-    cp -- ${atf.elf} $out/
+    cp -- ${tfa.elf} $out/
     cp -- ${uboot.elf} $out/
 
     cp -- boot.bin $out/boot.bin

@@ -3,13 +3,14 @@
 }:
 
 {
-  hw,
-  sdt,
-  pmufw,
-  fsbl,
   atf,
+  fsbl,
+  hwplat,
+  pmufw,
+  sdt,
   uboot,
-  force-bootmode-jtag ? true,
+
+  forceBootmodeJtag ? true,
 }:
 writeScript "boot-jtag.tcl" ''
   #!/usr/bin/env xsdb
@@ -30,13 +31,13 @@ writeScript "boot-jtag.tcl" ''
   connect
   target
 
-  ${if force-bootmode-jtag then "boot_jtag" else ""}
+  ${if forceBootmodeJtag then "boot_jtag" else ""}
   after 2000
 
   targets -set -filter {name =~ "PSU"}
 
   # Download bitstream
-  fpga ${hw.bit}
+  fpga ${hwplat.bit}
 
   # Select PMU
   mwr 0xffca0038 0x1FF

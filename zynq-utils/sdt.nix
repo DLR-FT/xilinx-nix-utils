@@ -8,8 +8,9 @@
 }:
 
 {
-  prj-name,
-  hw,
+  prjName,
+
+  hwplat,
   dt-overlays ? null,
   dt-src ? (
     fetchFromGitHub {
@@ -22,22 +23,22 @@
   ...
 }:
 let
-  gen-sdt-tcl = ''
-    hsi open_hw_design ./hw/${prj-name}.xsa
+  genSdtTcl = ''
+    hsi open_hw_design ./hw/${prjName}.xsa
     hsi set_repo_path ./device-tree-xlnx
 
     hsi create_sw_design device-tree -os device_tree -proc psu_cortexa53_0
     hsi generate_target -dir ./build/dt
     hsi close_hw_design [hsi current_hw_design]
 
-    sdtgen set_dt_param -xsa ./hw/${prj-name}.xsa -dir ./build/sdt
+    sdtgen set_dt_param -xsa ./hw/${prjName}.xsa -dir ./build/sdt
     sdtgen generate_sdt
   '';
 in
 stdenv.mkDerivation (finalAttrs: {
-  name = "${prj-name}-sdt";
+  name = "${prjName}-sdt";
   srcs = [
-    hw
+    hwplat
     dt-overlays
     dt-src
   ];
@@ -49,7 +50,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   unpackPhase = ''
-    cp -r -- ${hw} ./hw
+    cp -r -- ${hwplat} ./hw
     cp -r -- ${dt-src} ./device-tree-xlnx
 
     ${
@@ -67,7 +68,7 @@ stdenv.mkDerivation (finalAttrs: {
   configurePhase = ''
     mkdir ./build
 
-    xsct -eval ${lib.strings.escapeShellArg gen-sdt-tcl}
+    xsct -eval ${lib.strings.escapeShellArg genSdtTcl}
 
     echo -e "\n" >> ./build/dt/system-top.dts
     for f in ./dt-overlays/*.dts; do

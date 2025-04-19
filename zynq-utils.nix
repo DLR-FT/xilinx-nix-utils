@@ -12,7 +12,7 @@ final: prev: {
     boot-jtag-cmd = prev.callPackage ./zynq-utils/boot-jtag-cmd.nix { };
     flash-qspi-cmd = prev.callPackage ./zynq-utils/flash-qspi-cmd.nix { };
 
-    python-lopper = prev.python3Packages.callPackage ./zynq-utils/lopper.nix { };
+    python-lopper = prev.python3Packages.callPackage ./zynq-utils/python-lopper.nix { };
 
     embeddedsw-src = prev.fetchFromGitHub {
       owner = "Xilinx";
@@ -40,6 +40,13 @@ final: prev: {
       repo = "u-boot-xlnx";
       rev = "xlnx_rebase_v2024.01_2024.1";
       hash = "sha256-G6GOcazwY4A/muG2hh4pj8i9jm536kYhirrOzcn77WE=";
+    };
+
+    lopper-src = prev.fetchFromGitHub {
+      owner = "devicetree-org";
+      repo = "lopper";
+      rev = "fcfad5150f98691e2a867c76d3f60f3631a3fd59";
+      hash = "sha256-3Jt47POX5avx1OzUhkniov3BLcrmQ+ivK/fORzcOT04=";
     };
   };
 }

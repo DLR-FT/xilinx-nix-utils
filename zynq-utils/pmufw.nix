@@ -26,7 +26,7 @@ lib.makeOverridable (
       libclang
       (buildPackages.python3.withPackages (pyPkgs: [
         pyPkgs.setuptools
-        (pyPkgs.callPackage ./lopper.nix { })
+        (pyPkgs.callPackage ./python-lopper.nix { })
       ]))
 
       (buildPackages.writeShellScriptBin "mb-addr2line" "microblazeel-none-elf-addr2line $@")

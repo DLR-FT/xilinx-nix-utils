@@ -1,67 +1,81 @@
 {
+  lib,
+  runCommand,
   writeScript,
 }:
 
-{
-  atf,
-  fsbl,
-  hwplat,
-  pmufw,
-  sdt,
-  uboot,
-  forceBootmodeJtag ? true,
-}:
-writeScript "boot-jtag.tcl" ''
-  #!/usr/bin/env xsdb
+lib.makeOverridable (
+  {
+    hwplat,
+    sdt,
+    pmufw,
+    fsbl,
+    tfa,
+    uboot,
+    dtbLoadAddr ? "0x00100000",
+    forceBootmodeJtag ? true,
+  }:
+  let
+    baseName = hwplat.baseName;
 
-  proc boot_jtag { } {
-    ############################
-    # Switch to JTAG boot mode #
-    ############################
-    targets -set -filter {name =~ "PSU"}
-    # update multiboot to ZERO
-    mwr 0xffca0010 0x0
-    # change boot mode to JTAG
-    mwr 0xff5e0200 0x0100
-    # reset
-    rst -system
-  }
+    bootJtagScript = writeScript "boot-jtag-${baseName}.tcl" ''
+      #!/usr/bin/env xsdb
 
-  connect
-  target
+      proc boot_jtag { } {
+        ############################
+        # Switch to JTAG boot mode #
+        ############################
+        targets -set -filter {name =~ "PSU"}
+        # update multiboot to ZERO
+        mwr 0xffca0010 0x0
+        # change boot mode to JTAG
+        mwr 0xff5e0200 0x0100
+        # reset
+        rst -system
+      }
 
-  ${if forceBootmodeJtag then "boot_jtag" else ""}
-  after 2000
+      connect
+      target
 
-  targets -set -filter {name =~ "PSU"}
+      ${lib.strings.optionalString forceBootmodeJtag "boot_jtag"}
+      after 2000
 
-  # Download bitstream
-  fpga ${hwplat.bit}
+      targets -set -filter {name =~ "PSU"}
 
-  # Select PMU
-  mwr 0xffca0038 0x1FF
-  targets -set -filter {name =~ "MicroBlaze PMU"}
+      # Download bitstream
+      fpga ${hwplat.bit}
 
-  # Download pmufw
-  dow ${pmufw.elf}
-  con
-  after 500
+      # Select PMU
+      mwr 0xffca0038 0x1FF
+      targets -set -filter {name =~ "MicroBlaze PMU"}
 
-  # Select A53 Core 0
-  targets -set -filter {name =~ "Cortex-A53 #0"}
-  rst -processor -clear-registers
+      # Download pmufw
+      dow ${pmufw.elf}
+      con
+      after 500
 
-  # Download fsbl
-  dow ${fsbl.elf}
-  con
-  after 3000
-  stop
+      # Select A53 Core 0
+      targets -set -filter {name =~ "Cortex-A53 #0"}
+      rst -processor -clear-registers
 
-  # Download uboot
-  dow -data ${sdt.dtb} 0x00100000
-  dow ${uboot.elf}
+      # Download fsbl
+      dow ${fsbl.elf}
+      con
+      after 3000
+      stop
 
-  # Download atf
-  dow ${atf.elf}
-  con
-''
+      # Download dtb + uboot
+      dow -data ${sdt.dtb} ${dtbLoadAddr}
+      dow ${uboot.elf}
+
+      # Download atf
+      dow ${tfa.elf}
+      con
+    '';
+  in
+  runCommand "boot-jtag-${baseName}" { } ''
+    mkdir $out
+    cp -- ${bootJtagScript} $out/boot-jtag-${baseName}.tcl
+    ln -s $out/boot-jtag-${baseName}.tcl $out/boot-jtag.tcl
+  ''
+)

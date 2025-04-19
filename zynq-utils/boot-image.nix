@@ -4,61 +4,77 @@
   xilinx-unified,
 }:
 
-{
-  prjName,
-  fsbl,
-  hwplat,
-  pmufw,
-  sdt,
-  tfa,
-  uboot,
-}:
-let
-  boot_bif = ''
-    the_ROM_image:
-    {
-      [bootloader, destination_cpu = a53-0] ${fsbl.elf}
-      [pmufw_image] ${pmufw.elf}
-      [destination_device = pl]  ${hwplat.bit}
-      [destination_cpu = a53-0, exception_level = el-3, trustzone] ${tfa.elf}
-      [destination_cpu = a53-0, exception_level = el-2] ${uboot.elf}
-      [destination_cpu = a53-0,load = 0x00100000] ${sdt.dtb}
-    }
-  '';
-in
-stdenv.mkDerivation (finalAttrs: {
-  name = "${prjName}-fw";
+lib.makeOverridable (
+  {
+    hwplat,
+    sdt,
+    pmufw,
+    fsbl,
+    tfa,
+    uboot,
 
-  nativeBuildInputs = [ xilinx-unified ];
+    dtbLoadAddr ? "0x00100000",
+    bootBif ? null,
+  }@args:
+  let
+    baseName = hwplat.baseName;
+    toSnake = lib.strings.stringAsChars (ch: if ch == "-" then "_" else ch);
 
-  dontUnpack = true;
-  dontPatch = true;
-  doCheck = false;
+    defaultBootBif = ''
+      @name@:
+      {
+        [bootloader, destination_cpu = a53-0] @fsbl@
+        [pmufw_image] @pmufw@
+        [destination_device = pl] @bit@
+        [destination_cpu = a53-0, exception_level = el-3, trustzone] @tfa@
+        [destination_cpu = a53-0, exception_level = el-2] @uboot@
+        [destination_cpu = a53-0, load = @dtbLoadAddr@] @dtb@
+      }
+    '';
+  in
+  stdenv.mkDerivation (finalAttrs: {
+    name = "${baseName}-boot-image";
 
-  buildPhase = ''
-    bootgen -arch zynqmp -image <(echo ${lib.strings.escapeShellArg boot_bif}) -w -o boot.bin
-  '';
+    nativeBuildInputs = [ xilinx-unified ];
 
-  installPhase = ''
-    mkdir $out
+    dontUnpack = true;
+    dontPatch = true;
 
-    cp -- ${hwplat.bit} $out/
-    cp -r -- ${sdt}/dt $out/dt
-    cp -- ${pmufw.elf} $out/
-    cp -- ${fsbl.elf} $out/
-    cp -- ${tfa.elf} $out/
-    cp -- ${uboot.elf} $out/
+    buildPhase = ''
+      runHook preBuild
 
-    cp -- boot.bin $out/boot.bin
-  '';
+      echo ${lib.strings.escapeShellArg (if bootBif != null then bootBif else defaultBootBif)} > boot.bif
+      substituteInPlace ./boot.bif \
+        --subst-var-by "name" ${toSnake baseName} \
+        --subst-var-by "fsbl" ${fsbl.elf} \
+        --subst-var-by "pmufw" ${pmufw.elf} \
+        --subst-var-by "bit" ${hwplat.bit} \
+        --subst-var-by "tfa" ${tfa.elf} \
+        --subst-var-by "uboot" ${uboot.elf} \
+        --subst-var-by "dtb" ${sdt.dtb} \
+        --subst-var-by "dtbLoadAddr" ${dtbLoadAddr}
 
-  dontFixup = true;
-  dontPatchELF = true;
-  dontPatchShebangs = true;
-  doInstallCheck = false;
-  doDist = false;
+      bootgen -arch zynqmp -image ./boot.bif -w -o boot.bin
 
-  passthru = {
-    bin = "${finalAttrs.finalPackage.out}/boot.bin";
-  };
-})
+      runHook preBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+
+      mkdir $out
+      cp -- boot.bif $out/boot.bif
+      cp -- boot.bin $out/boot.bin
+
+      runHook postInstall
+    '';
+
+    dontFixup = true;
+
+    passthru = {
+      inherit args baseName;
+      bif = "${finalAttrs.finalPackage.out}/boot.bif";
+      bin = "${finalAttrs.finalPackage.out}/boot.bin";
+    };
+  })
+)

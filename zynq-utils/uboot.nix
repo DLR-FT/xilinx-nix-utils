@@ -13,88 +13,102 @@
   writeText,
   zynq-utils,
 }:
-{
-  defconfig ? "xilinx_zynqmp_virt_defconfig",
-  deviceTree ? "zynqmp-zcu102-rev1.0",
-  extDeviceTreeBlob ? null,
-  extraConfig ? "",
-  bootToEL2 ? false,
-  ubootSrc ? zynq-utils.uboot-src,
-}:
-let
-  extra-config-file = writeText ".extra-config" extraConfig;
-in
-stdenv.mkDerivation (finalAttrs: {
-  name = "uboot-${defconfig}";
 
-  srcs = ubootSrc;
+lib.makeOverridable (
+  {
+    defconfig,
+    deviceTree ? null,
+    extDeviceTreeBlob ? null,
+    extraConfig ? "",
+    extraMakeFlags ? [ ],
+    extraPatches ? [ ],
+    src ? zynq-utils.uboot-src,
+  }@args:
+  let
+    extraConfigPath = writeText ".extra-config" extraConfig;
+  in
+  stdenv.mkDerivation (finalAttrs: rec {
+    name = "uboot-${defconfig}";
 
-  nativeBuildInputs = [
-    bison
-    dtc
-    flex
-    gnutls
-    libuuid
-    openssl
-    pkg-config
-    swig
-    # https://github.com/NixOS/nixpkgs/issues/305858
-    (buildPackages.python3.withPackages (
-      pyPkgs: with pyPkgs; [
-        setuptools
-        pyelftools
+    inherit src;
+
+    nativeBuildInputs = [
+      bison
+      dtc
+      flex
+      gnutls
+      libuuid
+      openssl
+      pkg-config
+      swig
+      # https://github.com/NixOS/nixpkgs/issues/305858
+      (buildPackages.python3.withPackages (
+        pyPkgs: with pyPkgs; [
+          setuptools
+          pyelftools
+        ]
+      ))
+    ];
+
+    depsBuildBuild = [ buildPackages.stdenv.cc ];
+
+    env = {
+      KBUILD_OUTPUT = "build";
+    };
+
+    makeFlags =
+      [
+        "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
       ]
-    ))
-  ];
+      ++ lib.lists.optional (deviceTree != null) "DEVICE_TREE=${deviceTree}"
+      ++ lib.lists.optional (extDeviceTreeBlob != null) "EXT_DTB=${extDeviceTreeBlob}"
+      ++ extraMakeFlags;
 
-  depsBuildBuild = [ buildPackages.stdenv.cc ];
+    patches = [ ] ++ extraPatches;
 
-  patchPhase =
-    ''
+    postPatch = ''
       patchShebangs ./scripts
       patchShebangs ./tools
 
       sed -i 's/\/bin\/pwd/pwd/' ./Makefile
-    ''
-    + lib.strings.optionalString bootToEL2 ''
-      substituteInPlace ./board/xilinx/zynqmp/zynqmp.c \
-        --replace armv8_switch_to_el1 armv8_switch_to_el2
     '';
 
-  configurePhase = ''
-    export KBUILD_OUTPUT=build
-    export CROSS_COMPILE=${stdenv.cc.targetPrefix}
+    configurePhase = ''
+      runHook preConfigure
 
-    make ${defconfig}
+      make ${defconfig}
+      cat ${extraConfigPath} >> $KBUILD_OUTPUT/.config
 
-    cat ${extra-config-file} >> $KBUILD_OUTPUT/.config
-  '';
+      runHook postConfigure
+    '';
 
-  buildPhase = ''
-    ${lib.strings.optionalString (deviceTree != null) ''
-      export DEVICE_TREE=${deviceTree}
-    ''}
+    buildPhase = ''
+      runHook preBuild
 
-    ${lib.strings.optionalString (extDeviceTreeBlob != null) ''
-      export EXT_DTB=${extDeviceTreeBlob}
-    ''}
+      make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES
 
-    make -j $NIX_BUILD_CORES
-  '';
+      runHook postBuild
+    '';
 
-  installPhase = ''
-    mkdir $out
-    cp -r ./build/. $out/
+    installPhase = ''
+      runHook preInstall
 
-    mkdir $out/bin
-    cp ./build/tools/mkimage $out/bin/
-  '';
+      mkdir $out
+      cp -r ./$KBUILD_OUTPUT/. $out/
 
-  dontFixup = true;
+      mkdir $out/bin
+      cp ./$KBUILD_OUTPUT/tools/mkimage $out/bin/
 
-  passthru = {
-    elf = "${finalAttrs.finalPackage.out}/u-boot.elf";
-    dtb = "${finalAttrs.finalPackage.out}/u-boot.dtb";
-    config = "${finalAttrs.finalPackage.out}/.config";
-  };
-})
+      runHook postInstall
+    '';
+
+    dontFixup = true;
+
+    passthru = {
+      inherit args;
+      elf = "${finalAttrs.finalPackage.out}/u-boot.elf";
+      dtb = "${finalAttrs.finalPackage.out}/u-boot.dtb";
+      config = "${finalAttrs.finalPackage.out}/.config";
+    };
+  })
+)

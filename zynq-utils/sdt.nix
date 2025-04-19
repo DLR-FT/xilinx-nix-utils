@@ -1,96 +1,110 @@
 {
+  dtc,
   lib,
   stdenv,
   xilinx-unified,
-  dtc,
   xlsclients,
   zynq-utils,
 }:
 
-{
-  prjName,
+lib.makeOverridable (
+  {
+    hwplat,
+    extraDts ? [ ],
+    extraPatches ? [ ],
+    src ? zynq-utils.dt-src,
+  }@args:
+  let
+    baseName = hwplat.baseName;
 
-  hwplat,
-  dt-overlays ? null,
-  dt-src ? zynq-utils.dt-src,
-}:
-let
-  genSdtTcl = ''
-    hsi open_hw_design ./hw/${prjName}.xsa
-    hsi set_repo_path ./device-tree-xlnx
+    genSdtTcl = ''
+      hsi open_hw_design ./hwplat/${hwplat.baseName}.xsa
+      hsi set_repo_path ./device-tree-xlnx
 
-    hsi create_sw_design device-tree -os device_tree -proc psu_cortexa53_0
-    hsi generate_target -dir ./build/dt
-    hsi close_hw_design [hsi current_hw_design]
+      hsi create_sw_design device-tree -os device_tree -proc psu_cortexa53_0
+      hsi generate_target -dir ./build/dt
+      hsi close_hw_design [hsi current_hw_design]
 
-    sdtgen set_dt_param -xsa ./hw/${prjName}.xsa -dir ./build/sdt
-    sdtgen generate_sdt
-  '';
-in
-stdenv.mkDerivation (finalAttrs: {
-  name = "${prjName}-sdt";
-  srcs = [
-    hwplat
-    dt-overlays
-    dt-src
-  ];
+      sdtgen set_dt_param -xsa ./hwplat/${hwplat.baseName}.xsa -dir ./build/sys
+      sdtgen generate_sdt
+    '';
+  in
+  stdenv.mkDerivation (finalAttrs: {
+    name = "${hwplat.baseName}-sdt";
+    srcs = [
+      hwplat
+      src
+    ] ++ extraDts;
 
-  nativeBuildInputs = [
-    xilinx-unified
-    dtc
-    xlsclients
-  ];
+    nativeBuildInputs = [
+      dtc
+      xilinx-unified
+      xlsclients
+    ];
 
-  unpackPhase = ''
-    cp -r -- ${hwplat} ./hw
-    cp -r -- ${dt-src} ./device-tree-xlnx
+    unpackPhase = ''
+      runHook preUnpack
 
-    ${
-      if !(builtins.isNull dt-overlays) then
-        "cp -r -- ${dt-overlays} ./dt-overlays"
-      else
-        "mkdir ./dt-overlays"
-    }
+      cp -r -- ${hwplat} ./hwplat
+      cp -r -- ${src} ./device-tree-xlnx
 
-    chmod -R u=rwX ./hw
-  '';
+      mkdir ./extra-dts/
+      for dts in ${lib.strings.concatStringsSep " " extraDts}; do
+        cp -- $dts ./extra-dts/
+      done
 
-  dontPatch = true;
+      chmod -R u=rwX ./hwplat
 
-  configurePhase = ''
-    mkdir ./build
+      runHook postUnpack
+    '';
 
-    xsct -eval ${lib.strings.escapeShellArg genSdtTcl}
+    patches = [ ] ++ extraPatches;
 
-    echo -e "\n" >> ./build/dt/system-top.dts
-    for f in ./dt-overlays/*.dts; do
-      [ -f $f ] || continue
+    configurePhase = ''
+      runHook preConfigure
 
-      cat $f >> ./build/dt/system-top.dts
+      mkdir ./build
+
+      xsct -eval ${lib.strings.escapeShellArg genSdtTcl}
+
       echo -e "\n" >> ./build/dt/system-top.dts
-    done
-  '';
+      for f in ./extra-dts/*.dts; do
+        [ -f $f ] || continue
 
-  buildPhase = ''
-    gcc -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o ./build/dt/system-top.dts.pp ./build/dt/system-top.dts
-    dtc -I dts -O dtb -o ./build/dt/system-top.dtb ./build/dt/system-top.dts.pp
-  '';
+        echo -e "/* $f */" >> ./build/dt/system-top.dts
+        cat $f >> ./build/dt/system-top.dts
+        echo -e "\n" >> ./build/dt/system-top.dts
+      done
 
-  doCheck = false;
-  installPhase = ''
-    mkdir $out
+      runHook postConfigure
+    '';
 
-    cp -r -- ./build/dt $out/dt
-    cp -r -- ./build/sdt $out/sdt
-  '';
+    buildPhase = ''
+      runHook preBuild
 
-  dontFixup = true;
-  dontPatchELF = true;
-  dontPatchShebangs = true;
-  doInstallCheck = false;
-  doDist = false;
+      gcc -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o ./build/dt/system-top.dts.pp ./build/dt/system-top.dts
+      dtc -I dts -O dtb -o ./build/dt/system-top.dtb ./build/dt/system-top.dts.pp
 
-  passthru = {
-    dtb = "${finalAttrs.finalPackage.out}/dt/system-top.dtb";
-  };
-})
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+
+      mkdir $out
+      cp -r -- ./build/dt $out/dt
+      cp -r -- ./build/sys $out/sys
+
+      runHook postInstall
+    '';
+
+    dontFixup = true;
+
+    passthru = {
+      inherit args baseName;
+      dts = "${finalAttrs.finalPackage.out}/dt/system-top.dts";
+      dtb = "${finalAttrs.finalPackage.out}/dt/system-top.dtb";
+      sys.dts = "${finalAttrs.finalPackage.out}/sys/system-top.dts";
+    };
+  })
+)

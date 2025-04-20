@@ -18,6 +18,7 @@ lib.makeOverridable (
   in
   stdenv.mkDerivation (finalAttrs: {
     name = "${sdt.baseName}-pmufw";
+    version = src.rev;
 
     inherit src;
 

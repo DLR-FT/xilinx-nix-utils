@@ -18,6 +18,7 @@ lib.makeOverridable (
   in
   stdenv.mkDerivation (finalAttrs: {
     name = "${baseName}-fsbl";
+    version = src.rev;
 
     inherit src;
 

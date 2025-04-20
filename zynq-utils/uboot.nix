@@ -29,6 +29,7 @@ lib.makeOverridable (
   in
   stdenv.mkDerivation (finalAttrs: rec {
     name = "uboot-${defconfig}";
+    version = src.rev;
 
     inherit src;
 

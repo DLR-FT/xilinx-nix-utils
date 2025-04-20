@@ -14,6 +14,7 @@ lib.makeOverridable (
   }@args:
   stdenv.mkDerivation (finalAttrs: rec {
     name = "trusted-firmware-a-${plat}";
+    version = src.rev;
 
     inherit src;
 

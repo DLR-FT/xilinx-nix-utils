@@ -31,6 +31,8 @@ lib.makeOverridable (
   in
   stdenv.mkDerivation (finalAttrs: {
     name = "${hwplat.baseName}-sdt";
+    version = src.rev;
+
     srcs = [
       hwplat
       src

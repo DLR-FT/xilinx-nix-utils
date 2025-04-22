@@ -7,6 +7,7 @@
 {
   name,
   src,
+  flash-qspi-cmd,
   ...
 }@args:
 lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
@@ -75,8 +76,8 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
     (zynq-utils.flash-qspi-cmd {
       bootImage = final.boot-image;
       dowFsbl = final.fsbl;
-      flashType = "qspi-x8-dual_parallel";
-      flashDensity = 128;
+      flashType = args.flash-qspi-cmd.flashType;
+      flashDensity = args.flash-qspi-cmd.flashDensity;
     }).override
       (lib.attrsets.optionalAttrs (args ? flash-qspi-cmd) args.flash-qspi-cmd);
 })

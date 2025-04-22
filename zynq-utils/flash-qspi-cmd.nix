@@ -24,7 +24,7 @@ lib.makeOverridable (
         -flash_type ${flashType} \
         -fsbl ${dowFsbl.elf} \
         -flash_density ${toString flashDensity} \
-        ${lib.strings.optionalString verify "-verify \\"}
+        ${lib.strings.optionalString verify "-verify"} \
         ${lib.strings.concatStringsSep " " extraArgs}
     '';
   in

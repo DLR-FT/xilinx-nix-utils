@@ -34,6 +34,7 @@
 
           self.overlays.default
           self.overlays.zynq-utils
+          self.overlays.zynq-boards
 
           devshell.overlays.default
         ];
@@ -45,6 +46,10 @@
       packages.${system} = {
         xilinx-unified = pkgs.xilinx-unified;
         xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
+
+        board-small-fw = pkgs.zynq-boards.te0706-0821-3be21.boot-image;
+        board-small-boot-jtag-cmd = pkgs.zynq-boards.te0706-0821-3be21.boot-jtag-cmd;
+        board-small-flash-cmd = pkgs.zynq-boards.te0706-0821-3be21.flash-qspi-cmd;
       };
 
       devShells.${system}.default = pkgs.devshell.mkShell {
@@ -73,5 +78,6 @@
 
       overlays.default = import ./xilinx-unified.nix;
       overlays.zynq-utils = import ./zynq-utils.nix;
+      overlays.zynq-boards = import ./zynq-boards.nix;
     };
 }

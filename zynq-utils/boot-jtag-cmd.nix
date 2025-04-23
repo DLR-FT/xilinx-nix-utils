@@ -13,7 +13,7 @@ lib.makeOverridable (
     tfa,
     uboot,
     dtbLoadAddr ? "0x00100000",
-    forceBootmodeJtag ? true,
+    forceBootModeJtag ? false,
   }:
   let
     baseName = hwplat.baseName;
@@ -37,7 +37,7 @@ lib.makeOverridable (
       connect
       target
 
-      ${lib.strings.optionalString forceBootmodeJtag "boot_jtag"}
+      ${lib.strings.optionalString forceBootModeJtag "boot_jtag"}
       after 2000
 
       targets -set -filter {name =~ "PSU"}

@@ -12,7 +12,7 @@ final: prev: {
     boot-jtag-cmd = prev.callPackage ./zynq-utils/boot-jtag-cmd.nix { };
     flash-qspi-cmd = prev.callPackage ./zynq-utils/flash-qspi-cmd.nix { };
 
-    board = prev.callPackage ./zynq-utils/board.nix { };
+    zynqmp-board = prev.callPackage ./zynq-utils/zynqmp-board.nix { };
 
     python-lopper = prev.python3Packages.callPackage ./zynq-utils/python-lopper.nix { };
 

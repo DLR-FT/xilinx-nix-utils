@@ -10,6 +10,7 @@
   pkg-config,
   stdenv,
   swig,
+  which,
   writeText,
   zynq-utils,
 }:
@@ -42,6 +43,7 @@ lib.makeOverridable (
       openssl
       pkg-config
       swig
+      which
       # https://github.com/NixOS/nixpkgs/issues/305858
       (buildPackages.python3.withPackages (
         pyPkgs: with pyPkgs; [
@@ -107,7 +109,7 @@ lib.makeOverridable (
 
     passthru = {
       inherit args;
-      elf = "${finalAttrs.finalPackage.out}/u-boot.elf";
+      elf = "${finalAttrs.finalPackage.out}/u-boot";
       dtb = "${finalAttrs.finalPackage.out}/u-boot.dtb";
       config = "${finalAttrs.finalPackage.out}/.config";
     };

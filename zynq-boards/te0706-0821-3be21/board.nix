@@ -11,6 +11,9 @@ zynq-utils.zynqmp-board {
 
   uboot = {
     extraConfig = ''
+      # Workaround: "u-boot-spl.bin exceeds file size limit";
+      CONFIG_SPL_SIZE_LIMIT=0x30000
+
       CONFIG_ENV_IS_NOWHERE=n
       CONFIG_ENV_IS_IN_FAT=n
       CONFIG_ENV_IS_IN_NAND=n

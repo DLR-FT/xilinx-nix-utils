@@ -5,14 +5,14 @@
   libclang,
   ninja,
   stdenv,
-  zynq-utils,
+  zynq-srcs,
 }:
 
 lib.makeOverridable (
   {
     sdt,
     extraPatches ? [ ],
-    src ? zynq-utils.embeddedsw-src,
+    src ? zynq-srcs.embeddedsw-src,
   }@args:
   let
     baseName = sdt.baseName;

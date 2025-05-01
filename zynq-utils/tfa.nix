@@ -2,7 +2,7 @@
   dtc,
   lib,
   stdenv,
-  zynq-utils,
+  zynq-srcs,
 }:
 
 lib.makeOverridable (
@@ -10,7 +10,7 @@ lib.makeOverridable (
     plat,
     extraMakeFlags ? [ ],
     extraPatches ? [ ],
-    src ? zynq-utils.tfa-src,
+    src ? zynq-srcs.tfa-src,
   }@args:
   stdenv.mkDerivation (finalAttrs: rec {
     name = "trusted-firmware-a-${plat}";

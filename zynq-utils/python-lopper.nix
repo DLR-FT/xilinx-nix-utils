@@ -8,14 +8,14 @@
   packaging,
   pyyaml,
   ruamel-yaml,
-  zynq-utils,
+  zynq-srcs,
 }:
 
 buildPythonPackage rec {
   pname = "python-lopper";
   version = src.rev;
 
-  src = zynq-utils.lopper-src;
+  src = zynq-srcs.lopper-src;
 
   propagatedBuildInputs = [
     anytree

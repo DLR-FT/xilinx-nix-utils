@@ -4,7 +4,7 @@
   stdenv,
   xilinx-unified,
   xlsclients,
-  zynq-utils,
+  zynq-srcs,
 }:
 
 lib.makeOverridable (
@@ -13,7 +13,7 @@ lib.makeOverridable (
     boardDts ? null,
     extraDtsi ? null,
     extraPatches ? [ ],
-    src ? zynq-utils.sdt-src,
+    src ? zynq-srcs.sdt-src,
   }@args:
   let
     baseName = hwplat.baseName;

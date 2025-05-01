@@ -12,7 +12,7 @@
   swig,
   which,
   writeText,
-  zynq-utils,
+  zynq-srcs,
 }:
 
 lib.makeOverridable (
@@ -23,7 +23,7 @@ lib.makeOverridable (
     extraConfig ? "",
     extraMakeFlags ? [ ],
     extraPatches ? [ ],
-    src ? zynq-utils.uboot-src,
+    src ? zynq-srcs.uboot-src,
   }@args:
   let
     extraConfigPath = writeText ".extra-config" extraConfig;

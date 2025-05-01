@@ -33,8 +33,20 @@
           })
 
           self.overlays.default
+          self.overlays.zynq-srcs
           self.overlays.zynq-utils
           self.overlays.zynq-boards
+
+          (final: prev: {
+            zynq-srcs = prev.zynq-srcs // {
+              uboot-src = pkgs.fetchFromGitHub {
+                owner = "Xilinx";
+                repo = "u-boot-xlnx";
+                rev = "xlnx_rebase_v2025.01";
+                hash = "sha256-uN6oXoa6huclsz1c5Z2IyIvJoRfMr1QsfKF6Y2Z4zf4=";
+              };
+            };
+          })
 
           devshell.overlays.default
         ];
@@ -43,14 +55,16 @@
       treefmtEval = treefmt.lib.evalModule pkgs ./treefmt.nix;
     in
     {
-      packages.${system} = {
-        xilinx-unified = pkgs.xilinx-unified;
-        xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
+      packages.${system} =
+        let
+          board-small = pkgs.zynq-boards.te0706-0821-3be21;
+        in
+        {
+          xilinx-unified = pkgs.xilinx-unified;
+          xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
 
-        board-small-fw = pkgs.zynq-boards.te0706-0821-3be21.boot-image;
-        board-small-boot-jtag-cmd = pkgs.zynq-boards.te0706-0821-3be21.boot-jtag-cmd;
-        board-small-flash-cmd = pkgs.zynq-boards.te0706-0821-3be21.flash-qspi-cmd;
-      };
+          fw = board-small.boot-image;
+        };
 
       devShells.${system}.default = pkgs.devshell.mkShell {
         name = "xilinx-dev-shell";
@@ -77,6 +91,7 @@
       checks.${system}.formatting = treefmtEval.config.build.check self;
 
       overlays.default = import ./xilinx-unified.nix;
+      overlays.zynq-srcs = import ./zynq-srcs.nix;
       overlays.zynq-utils = import ./zynq-utils.nix;
       overlays.zynq-boards = import ./zynq-boards.nix;
     };

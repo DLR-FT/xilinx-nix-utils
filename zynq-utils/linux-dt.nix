@@ -3,7 +3,7 @@
   dtc,
   lib,
   stdenv,
-  zynq-utils,
+  zynq-srcs,
 }:
 
 lib.makeOverridable (
@@ -11,7 +11,7 @@ lib.makeOverridable (
     sdt,
     proc,
     extraPatches ? [ ],
-    src ? zynq-utils.lopper-src,
+    src ? zynq-srcs.lopper-src,
   }@args:
   let
     baseName = sdt.baseName;

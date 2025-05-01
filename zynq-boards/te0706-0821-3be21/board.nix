@@ -6,7 +6,7 @@ zynq-utils.zynqmp-board {
   src = ./vivado-srcs;
 
   sdt = {
-    extraDts = [ ./dts/qspi-nor-flash.dts ];
+    extraDtsi = ./dts/qspi-nor-flash.dtsi;
   };
 
   uboot = {

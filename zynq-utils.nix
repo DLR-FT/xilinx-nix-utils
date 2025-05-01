@@ -5,6 +5,7 @@ final: prev: {
     pmufw = prev.callPackage ./zynq-utils/pmufw.nix { };
     fsbl = prev.callPackage ./zynq-utils/fsbl.nix { };
     tfa = prev.callPackage ./zynq-utils/tfa.nix { };
+    linux-dt = prev.callPackage ./zynq-utils/linux-dt.nix { };
     uboot = prev.callPackage ./zynq-utils/uboot.nix { };
 
     boot-image = prev.callPackage ./zynq-utils/boot-image.nix { };

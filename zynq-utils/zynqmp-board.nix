@@ -43,10 +43,17 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
     lib.attrsets.optionalAttrs (args ? tfa) args.tfa
   );
 
+  linux-dt =
+    (zynq-utils.linux-dt {
+      sdt = final.sdt;
+      proc = "psu_cortexa53_0";
+    }).override
+      (lib.attrsets.optionalAttrs (args ? linux-dt) args.linux-dt);
+
   uboot =
     (pkgsCross.aarch64-multiplatform.zynq-utils.uboot {
       defconfig = "xilinx_zynqmp_virt_defconfig";
-      extDeviceTreeBlob = final.sdt.dtb;
+      extDeviceTreeBlob = final.linux-dt.dtb;
     }).override
       (lib.attrsets.optionalAttrs (args ? uboot) args.uboot);
 

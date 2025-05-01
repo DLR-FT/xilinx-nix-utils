@@ -3,6 +3,7 @@
   cmake,
   lib,
   libclang,
+  ninja,
   stdenv,
   zynq-utils,
 }:
@@ -25,6 +26,7 @@ lib.makeOverridable (
     nativeBuildInputs = [
       cmake
       libclang
+      ninja
       (buildPackages.python3.withPackages (pyPkgs: [
         pyPkgs.setuptools
         (pyPkgs.callPackage ./python-lopper.nix { })
@@ -64,7 +66,7 @@ lib.makeOverridable (
 
       mkdir ./fsbl-bsp
       pushd ./fsbl-bsp
-      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -s ${sdt.sys.dts} -p psu_cortexa53_0
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_fsbl -s ${sdt.dts} -p psu_cortexa53_0
       popd
 
       mkdir ./fsbl

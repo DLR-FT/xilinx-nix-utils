@@ -3,6 +3,7 @@
   cmake,
   lib,
   libclang,
+  ninja,
   stdenv,
   zynq-utils,
 }:
@@ -25,6 +26,7 @@ lib.makeOverridable (
     nativeBuildInputs = [
       cmake
       libclang
+      ninja
       (buildPackages.python3.withPackages (pyPkgs: [
         pyPkgs.setuptools
         (pyPkgs.callPackage ./python-lopper.nix { })
@@ -62,7 +64,7 @@ lib.makeOverridable (
 
       mkdir ./pmufw-bsp
       pushd ./pmufw-bsp
-      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_pmufw -s ${sdt.sys.dts} -p psu_pmu_0
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_pmufw -s ${sdt.dts} -p psu_pmu_0
       popd
 
       mkdir ./pmufw

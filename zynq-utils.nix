@@ -5,6 +5,7 @@ final: prev: {
     pmufw = prev.callPackage ./zynq-utils/pmufw.nix { };
     fsbl = prev.callPackage ./zynq-utils/fsbl.nix { };
     tfa = prev.callPackage ./zynq-utils/tfa.nix { };
+
     linux-dt = prev.callPackage ./zynq-utils/linux-dt.nix { };
     uboot = prev.callPackage ./zynq-utils/uboot.nix { };
 
@@ -20,36 +21,36 @@ final: prev: {
     embeddedsw-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "embeddedsw";
-      rev = "xilinx_v2024.1";
-      hash = "sha256-vh7tdHNd3miDZplTiRP8UWhQ/HLrjMcbQXCJjTO4p9o=";
+      rev = "xilinx_v2024.2";
+      hash = "sha256-j2wY1XQ4TFGZpDcORXDwDpXSUEnAnl8TcBeA2y9bln4=";
     };
 
-    dt-src = prev.fetchFromGitHub {
+    sdt-src = prev.fetchFromGitHub {
       owner = "Xilinx";
-      repo = "device-tree-xlnx";
-      rev = "xilinx_v2024.1";
-      hash = "sha256-dja+JwbXwiBRJwg/6GNOdONp/vrihmfPBnpjEA/xxnk=";
+      repo = "system-device-tree-xlnx";
+      rev = "xilinx_v2024.2";
+      hash = "sha256-tc6YU+yXZ8LZ2Sizo7jzNsyGpj6eLTefYQl0AfMJ68Q=";
     };
 
     tfa-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "arm-trusted-firmware";
-      rev = "xilinx-v2024.1";
-      hash = "sha256-XEFHS2hZWdJEB7b0Zdci/PtNc7csn+zQWljiG9Tx0mM=";
+      rev = "xilinx-v2024.2";
+      hash = "sha256-bq9Da3Zc+soEudJxXRejehordtttXJ3vayYZb5IfJFI=";
     };
 
     uboot-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "u-boot-xlnx";
-      rev = "xlnx_rebase_v2024.01_2024.1";
-      hash = "sha256-G6GOcazwY4A/muG2hh4pj8i9jm536kYhirrOzcn77WE=";
+      rev = "xilinx-v2024.2";
+      hash = "sha256-qeyvbpDvgg3Uu9Rr7yQIzIMhbLxGIuSAc/T95GPMDL8=";
     };
 
     lopper-src = prev.fetchFromGitHub {
       owner = "devicetree-org";
       repo = "lopper";
-      rev = "fcfad5150f98691e2a867c76d3f60f3631a3fd59";
-      hash = "sha256-3Jt47POX5avx1OzUhkniov3BLcrmQ+ivK/fORzcOT04=";
+      rev = "v0.2024.x";
+      hash = "sha256-saK6Mt3sCf6xJVDnjqVrasswVocSwvfVdTMw0fx7bdA=";
     };
   };
 }

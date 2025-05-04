@@ -11,11 +11,27 @@
 lib.makeOverridable (
   {
     sdt,
+    plat,
+    proc,
     extraPatches ? [ ],
     src ? zynq-srcs.embeddedsw-src,
   }@args:
   let
     baseName = sdt.baseName;
+
+    template =
+      {
+        zynqmp = "zynqmp_pmufw";
+      }
+      .${plat};
+
+    mode = if stdenv.targetPlatform.is32bit then "32-bit" else "64-bit";
+
+    toolchainFile =
+      {
+        psu_pmu_0 = "microblaze-pmu_toolchain.cmake";
+      }
+      .${proc};
   in
   stdenv.mkDerivation (finalAttrs: {
     name = "${sdt.baseName}-pmufw";
@@ -44,20 +60,20 @@ lib.makeOverridable (
 
       export ESW_REPO=$(realpath .)
 
-      echo "set(CMAKE_C_COMPILER ${stdenv.cc.targetPrefix}gcc)" >> ./cmake/toolchainfiles/microblaze-pmu_toolchain.cmake
-      echo "set(CMAKE_CXX_COMPILER ${stdenv.cc.targetPrefix}g++)" >> ./cmake/toolchainfiles/microblaze-pmu_toolchain.cmake
-      echo "set(CMAKE_ASM_COMPILER ${stdenv.cc.targetPrefix}gcc)" >> ./cmake/toolchainfiles/microblaze-pmu_toolchain.cmake
-      echo "set(CMAKE_AR ${stdenv.cc.targetPrefix}ar)" >> ./cmake/toolchainfiles/microblaze-pmu_toolchain.cmake
-      echo "set(CMAKE_SIZE ${stdenv.cc.targetPrefix}size)" >> ./cmake/toolchainfiles/microblaze-pmu_toolchain.cmake
+      echo "set(CMAKE_C_COMPILER ${stdenv.cc.targetPrefix}gcc)" >> ./cmake/toolchainfiles/${toolchainFile}
+      echo "set(CMAKE_CXX_COMPILER ${stdenv.cc.targetPrefix}g++)" >> ./cmake/toolchainfiles/${toolchainFile}
+      echo "set(CMAKE_ASM_COMPILER ${stdenv.cc.targetPrefix}gcc)" >> ./cmake/toolchainfiles/${toolchainFile}
+      echo "set(CMAKE_AR ${stdenv.cc.targetPrefix}ar)" >> ./cmake/toolchainfiles/${toolchainFile}
+      echo "set(CMAKE_SIZE ${stdenv.cc.targetPrefix}size)" >> ./cmake/toolchainfiles/${toolchainFile}
 
       mkdir ./pmufw-bsp
       pushd ./pmufw-bsp
-      python $ESW_REPO/scripts/pyesw/create_bsp.py -t zynqmp_pmufw -s ${sdt.dts} -p psu_pmu_0
+      python $ESW_REPO/scripts/pyesw/create_bsp.py -t ${template} -s ${sdt.dts} -p ${proc} ${lib.strings.optionalString (lib.strings.hasInfix "cortexa53" proc) "-m ${mode}"}
       popd
 
       mkdir ./pmufw
       pushd ./pmufw
-      python $ESW_REPO/scripts/pyesw/create_app.py -t zynqmp_pmufw -d ../pmufw-bsp
+      python $ESW_REPO/scripts/pyesw/create_app.py -t ${template} -d ../pmufw-bsp
       popd
 
       runHook postConfigure
@@ -83,7 +99,7 @@ lib.makeOverridable (
 
     passthru = {
       inherit args baseName;
-      elf = "${finalAttrs.finalPackage.out}/zynqmp_pmufw.elf";
+      elf = "${finalAttrs.finalPackage.out}/${template}.elf";
     };
   })
 )

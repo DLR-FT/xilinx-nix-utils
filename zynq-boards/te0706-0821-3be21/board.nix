@@ -1,7 +1,7 @@
 {
   zynq-utils,
 }:
-zynq-utils.zynqmp-board {
+zynq-utils.zynqmp.board {
   name = "te0706-0821-3be21";
   src = ./vivado-srcs;
 
@@ -25,11 +25,11 @@ zynq-utils.zynqmp-board {
     '';
   };
 
-  boot-jtag-cmd = {
+  boot-jtag = {
     forceBootModeJtag = true;
   };
 
-  flash-qspi-cmd = {
+  flash-qspi = {
     flashType = "qspi-x8-dual_parallel";
     flashDensity = 128;
   };

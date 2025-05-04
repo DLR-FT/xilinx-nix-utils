@@ -32,6 +32,24 @@
               });
           })
 
+          (final: prev: {
+            pkgsCross = prev.pkgsCross // {
+              armhf-embedded = import nixpkgs {
+                localSystem = system;
+                crossSystem = {
+                  config = "arm-none-eabihf";
+                  gcc.arch = "armv7-a+fp";
+                  gcc.tune = "cortex-a9";
+                };
+
+                overlays = [
+                  self.overlays.zynq-srcs
+                  self.overlays.zynq-utils
+                ];
+              };
+            };
+          })
+
           self.overlays.default
           self.overlays.zynq-srcs
           self.overlays.zynq-utils
@@ -57,13 +75,15 @@
     {
       packages.${system} =
         let
-          board-small = pkgs.zynq-boards.te0706-0821-3be21;
+          example = pkgs.zynq-boards.te0706-0821-3be21;
         in
         {
           xilinx-unified = pkgs.xilinx-unified;
           xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
 
-          fw = board-small.boot-image;
+          fw = example.boot-image;
+          boot = example.boot-jtag;
+          flash = example.flash-qspi;
         };
 
       devShells.${system}.default = pkgs.devshell.mkShell {

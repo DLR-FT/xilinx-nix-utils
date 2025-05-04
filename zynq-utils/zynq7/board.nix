@@ -7,7 +7,6 @@
 {
   name,
   src,
-  flash-qspi-cmd,
   ...
 }@args:
 lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
@@ -27,64 +26,52 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
     }).override
       (lib.attrsets.optionalAttrs (args ? sdt) args.sdt);
 
-  pmufw =
-    (pkgsCross.microblaze-embedded.zynq-utils.pmufw {
-      sdt = final.sdt;
-    }).override
-      (lib.attrsets.optionalAttrs (args ? pmufw) args.pmufw);
-
   fsbl =
-    (pkgsCross.aarch64-embedded.zynq-utils.fsbl {
+    (pkgsCross.armhf-embedded.zynq-utils.fsbl {
       sdt = final.sdt;
+      plat = "zynq7";
+      proc = "ps7_cortexa9_0";
     }).override
       (lib.attrsets.optionalAttrs (args ? fsbl) args.fsbl);
-
-  tfa = (pkgsCross.aarch64-multiplatform.zynq-utils.tfa { plat = "zynqmp"; }).override (
-    lib.attrsets.optionalAttrs (args ? tfa) args.tfa
-  );
 
   linux-dt =
     (zynq-utils.linux-dt {
       sdt = final.sdt;
-      proc = "psu_cortexa53_0";
+      proc = "ps7_cortexa9_0";
     }).override
       (lib.attrsets.optionalAttrs (args ? linux-dt) args.linux-dt);
 
   uboot =
-    (pkgsCross.aarch64-multiplatform.zynq-utils.uboot {
-      defconfig = "xilinx_zynqmp_virt_defconfig";
+    (pkgsCross.armv7l-hf-multiplatform.zynq-utils.uboot {
+      defconfig = "xilinx_zynq_virt_defconfig";
       extDeviceTreeBlob = final.linux-dt.dtb;
     }).override
       (lib.attrsets.optionalAttrs (args ? uboot) args.uboot);
 
   boot-image =
-    (zynq-utils.boot-image {
+    (zynq-utils.zynq7.boot-image {
       hwplat = final.hwplat;
-      sdt = final.sdt;
-      pmufw = final.pmufw;
       fsbl = final.fsbl;
-      tfa = final.tfa;
+      linux-dt = final.linux-dt;
       uboot = final.uboot;
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
 
-  boot-jtag-cmd =
-    (zynq-utils.boot-jtag-cmd {
+  boot-jtag =
+    (zynq-utils.zynq7.boot-jtag {
       hwplat = final.hwplat;
-      sdt = final.sdt;
-      pmufw = final.pmufw;
       fsbl = final.fsbl;
-      tfa = final.tfa;
+      linux-dt = final.linux-dt;
       uboot = final.uboot;
     }).override
-      (lib.attrsets.optionalAttrs (args ? boot-jtag-cmd) args.boot-jtag-cmd);
+      (lib.attrsets.optionalAttrs (args ? boot-jtag) args.boot-jtag);
 
-  flash-qspi-cmd =
-    (zynq-utils.flash-qspi-cmd {
+  flash-qspi =
+    (zynq-utils.flash-qspi {
       bootImage = final.boot-image;
       dowFsbl = final.fsbl;
       flashType = args.flash-qspi-cmd.flashType;
       flashDensity = args.flash-qspi-cmd.flashDensity;
     }).override
-      (lib.attrsets.optionalAttrs (args ? flash-qspi-cmd) args.flash-qspi-cmd);
+      (lib.attrsets.optionalAttrs (args ? flash-qspi) args.flash-qspi);
 })

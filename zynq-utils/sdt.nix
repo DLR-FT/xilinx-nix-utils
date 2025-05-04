@@ -51,7 +51,10 @@ lib.makeOverridable (
 
     postUnpack = ''
       mkdir ./extra-dtsi
-      cp -r -- ${extraDtsi} ./extra-dtsi/${builtins.baseNameOf extraDtsi}
+
+      ${lib.strings.optionalString (
+        extraDtsi != null
+      ) "cp -r -- ${extraDtsi} ./extra-dtsi/${builtins.baseNameOf extraDtsi}"}
     '';
 
     buildPhase = ''

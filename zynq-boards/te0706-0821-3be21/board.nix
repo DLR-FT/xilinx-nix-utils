@@ -31,6 +31,6 @@ zynq-utils.zynqmp.board {
 
   flash-qspi = {
     flashType = "qspi-x8-dual_parallel";
-    flashDensity = 128;
+    flashDensity = 64;
   };
 }

@@ -7,10 +7,10 @@
 lib.makeOverridable (
   {
     hwplat,
-    sdt,
     pmufw,
     fsbl,
     tfa,
+    linux-dt,
     uboot,
 
     dtbLoadAddr ? "0x00100000",
@@ -51,7 +51,7 @@ lib.makeOverridable (
         --subst-var-by "bit" ${hwplat.bit} \
         --subst-var-by "tfa" ${tfa.elf} \
         --subst-var-by "uboot" ${uboot.elf} \
-        --subst-var-by "dtb" ${sdt.dtb} \
+        --subst-var-by "dtb" ${linux-dt.dtb} \
         --subst-var-by "dtbLoadAddr" ${dtbLoadAddr}
 
       bootgen -arch zynqmp -image ./boot.bif -w -o boot.bin

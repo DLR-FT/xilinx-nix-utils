@@ -7,10 +7,10 @@
 lib.makeOverridable (
   {
     hwplat,
-    sdt,
     pmufw,
     fsbl,
     tfa,
+    linux-dt,
     uboot,
     dtbLoadAddr ? "0x00100000",
     forceBootModeJtag ? false,
@@ -65,7 +65,7 @@ lib.makeOverridable (
       stop
 
       # Download dtb + uboot
-      dow -data ${sdt.dtb} ${dtbLoadAddr}
+      dow -data ${linux-dt.dtb} ${dtbLoadAddr}
       dow ${uboot.elf}
 
       # Download atf

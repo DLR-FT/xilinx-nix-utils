@@ -7,6 +7,7 @@
 lib.makeOverridable (
   {
     name,
+    sourceTcl ? src + "/vivado.tcl",
     extraPatches ? [ ],
     src,
   }@args:
@@ -37,7 +38,7 @@ lib.makeOverridable (
     configurePhase = ''
       runHook preConfigure
 
-      vivado -nolog -nojournal -mode batch -source ${src}/vivado.tcl -tclargs --origin_dir ./. --project_name ${name}
+      vivado -nolog -nojournal -mode batch -source ${sourceTcl} -tclargs --origin_dir ./. --project_name ${name}
       echo ${lib.strings.escapeShellArg buildHwplatTcl} > ./${name}/build-hw.tcl
 
       runHook postConfigure

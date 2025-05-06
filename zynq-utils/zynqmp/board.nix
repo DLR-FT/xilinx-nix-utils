@@ -6,7 +6,7 @@
 
 {
   name,
-  src,
+  hwplat,
   flash-qspi,
   ...
 }@args:
@@ -14,10 +14,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
   hwplat =
     (zynq-utils.hwplat {
       inherit name;
-      src = builtins.path {
-        path = src;
-        name = "vivado-srcs";
-      };
+      src = args.hwplat.src;
     }).override
       (lib.attrsets.optionalAttrs (args ? hwplat) args.hwplat);
 
@@ -67,7 +64,6 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       pmufw = final.pmufw;
       fsbl = final.fsbl;
       tfa = final.tfa;
-      linux-dt = final.linux-dt;
       uboot = final.uboot;
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
@@ -78,7 +74,6 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       pmufw = final.pmufw;
       fsbl = final.fsbl;
       tfa = final.tfa;
-      linux-dt = final.linux-dt;
       uboot = final.uboot;
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-jtag) args.boot-jtag);

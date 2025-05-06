@@ -3,7 +3,10 @@
 }:
 zynq-utils.zynqmp.board {
   name = "te0706-0821-3be21";
-  src = ./vivado-srcs;
+
+  hwplat = {
+    src = ./vivado-srcs;
+  };
 
   sdt = {
     extraDtsi = ./dts/qspi-nor-flash.dtsi;

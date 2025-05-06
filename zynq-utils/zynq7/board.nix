@@ -52,7 +52,6 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
     (zynq-utils.zynq7.boot-image {
       hwplat = final.hwplat;
       fsbl = final.fsbl;
-      linux-dt = final.linux-dt;
       uboot = final.uboot;
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
@@ -61,7 +60,6 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
     (zynq-utils.zynq7.boot-jtag {
       hwplat = final.hwplat;
       fsbl = final.fsbl;
-      linux-dt = final.linux-dt;
       uboot = final.uboot;
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-jtag) args.boot-jtag);

@@ -8,7 +8,6 @@ lib.makeOverridable (
   {
     hwplat,
     fsbl,
-    linux-dt,
     uboot,
     dtbLoadAddr ? "0x00100000",
   }:
@@ -38,7 +37,7 @@ lib.makeOverridable (
       after 5000; stop
 
       # Download dtb + uboot
-      dow -data ${linux-dt.dtb} ${dtbLoadAddr}
+      dow -data ${uboot.dtb} ${dtbLoadAddr}
       dow ${uboot.elf}
 
       con

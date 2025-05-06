@@ -39,8 +39,8 @@ lib.makeOverridable (
 
     nativeBuildInputs = [
       dtc
-      xilinx-unified
       xlsclients
+      (lib.lowPrio xilinx-unified)
     ];
 
     patches = [ ] ++ extraPatches;
@@ -52,9 +52,9 @@ lib.makeOverridable (
     postUnpack = ''
       mkdir ./extra-dtsi
 
-      ${lib.strings.optionalString (
-        extraDtsi != null
-      ) "cp -r -- ${extraDtsi} ./extra-dtsi/${builtins.baseNameOf extraDtsi}"}
+      ${lib.strings.optionalString (extraDtsi != null) ''
+        cp -r -- ${extraDtsi} ./extra-dtsi/${builtins.baseNameOf extraDtsi}
+      ''}
     '';
 
     buildPhase = ''

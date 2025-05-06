@@ -46,7 +46,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
 
   linux-dt =
     (zynq-utils.linux-dt {
-      sdt = final.sdt;
+      hwplat = final.hwplat;
       proc = "psu_cortexa53_0";
     }).override
       (lib.attrsets.optionalAttrs (args ? linux-dt) args.linux-dt);

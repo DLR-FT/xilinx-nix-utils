@@ -31,7 +31,7 @@ lib.makeOverridable (
 
     inherit src;
 
-    nativeBuildInputs = [ xilinx-unified ];
+    nativeBuildInputs = [ (lib.lowPrio xilinx-unified) ];
 
     patches = [ ] ++ extraPatches;
 

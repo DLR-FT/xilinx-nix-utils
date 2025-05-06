@@ -21,6 +21,13 @@ final: prev: {
       hash = "sha256-bq9Da3Zc+soEudJxXRejehordtttXJ3vayYZb5IfJFI=";
     };
 
+    dt-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "device-tree-xlnx";
+      rev = "xilinx_v2024.2";
+      hash = "sha256-dJR4onMlmqNiwmiN72v6gX9muw8QYC0ig4luE6HEv9U=";
+    };
+
     uboot-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "u-boot-xlnx";

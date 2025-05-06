@@ -8,8 +8,8 @@ zynq-utils.zynqmp.board {
     src = ./vivado-srcs;
   };
 
-  sdt = {
-    extraDtsi = ./dts/qspi-nor-flash.dtsi;
+  linux-dt = {
+    extraDtsi = ./dts/board.dtsi;
   };
 
   uboot = {

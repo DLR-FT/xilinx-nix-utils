@@ -75,7 +75,7 @@
     {
       packages.${system} =
         let
-          example = pkgs.zynq-boards.te0706-0821-3be21;
+          example = pkgs.zynq-boards.kria-kr260;
         in
         {
           xilinx-unified = pkgs.xilinx-unified;

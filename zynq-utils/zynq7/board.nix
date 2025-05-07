@@ -6,17 +6,15 @@
 
 {
   name,
-  src,
+  hwplat,
+  flash-qspi,
   ...
 }@args:
 lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
   hwplat =
     (zynq-utils.hwplat {
       inherit name;
-      src = builtins.path {
-        path = src;
-        name = "vivado-srcs";
-      };
+      src = args.hwplat.src;
     }).override
       (lib.attrsets.optionalAttrs (args ? hwplat) args.hwplat);
 

@@ -10,7 +10,10 @@
 lib.makeOverridable (
   {
     hwplat,
+    # Optional: Board name to include board specific dtsi files (zcu102-rev1.0, ...)
+    #(see https://github.com/Xilinx/system-device-tree-xlnx)
     boardDts ? null,
+    # Optional: External device tree file to include
     extraDtsi ? null,
     extraPatches ? [ ],
     src ? zynq-srcs.sdt-src,

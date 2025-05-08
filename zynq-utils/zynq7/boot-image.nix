@@ -9,8 +9,10 @@ lib.makeOverridable (
     hwplat,
     fsbl,
     uboot,
-
+    # Optional: The address at which the dtb will be loaded
     dtbLoadAddr ? "0x00100000",
+    # Optional: Boot image description (boot.bif)
+    # Can include placeholders like %name%, %fslb%, %bit%, etc
     bootBif ? null,
   }@args:
   let

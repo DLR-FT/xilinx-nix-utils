@@ -11,7 +11,9 @@ lib.makeOverridable (
     fsbl,
     tfa,
     uboot,
+    # Optional: The address at which the dtb will be loaded
     dtbLoadAddr ? "0x00100000",
+    # Optional: Switch zynq boot mode to JTAG by software before downloading compoents.
     forceBootModeJtag ? false,
   }:
   let

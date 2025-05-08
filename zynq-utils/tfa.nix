@@ -7,6 +7,7 @@
 
 lib.makeOverridable (
   {
+    # Platform name (zynqmp, ...)
     plat,
     extraMakeFlags ? [ ],
     extraPatches ? [ ],

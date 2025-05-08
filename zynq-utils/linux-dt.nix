@@ -9,7 +9,9 @@
 lib.makeOverridable (
   {
     hwplat,
+    # Processor id string (ps7_cortexa9_0, psu_cortexa53_0, ...)
     proc,
+    # Optional: Extra external device tree file to include
     extraDtsi ? null,
     extraPatches ? [ ],
     src ? zynq-srcs.dt-src,

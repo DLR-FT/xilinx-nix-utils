@@ -17,10 +17,15 @@
 
 lib.makeOverridable (
   {
+    # U-Boot config name
     defconfig,
+    # Optional: U-Boot device tree name
     deviceTree ? null,
+    # Optional: External device tree blob
     extDeviceTreeBlob ? null,
+    # Optional: Extra configs
     extraConfig ? "",
+    # Optional: Extra flags for make
     extraMakeFlags ? [ ],
     extraPatches ? [ ],
     src ? zynq-srcs.uboot-src,

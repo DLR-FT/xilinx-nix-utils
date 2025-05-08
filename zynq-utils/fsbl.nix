@@ -11,7 +11,9 @@
 lib.makeOverridable (
   {
     sdt,
+    # Platform string (zynq7, zynqmp)
     plat,
+    # Processor id string (ps7_cortexa9_0, psu_cortexa53_0, ...)
     proc,
     extraPatches ? [ ],
     src ? zynq-srcs.embeddedsw-src,

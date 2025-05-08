@@ -6,7 +6,9 @@
 
 lib.makeOverridable (
   {
+    # Name of the project
     name,
+    # Optional: Vivado project source tcl file (write_project_tcl ...)
     sourceTcl ? src + "/vivado.tcl",
     extraPatches ? [ ],
     src,

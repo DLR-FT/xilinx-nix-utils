@@ -5,6 +5,7 @@
 }:
 
 {
+  # Name of the project
   name,
   hwplat,
   flash-qspi,

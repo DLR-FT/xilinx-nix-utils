@@ -61,7 +61,7 @@
                 owner = "Xilinx";
                 repo = "u-boot-xlnx";
                 rev = "xlnx_rebase_v2025.01";
-                hash = "sha256-ToA+ossw2pSX5FXq3N9DjVR6MEhZUsYKCp4Q9BZ46h4=";
+                hash = "sha256-RTcd7MR37E4yVGWP3RMruyKBI4tz8ex7mY1f5F2xd00=";
               };
             };
           })

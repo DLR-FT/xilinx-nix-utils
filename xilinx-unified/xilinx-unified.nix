@@ -4,6 +4,7 @@
   genXilinxFhs,
   rapidgzip,
   ripgrep,
+  sd,
   xorg,
 
   name,
@@ -42,6 +43,7 @@ stdenv.mkDerivation (
     nativeBuildInputs = [
       rapidgzip
       ripgrep
+      sd
       xorg.xorgserver
       (genXilinxFhs { })
     ];
@@ -118,9 +120,15 @@ stdenv.mkDerivation (
         substituteInPlace "$file" \
           --replace-fail ${lib.strings.escapeShellArg uniqueTargetDir} "$out"
       done < <(rg --null --files-with-matches ${lib.strings.escapeShellArg uniqueTargetDir} "$out")
+
+      # Fix symlinks
+      find $out/ -xtype l -exec bash -c ' \
+        link={}; \
+        target=$(readlink {} | sd ${lib.strings.escapeShellArg uniqueTargetDir} "$out"); \
+        echo "Fixing $link -> $target"; \
+        rm $link; \
+        ln -s $target $link' \;
     '';
-    # sed 's:'${lib.strings.escapeShellArg uniqueTargetDir}":$out:g" \
-    #   --in-place -- "$file"
 
     dontPatchELF = true;
     dontPatchShebangs = true;

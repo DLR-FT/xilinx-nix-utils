@@ -1,4 +1,4 @@
-{ buildFHSUserEnv }:
+{ buildFHSEnv }:
 
 {
   name ? "xilinx-fhs",
@@ -7,7 +7,7 @@
 }:
 
 # Inspired by: https://github.com/nix-community/nix-environments
-buildFHSUserEnv {
+buildFHSEnv {
   inherit name runScript profile;
   targetPkgs =
     pkgs:

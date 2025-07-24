@@ -39,6 +39,8 @@ lib.makeOverridable (
       ]))
     ];
 
+    depsBuildBuild = [ buildPackages.stdenv.cc ];
+
     patches = [ ] ++ extraPatches;
 
     env = {

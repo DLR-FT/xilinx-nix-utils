@@ -1,10 +1,10 @@
 {
   lib,
-  stdenv,
-  genXilinxFhs,
+  pkgsBuildBuild,
   rapidgzip,
   ripgrep,
   sd,
+  stdenv,
   xorg,
 
   name,
@@ -45,7 +45,7 @@ stdenv.mkDerivation (
       ripgrep
       sd
       xorg.xorgserver
-      (genXilinxFhs { })
+      (pkgsBuildBuild.genXilinxFhs { })
     ];
 
     # the installer puts stuff to $HOME/.Xilinx

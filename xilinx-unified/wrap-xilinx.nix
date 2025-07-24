@@ -1,8 +1,8 @@
 {
-  stdenvNoCC,
-  makeWrapper,
-  genXilinxFhs,
   inputDerivation,
+  makeWrapper,
+  pkgsBuildBuild,
+  stdenvNoCC,
 }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
@@ -18,7 +18,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       while IFS= read -r -d "" file ; do
       echo $file
         makeWrapper \
-            "${genXilinxFhs { runScript = ""; }}/bin/xilinx-fhs" \
+            "${pkgsBuildBuild.genXilinxFhs { runScript = ""; }}/bin/xilinx-fhs" \
             "$out/bin/''${file##*/}" \
             --run "$dir/settings64.sh" \
             --set LC_NUMERIC 'en_US.UTF-8' \

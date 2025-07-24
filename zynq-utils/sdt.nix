@@ -1,4 +1,5 @@
 {
+  buildPackages,
   dtc,
   lib,
   stdenv,
@@ -45,6 +46,8 @@ lib.makeOverridable (
       xlsclients
       (lib.lowPrio xilinx-unified)
     ];
+
+    depsBuildBuild = [ buildPackages.stdenv.cc ];
 
     patches = [ ] ++ extraPatches;
 

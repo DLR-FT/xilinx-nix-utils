@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  xilinx-unified,
+  xilinx-common,
 }:
 
 lib.makeOverridable (
@@ -36,7 +36,7 @@ lib.makeOverridable (
   stdenv.mkDerivation (finalAttrs: {
     name = "${baseName}-boot-image";
 
-    nativeBuildInputs = [ xilinx-unified ];
+    nativeBuildInputs = [ xilinx-common ];
 
     dontUnpack = true;
     dontPatch = true;

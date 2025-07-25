@@ -9,7 +9,7 @@ zynq-utils.zynqmp.board {
   };
 
   linux-dt = {
-    extraDtsi = ./dts/board.dtsi;
+    extraDtsi = [ ./dts/board.dtsi ];
   };
 
   uboot = {

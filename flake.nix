@@ -79,6 +79,8 @@
         in
         {
           xilinx-unified = pkgs.xilinx-unified;
+          xilinx-lab = pkgs.xilinx-lab;
+
           xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
 
           hwplat = example.hwplat;

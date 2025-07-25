@@ -1,4 +1,4 @@
-final: prev: {
+final: prev: rec {
   xilinx-lab-unwrapped = final.xilinx-lab-2024-2-unwrapped;
   xilinx-lab = final.xilinx-lab-2024-2;
 
@@ -16,4 +16,7 @@ final: prev: {
   xilinx-lab-2024-2 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
     inputDerivation = final.xilinx-lab-2024-2-unwrapped;
   };
+
+  # Provide xilinx-common, if it does not already exist
+  xilinx-common = if (prev ? xilinx-common) then prev.xilinx-common else xilinx-lab;
 }

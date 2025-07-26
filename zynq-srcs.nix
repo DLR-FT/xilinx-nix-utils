@@ -1,5 +1,12 @@
 final: prev: {
   zynq-srcs = {
+    bootgen-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "bootgen";
+      rev = "xilinx_v2024.2";
+      hash = "sha256-t165nTG4IkI3WrcS3ZryINmAOVzfctxg5zY3oqmNtLw=";
+    };
+
     embeddedsw-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "embeddedsw";

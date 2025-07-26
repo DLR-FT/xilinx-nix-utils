@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  xilinx-unified,
+  zynq-utils,
 }:
 
 lib.makeOverridable (
@@ -32,7 +32,7 @@ lib.makeOverridable (
   stdenv.mkDerivation (finalAttrs: {
     name = "${baseName}-boot-image";
 
-    nativeBuildInputs = [ xilinx-unified ];
+    nativeBuildInputs = [ zynq-utils.bootgen ];
 
     dontUnpack = true;
     dontPatch = true;

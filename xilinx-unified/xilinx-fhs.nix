@@ -34,6 +34,7 @@ buildFHSEnv {
       stdenv.cc.cc
       zlib
       libyaml
+      libusb1
 
       # gui libraries
       fontconfig

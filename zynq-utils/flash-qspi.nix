@@ -2,6 +2,7 @@
   lib,
   runCommand,
   writeScript,
+  xilinx-unified,
 }:
 
 lib.makeOverridable (
@@ -30,7 +31,7 @@ lib.makeOverridable (
     flashQspiScript = writeScript "flash-qspi-${baseName}.sh" ''
       #!/usr/bin/env sh
 
-      program_flash \
+      ${xilinx-unified}/bin/program_flash \
         -f ${bootImage.bin} \
         -flash_type ${flashType} \
         -fsbl ${dowFsbl.elf} \

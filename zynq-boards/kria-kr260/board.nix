@@ -8,8 +8,14 @@ zynq-utils.zynqmp.board {
     src = ./vivado-srcs;
   };
 
+  sdt = {
+    boardDts = "zynqmp-smk-k26-reva";
+  };
+
   linux-dt = {
-    extraDtsi = ./dts/board.dtsi;
+    extraLops = [
+      "./lopper/lops/lop-a53-imux.dts"
+    ];
   };
 
   tfa.extraMakeFlags = [ "ZYNQMP_CONSOLE=cadence1" ];

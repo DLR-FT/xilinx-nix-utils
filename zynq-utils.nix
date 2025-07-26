@@ -1,5 +1,7 @@
 final: prev: {
   zynq-utils = {
+    bootgen = prev.callPackage ./zynq-utils/bootgen.nix { };
+
     hwplat = prev.callPackage ./zynq-utils/hwplat.nix { };
     sdt = prev.callPackage ./zynq-utils/sdt.nix { };
     pmufw = prev.callPackage ./zynq-utils/pmufw.nix { };

@@ -82,6 +82,8 @@
           xilinx-unified = pkgs.xilinx-unified;
           xilinx-lab = pkgs.xilinx-lab;
 
+          bootgen = pkgs.zynq-utils.bootgen;
+
           xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
 
           hwplat = example.hwplat;

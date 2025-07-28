@@ -44,12 +44,11 @@ zynq-utils.zynqmp.board {
     forceBootModeJtag = true;
   };
 
-  flash-qspi = {
-    flashType = "qspi-x4-single";
-    flashDensity = 64;
+  boot-image = {
+  };
 
-    extraArgs = [
-      "-offset 0x00200000"
-    ];
+  flash-qspi = {
+    flashPart = "mt25qu512-";
+    offset = "0x00200000";
   };
 }

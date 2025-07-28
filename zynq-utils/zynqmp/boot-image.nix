@@ -13,6 +13,10 @@ lib.makeOverridable (
     uboot,
     # Optional: The address at which the dtb will be loaded
     dtbLoadAddr ? "0x00100000",
+    # Optional: Generate boot-image for dual-qspi flash.
+    # Either "parallel" or "stacked <size>".
+    # See xilinx bootgen
+    dualQspiMode ? null,
     # Optional: Boot image description (boot.bif)
     # Can include placeholders like %name%, %fslb%, %pmufw%, %bit%, etc
     bootBif ? null,
@@ -55,7 +59,10 @@ lib.makeOverridable (
         --subst-var-by "dtb" ${uboot.dtb} \
         --subst-var-by "dtbLoadAddr" ${dtbLoadAddr}
 
-      bootgen -arch zynqmp -image ./boot.bif -w -o boot.bin
+      bootgen -arch zynqmp \
+        -image ./boot.bif \
+        ${lib.strings.optionalString (!builtins.isNull dualQspiMode) "-dual_qspi_mode ${dualQspiMode}"} \
+        -w -o boot.bin
 
       runHook preBuild
     '';
@@ -65,7 +72,7 @@ lib.makeOverridable (
 
       mkdir $out
       cp -- boot.bif $out/boot.bif
-      cp -- boot.bin $out/boot.bin
+      cp -- boot*.bin $out/
 
       runHook postInstall
     '';
@@ -75,7 +82,14 @@ lib.makeOverridable (
     passthru = {
       inherit args baseName;
       bif = "${finalAttrs.finalPackage.out}/boot.bif";
-      bin = "${finalAttrs.finalPackage.out}/boot.bin";
+      bin =
+        if builtins.pathExists "${finalAttrs.finalPackage.out}/boot_1.bin" then
+          [
+            "${finalAttrs.finalPackage.out}/boot_1.bin"
+            "${finalAttrs.finalPackage.out}/boot_2.bin"
+          ]
+        else
+          "${finalAttrs.finalPackage.out}/boot.bin";
     };
   })
 )

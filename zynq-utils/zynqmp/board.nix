@@ -82,9 +82,8 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
   flash-qspi =
     (zynq-utils.flash-qspi {
       bootImage = final.boot-image;
-      dowFsbl = final.fsbl;
-      flashType = args.flash-qspi-cmd.flashType;
-      flashDensity = args.flash-qspi-cmd.flashDensity;
+      initFsbl = final.fsbl;
+      flashPart = args.flash-qspi.flashPart;
     }).override
       (lib.attrsets.optionalAttrs (args ? flash-qspi) args.flash-qspi);
 })

@@ -28,12 +28,15 @@ zynq-utils.zynqmp.board {
     '';
   };
 
+  boot-image = {
+    dualQspiMode = "parallel";
+  };
+
   boot-jtag = {
     forceBootModeJtag = true;
   };
 
   flash-qspi = {
-    flashType = "qspi-x8-dual_parallel";
-    flashDensity = 64;
+    flashPart = "mt25qu512-qspi-x8-parallel";
   };
 }

@@ -45,11 +45,7 @@ zynq-utils.zynqmp.board {
   };
 
   flash-qspi = {
-    flashType = "qspi-x4-single";
-    flashDensity = 64;
-
-    extraArgs = [
-      "-offset 0x00200000"
-    ];
+    flashPart = "mt25qu512-qspi-x4-single";
+    offset = "0x00200000";
   };
 }

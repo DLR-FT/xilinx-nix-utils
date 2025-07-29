@@ -46,7 +46,7 @@ lib.makeOverridable (
       while [ "$#" -gt 0 ]; do
         case $1 in
           -target) target="$2"; shift;;
-          -device) target="$2"; shift;;
+          -device) device="$2"; shift;;
           -flash_part) flash_part="$2"; shift;;
           -addr_range) addr_range="$2"; shift;;
           -bin_offset) bin_offset="$2"; shift;;

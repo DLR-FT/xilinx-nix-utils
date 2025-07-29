@@ -31,6 +31,8 @@ lib.makeOverridable (
       #!/usr/bin/env sh
 
       # defaults for ${baseName}
+      target="*" # the jtag probe, default is the first one
+      device="*" # the device in the jtag chain, default is the first one
       flash_part="${flashPart}"
       addr_range="use_file" # either "use_file" or "entire_device"
       bin_offset="${
@@ -43,6 +45,8 @@ lib.makeOverridable (
 
       while [ "$#" -gt 0 ]; do
         case $1 in
+          -target) target="$2"; shift;;
+          -device) target="$2"; shift;;
           -flash_part) flash_part="$2"; shift;;
           -addr_range) addr_range="$2"; shift;;
           -bin_offset) bin_offset="$2"; shift;;
@@ -55,7 +59,9 @@ lib.makeOverridable (
         shift
       done
 
-      ${xilinx-common}/bin/vivado_lab -nolog -nojournal -mode batch -source ${./scripts/program-flash.tcl} -tclargs \
+      ${xilinx-common}/bin/vivado_lab -nolog -nojournal -mode batch -source ${../scripts/program-flash.tcl} -tclargs \
+        -target "$target" \
+        -device "$device" \
         -flash_part "$flash_part" \
         -addr_range "$addr_range" \
         -bin_offset "$bin_offset" \
@@ -76,7 +82,7 @@ lib.makeOverridable (
   runCommand "flash-qspi-${baseName}" { } ''
     mkdir $out
 
-    ln -s ${./scripts/program-flash.tcl} $out/program-flash.tcl
+    ln -s ${../scripts/program-flash.tcl} $out/program-flash.tcl
     ln -s ${flashQspiScript} $out/flash-qspi-${baseName}.sh
   ''
 )

@@ -33,7 +33,9 @@ lib.makeOverridable (
       # defaults for ${baseName}
       flash_part="${flashPart}"
       addr_range="use_file" # either "use_file" or "entire_device"
-      bin_offset="${if (offset != null) then offset else 0}" # offset at which the image is flashed
+      bin_offset="${
+        if (offset != null) then (builtins.toString offset) else "0"
+      }" # offset at which the image is flashed
       erase=1
       blank_check=0
       program=1

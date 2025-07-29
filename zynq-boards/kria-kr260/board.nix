@@ -44,11 +44,8 @@ zynq-utils.zynqmp.board {
     forceBootModeJtag = true;
   };
 
-  boot-image = {
-  };
-
   flash-qspi = {
-    flashPart = "mt25qu512-";
+    flashPart = "mt25qu512-qspi-x4-single";
     offset = "0x00200000";
   };
 }

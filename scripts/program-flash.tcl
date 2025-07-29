@@ -19,22 +19,44 @@ open_hw_manager
 
 connect_hw_server -url ${url}
 
-current_hw_target [get_hw_targets $target]
+set hw_targets [get_hw_targets $target]
+if {[llength $hw_targets] > 1} {
+    puts "Multiple hw targets found:"
+    puts $hw_targets
+    puts "Use -target to specify one."
+    disconnect_hw_server
+    close_hw_manager
+    exit
+}
+
+current_hw_target $hw_targets
 open_hw_target
 
-current_hw_device [lindex [get_hw_devices $device] 0]
-
-if {[catch { set mem_dev [get_cfgmem_parts -of_object [current_hw_device] $flash_part] } ]} {
-    puts "Invalid -flash_part \"$flash_part\". Similar flash parts:"
-    puts [get_cfgmem_parts -of_object [current_hw_device] "*$flash_part*"]
-
+set hw_devices [get_hw_devices -filter {PROGRAM.IS_SUPPORTED} $device]
+if {[llength $hw_devices] > 1} {
+    puts "Multiple hw devices found:"
+    puts $hw_devices
+    puts "Use -device to specify one."
     close_hw_target
     disconnect_hw_server
     close_hw_manager
     exit
 }
 
-set cfgmem [create_hw_cfgmem -hw_device [current_hw_device] -mem_dev $mem_dev]
+current_hw_device $hw_devices
+
+set mem_parts [get_cfgmem_parts -of_object [current_hw_device] $flash_part]
+if {[llength $mem_parts] > 1} {
+    puts "Multiple mem parts found:"
+    puts $mem_parts
+    puts "Use -flash to specify one."
+    close_hw_target
+    disconnect_hw_server
+    close_hw_manager
+    exit
+}
+
+set cfgmem [create_hw_cfgmem -hw_device [current_hw_device] -mem_dev $mem_parts]
 
 set_property PROGRAM.ADDRESS_RANGE $addr_range $cfgmem
 set_property PROGRAM.BIN_OFFSET [format "%d" $bin_offset] $cfgmem

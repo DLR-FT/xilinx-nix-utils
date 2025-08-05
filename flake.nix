@@ -50,7 +50,8 @@
             };
           })
 
-          self.overlays.default
+          self.overlays.xilinx-lab
+          self.overlays.xilinx-unified
           self.overlays.zynq-srcs
           self.overlays.zynq-utils
           self.overlays.zynq-boards
@@ -79,6 +80,8 @@
         in
         {
           xilinx-unified = pkgs.xilinx-unified;
+          xilinx-lab = pkgs.xilinx-lab;
+
           xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
 
           hwplat = example.hwplat;
@@ -93,21 +96,30 @@
           flash = example.flash-qspi;
         };
 
-      devShells.${system}.default = pkgs.devshell.mkShell {
-        name = "xilinx-dev-shell";
+      devShells.${system} = {
+        default = pkgs.devshell.mkShell {
+          name = "xilinx-nix-utils";
+          imports = [ "${devshell}/extra/git/hooks.nix" ];
 
-        imports = [ "${devshell}/extra/git/hooks.nix" ];
+          packages = [ ];
 
-        packages = [
-          pkgs.xilinx-unified
-        ];
+          git.hooks = {
+            enable = true;
+            pre-commit.text = ''
+              nix fmt
+              nix flake check
+            '';
+          };
+        };
 
-        git.hooks = {
-          enable = true;
-          pre-commit.text = ''
-            nix fmt
-            nix flake check
-          '';
+        xilinx-lab = pkgs.devshell.mkShell {
+          name = "xilinx-lab";
+          packages = [ pkgs.xilinx-lab ];
+        };
+
+        xilinx-unified = pkgs.devshell.mkShell {
+          name = "xilinx-unified";
+          packages = [ pkgs.xilinx-unified ];
         };
       };
 
@@ -117,9 +129,10 @@
       # for `nix flake check`
       checks.${system}.formatting = treefmtEval.config.build.check self;
 
-      overlays.default = import ./xilinx-unified.nix;
+      overlays.xilinx-lab = import ./xilinx-lab.nix;
+      overlays.xilinx-unified = import ./xilinx-unified.nix;
+      overlays.zynq-boards = import ./zynq-boards.nix;
       overlays.zynq-srcs = import ./zynq-srcs.nix;
       overlays.zynq-utils = import ./zynq-utils.nix;
-      overlays.zynq-boards = import ./zynq-boards.nix;
     };
 }

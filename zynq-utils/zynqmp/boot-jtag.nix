@@ -2,6 +2,7 @@
   lib,
   runCommand,
   writeScript,
+  xilinx-common,
 }:
 
 lib.makeOverridable (
@@ -20,7 +21,7 @@ lib.makeOverridable (
     baseName = hwplat.baseName;
 
     bootJtagScript = writeScript "boot-jtag-${baseName}.tcl" ''
-      #!/usr/bin/env xsdb
+      #!${xilinx-common}/bin/xsdb
 
       proc boot_jtag { } {
         ############################

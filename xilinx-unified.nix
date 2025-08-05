@@ -1,4 +1,4 @@
-final: prev: {
+final: prev: rec {
   xilinx-unified-unwrapped = final.xilinx-unified-2024-2-unwrapped;
   xilinx-unified = final.xilinx-unified-2024-2;
 
@@ -78,6 +78,8 @@ final: prev: {
   xilinx-vivado-2019-2 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
     inputDerivation = final.xilinx-vivado-2019-2-unwrapped;
   };
+
+  xilinx-common = xilinx-unified;
 
   genXilinxFhs = final.callPackage ./xilinx-unified/xilinx-fhs.nix { };
 }

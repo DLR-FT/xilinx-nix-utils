@@ -81,6 +81,13 @@
           xilinx-unified = pkgs.xilinx-unified;
           xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
 
+          hwplat = example.hwplat;
+          sdt = example.sdt;
+          pmufw = example.pmufw;
+          fsbl = example.fsbl;
+          tfa = example.tfa;
+          linux-dt = example.linux-dt;
+          uboot = example.uboot;
           fw = example.boot-image;
           boot = example.boot-jtag;
           flash = example.flash-qspi;

@@ -60,12 +60,25 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? uboot) args.uboot);
 
   boot-image =
-    (zynq-utils.zynqmp.boot-image {
-      hwplat = final.hwplat;
-      pmufw = final.pmufw;
-      fsbl = final.fsbl;
-      tfa = final.tfa;
-      uboot = final.uboot;
+    let
+      toSnake = lib.strings.stringAsChars (ch: if ch == "-" then "_" else ch);
+      bootBif = ''
+        ${toSnake final.hwplat.baseName}:
+        {
+          [bootloader, destination_cpu = a53-0] ${final.fsbl.elf}
+          [pmufw_image] ${final.pmufw.elf}
+          [destination_device = pl] ${final.hwplat.bit}
+          [destination_cpu = a53-0, exception_level = el-3, trustzone] ${final.tfa.elf}
+          [destination_cpu = a53-0, exception_level = el-2] ${final.uboot.elf}
+          [destination_cpu = a53-0, load = 0x00100000] ${final.linux-dt.dtb}
+        }
+      '';
+    in
+    (zynq-utils.boot-image {
+      baseName = final.hwplat.baseName;
+      arch = "zynqmp";
+      bootBif = bootBif;
+
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
 

@@ -6,33 +6,15 @@
 
 lib.makeOverridable (
   {
-    hwplat,
-    fsbl,
-    uboot,
-    # Optional: The address at which the dtb will be loaded
-    dtbLoadAddr ? "0x00100000",
+    baseName,
+    arch,
+    bootBif,
     # Optional: Generate boot-image for dual-qspi flash.
     # Either "parallel" or "stacked <size>".
     # See xilinx bootgen
     dualQspiMode ? null,
-    # Optional: Boot image description (boot.bif)
-    # Can include placeholders like %name%, %fslb%, %bit%, etc
-    bootBif ? null,
+    extraArgs ? [ ],
   }@args:
-  let
-    baseName = hwplat.baseName;
-    toSnake = lib.strings.stringAsChars (ch: if ch == "-" then "_" else ch);
-
-    defaultBootBif = ''
-      @name@:
-      {
-        [bootloader] @fsbl@
-        @bit@
-        @uboot@
-        [load = @dtbLoadAddr@] @dtb@
-      }
-    '';
-  in
   stdenv.mkDerivation (finalAttrs: {
     name = "${baseName}-boot-image";
 
@@ -44,19 +26,22 @@ lib.makeOverridable (
     buildPhase = ''
       runHook preBuild
 
-      echo ${lib.strings.escapeShellArg (if bootBif != null then bootBif else defaultBootBif)} > boot.bif
-      substituteInPlace ./boot.bif \
-        --subst-var-by "name" ${toSnake baseName} \
-        --subst-var-by "fsbl" ${fsbl.elf} \
-        --subst-var-by "bit" ${hwplat.bit} \
-        --subst-var-by "uboot" ${uboot.elf} \
-        --subst-var-by "dtb" ${uboot.dtb} \
-        --subst-var-by "dtbLoadAddr" ${dtbLoadAddr}
+      ${
+        if builtins.isPath bootBif then
+          ''
+            cp -- ${bootBif} ./boot.bif
+          ''
+        else
+          ''
+            echo ${lib.strings.escapeShellArg bootBif} > ./boot.bif
+          ''
+      }
 
-      bootgen -arch zynq \
+      bootgen -arch ${arch} \
         -image ./boot.bif \
         ${lib.strings.optionalString (!builtins.isNull dualQspiMode) "-dual_qspi_mode ${dualQspiMode}"} \
-        -w -o boot.bin
+        ${lib.strings.concatStringsSep " " extraArgs} \
+        -w -o boot.bin \
 
       runHook preBuild
     '';

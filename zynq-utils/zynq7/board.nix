@@ -48,20 +48,24 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? uboot) args.uboot);
 
   boot-image =
-    (zynq-utils.zynq7.boot-image {
-      hwplat = final.hwplat;
-      fsbl = final.fsbl;
-      uboot = final.uboot;
+    let
+      toSnake = lib.strings.stringAsChars (ch: if ch == "-" then "_" else ch);
+      bootBif = ''
+        ${toSnake final.hwplat.baseName}:
+        {
+          [bootloader] ${final.fsbl.elf}
+          ${final.hwplat.bit}
+          ${final.uboot.elf}
+          [load = 0x00100000] ${final.linux-dt.dtb}
+        }
+      '';
+    in
+    (zynq-utils.boot-image {
+      baseName = final.hwplat.baseName;
+      arch = "zynq";
+      bootBif = bootBif;
     }).override
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
-
-  boot-jtag =
-    (zynq-utils.zynq7.boot-jtag {
-      hwplat = final.hwplat;
-      fsbl = final.fsbl;
-      uboot = final.uboot;
-    }).override
-      (lib.attrsets.optionalAttrs (args ? boot-jtag) args.boot-jtag);
 
   flash-qspi =
     (zynq-utils.flash-qspi {

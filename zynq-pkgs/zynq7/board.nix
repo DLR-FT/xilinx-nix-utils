@@ -1,7 +1,7 @@
 {
   lib,
   pkgsCross,
-  zynq-utils,
+  zynq-pkgs,
 }:
 
 {
@@ -13,20 +13,20 @@
 }@args:
 lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
   hwplat =
-    (zynq-utils.hwplat {
+    (zynq-pkgs.hwplat {
       inherit name;
       src = args.hwplat.src;
     }).override
       (lib.attrsets.optionalAttrs (args ? hwplat) args.hwplat);
 
   sdt =
-    (zynq-utils.sdt {
+    (zynq-pkgs.sdt {
       hwplat = final.hwplat;
     }).override
       (lib.attrsets.optionalAttrs (args ? sdt) args.sdt);
 
   fsbl =
-    (pkgsCross.armhf-embedded.zynq-utils.fsbl {
+    (pkgsCross.armhf-embedded.zynq-pkgs.fsbl {
       sdt = final.sdt;
       plat = "zynq7";
       proc = "ps7_cortexa9_0";
@@ -34,14 +34,14 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? fsbl) args.fsbl);
 
   linux-dt =
-    (zynq-utils.linux-dt {
+    (zynq-pkgs.linux-dt {
       sdt = final.sdt;
       proc = "ps7_cortexa9_0";
     }).override
       (lib.attrsets.optionalAttrs (args ? linux-dt) args.linux-dt);
 
   uboot =
-    (pkgsCross.armv7l-hf-multiplatform.zynq-utils.uboot {
+    (pkgsCross.armv7l-hf-multiplatform.zynq-pkgs.uboot {
       defconfig = "xilinx_zynq_virt_defconfig";
       extDeviceTreeBlob = final.linux-dt.dtb;
     }).override
@@ -60,7 +60,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
         }
       '';
     in
-    (zynq-utils.boot-image {
+    (zynq-pkgs.boot-image {
       baseName = final.hwplat.baseName;
       arch = "zynq";
       bootBif = bootBif;
@@ -68,7 +68,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
 
   flash-qspi =
-    (zynq-utils.flash-qspi {
+    (zynq-pkgs.flash-qspi {
       bootImage = final.boot-image;
       initFsbl = final.fsbl;
       flashPart = args.flash-qspi.flashPart;

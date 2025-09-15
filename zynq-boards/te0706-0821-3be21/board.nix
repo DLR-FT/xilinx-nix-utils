@@ -1,7 +1,7 @@
 {
-  zynq-utils,
+  zynq-pkgs,
 }:
-zynq-utils.zynqmp.board {
+zynq-pkgs.zynqmp.board {
   name = "te0706-0821-3be21";
 
   hwplat = {

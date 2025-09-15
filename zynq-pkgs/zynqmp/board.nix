@@ -1,7 +1,7 @@
 {
   lib,
   pkgsCross,
-  zynq-utils,
+  zynq-pkgs,
 }:
 
 {
@@ -13,20 +13,20 @@
 }@args:
 lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
   hwplat =
-    (zynq-utils.hwplat {
+    (zynq-pkgs.hwplat {
       inherit name;
       src = args.hwplat.src;
     }).override
       (lib.attrsets.optionalAttrs (args ? hwplat) args.hwplat);
 
   sdt =
-    (zynq-utils.sdt {
+    (zynq-pkgs.sdt {
       hwplat = final.hwplat;
     }).override
       (lib.attrsets.optionalAttrs (args ? sdt) args.sdt);
 
   pmufw =
-    (pkgsCross.microblaze-embedded.zynq-utils.pmufw {
+    (pkgsCross.microblaze-embedded.zynq-pkgs.pmufw {
       sdt = final.sdt;
       plat = "zynqmp";
       proc = "psu_pmu_0";
@@ -34,26 +34,26 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? pmufw) args.pmufw);
 
   fsbl =
-    (pkgsCross.aarch64-embedded.zynq-utils.fsbl {
+    (pkgsCross.aarch64-embedded.zynq-pkgs.fsbl {
       sdt = final.sdt;
       plat = "zynqmp";
       proc = "psu_cortexa53_0";
     }).override
       (lib.attrsets.optionalAttrs (args ? fsbl) args.fsbl);
 
-  tfa = (pkgsCross.aarch64-multiplatform.zynq-utils.tfa { plat = "zynqmp"; }).override (
+  tfa = (pkgsCross.aarch64-multiplatform.zynq-pkgs.tfa { plat = "zynqmp"; }).override (
     lib.attrsets.optionalAttrs (args ? tfa) args.tfa
   );
 
   linux-dt =
-    (zynq-utils.linux-dt {
+    (zynq-pkgs.linux-dt {
       sdt = final.sdt;
       proc = "psu_cortexa53_0";
     }).override
       (lib.attrsets.optionalAttrs (args ? linux-dt) args.linux-dt);
 
   uboot =
-    (pkgsCross.aarch64-multiplatform.zynq-utils.uboot {
+    (pkgsCross.aarch64-multiplatform.zynq-pkgs.uboot {
       defconfig = "xilinx_zynqmp_virt_defconfig";
       extDeviceTreeBlob = final.linux-dt.dtb;
     }).override
@@ -74,7 +74,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
         }
       '';
     in
-    (zynq-utils.boot-image {
+    (zynq-pkgs.boot-image {
       baseName = final.hwplat.baseName;
       arch = "zynqmp";
       bootBif = bootBif;
@@ -83,7 +83,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? boot-image) args.boot-image);
 
   boot-jtag =
-    (zynq-utils.zynqmp.boot-jtag {
+    (zynq-pkgs.zynqmp.boot-jtag {
       hwplat = final.hwplat;
       pmufw = final.pmufw;
       fsbl = final.fsbl;
@@ -93,7 +93,7 @@ lib.makeExtensibleWithCustomName "overrideAttrs" (final: {
       (lib.attrsets.optionalAttrs (args ? boot-jtag) args.boot-jtag);
 
   flash-qspi =
-    (zynq-utils.flash-qspi {
+    (zynq-pkgs.flash-qspi {
       bootImage = final.boot-image;
       initFsbl = final.fsbl;
       flashPart = args.flash-qspi.flashPart;

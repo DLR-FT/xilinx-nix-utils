@@ -1,7 +1,7 @@
 {
-  zynq-utils,
+  zynq-pkgs,
 }:
-zynq-utils.zynqmp.board {
+zynq-pkgs.zynqmp.board {
   name = "kria-kr260";
 
   hwplat = {

@@ -58,9 +58,9 @@ This repo provides multiple Nix overlays for easy and flexible use:
 
 - `overlays.zynq-srcs`: Contains the Xilinx source repos for the Zynq Firmware components. For easy versioning and overrideability in a central place
 
-- `overlays.zynq-utils`: Contains Nix packages for the Zynq Firmware components (PMUFW, FSBL, TF-A, U-Boot, etc) and utilities for building and deploying boot images. Depends on `zynq-srcs` and `default`
+- `overlays.zynq-pkgs`: Contains Nix packages for the Zynq Firmware components (PMUFW, FSBL, TF-A, U-Boot, etc) and utilities for building and deploying boot images. Depends on `zynq-srcs` and `default`
 
-- `overlays.zynq-boards`: Contains complete example boards. Depends on `overlays.zynq-utils`
+- `overlays.zynq-boards`: Contains complete example boards. Depends on `overlays.zynq-pkgs`
 
 ## DevShells
 
@@ -105,7 +105,7 @@ This flake provides three dev-shells:
 
                 overlays = [
                   xlnx-utils.overlays.zynq-srcs
-                  xlnx-utils.overlays.zynq-utils
+                  xlnx-utils.overlays.zynq-pkgs
                 ];
               };
             };
@@ -115,7 +115,7 @@ This flake provides three dev-shells:
           xlnx-utils.overlays.xilinx-unified
           xlnx-utils.overlays.xilinx-lab
           xlnx-utils.overlays.zynq-srcs
-          xlnx-utils.overlays.zynq-utils
+          xlnx-utils.overlays.zynq-pkgs
           xlnx-utils.overlays.zynq-boards
 
           # Default versions can be changed like this
@@ -176,9 +176,9 @@ This flake provides three dev-shells:
 
 ```
 {
-  zynq-utils,
+  zynq-pkgs,
 }:
-zynq-utils.zynqmp.board {
+zynq-pkgs.zynqmp.board {
   name = "my-zynq-board";
 
   # Mandaory: Supply the exported (write_project_tcl) Vivado project

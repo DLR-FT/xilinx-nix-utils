@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  zynq-utils,
+  zynq-pkgs,
 }:
 
 lib.makeOverridable (
@@ -18,7 +18,7 @@ lib.makeOverridable (
   stdenv.mkDerivation (finalAttrs: {
     name = "${baseName}-boot-image";
 
-    nativeBuildInputs = [ zynq-utils.bootgen ];
+    nativeBuildInputs = [ zynq-pkgs.bootgen ];
 
     dontUnpack = true;
     dontPatch = true;

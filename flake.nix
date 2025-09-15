@@ -62,7 +62,7 @@
           self.overlays.xilinx-unified
           self.overlays.zynq-srcs
           self.overlays.zynq-patches
-          self.overlays.zynq-utils
+          self.overlays.zynq-pkgs
           self.overlays.zynq-boards
 
           devshell.overlays.default
@@ -80,7 +80,7 @@
           xilinx-unified = pkgs.xilinx-unified;
           xilinx-lab = pkgs.xilinx-lab;
 
-          bootgen = pkgs.zynq-utils.bootgen;
+          bootgen = pkgs.zynq-pkgs.bootgen;
 
           hwplat = example.hwplat;
           sdt = example.sdt;
@@ -134,6 +134,6 @@
       overlays.zynq-boards = import ./zynq-boards.nix;
       overlays.zynq-srcs = import ./zynq-srcs.nix;
       overlays.zynq-patches = import ./zynq-patches.nix;
-      overlays.zynq-utils = import ./zynq-utils.nix;
+      overlays.zynq-pkgs = import ./zynq-pkgs.nix;
     };
 }

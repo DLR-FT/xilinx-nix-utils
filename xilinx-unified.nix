@@ -1,6 +1,21 @@
 final: prev: rec {
-  xilinx-unified-unwrapped = final.xilinx-unified-2024-2-unwrapped;
-  xilinx-unified = final.xilinx-unified-2024-2;
+  xilinx-unified-unwrapped = final.xilinx-unified-2025-01-unwrapped;
+  xilinx-unified = final.xilinx-unified-2025-01;
+
+  xilinx-unified-2025-01-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
+    name = "xilinx-unified";
+    version = "2025.1_0530_0145";
+    installTar = final.requireFile {
+      name = "FPGAs_AdaptiveSoCs_Unified_SDI_${version}.tar";
+      url = "https://www.xilinx.com/";
+      hash = "sha256-9LASrgJAzRczREYpaXxg9qwVmP9SwMYDwrUyWK1SMqw=";
+    };
+    install_config = ./xilinx-unified/install-configs/xlnx-unified-2025-1.txt;
+  };
+
+  xilinx-unified-2025-01 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
+    inputDerivation = final.xilinx-unified-2025-01-unwrapped;
+  };
 
   xilinx-unified-2024-2-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
     name = "xilinx-unified";

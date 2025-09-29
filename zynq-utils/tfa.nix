@@ -26,12 +26,17 @@ lib.makeOverridable (
     makeFlags = [
       "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
       "PLAT=${plat}"
+      "CC=${stdenv.cc.targetPrefix}cc"
+      "LD=${stdenv.cc.targetPrefix}cc"
+      "AS=${stdenv.cc.targetPrefix}cc"
+      "OC=${stdenv.cc.targetPrefix}objcopy"
+      "OD=${stdenv.cc.targetPrefix}objdump"
     ] ++ extraMakeFlags;
 
     patches = [ ] ++ extraPatches;
 
     dontConfigure = true;
-
+    hardeningDisable = [ "all" ];
     buildPhase = ''
       runHook preBuild
 

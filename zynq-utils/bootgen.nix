@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     mkdir $out
 
     mkdir $out/bin
-    cp bootgen $out/bin
+    cp build/bin/bootgen $out/bin
   '';
 
   meta = {

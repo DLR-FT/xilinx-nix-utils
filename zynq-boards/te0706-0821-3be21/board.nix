@@ -9,6 +9,9 @@ zynq-utils.zynqmp.board {
   };
 
   linux-dt = {
+    extraLops = [
+      "./lopper/lops/lop-a53-imux.dts"
+    ];
     extraDtsi = [ ./dts/board.dtsi ];
   };
 

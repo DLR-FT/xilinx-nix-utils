@@ -4,11 +4,17 @@
   name ? "xilinx-fhs",
   runScript ? "bash",
   profile ? "",
+  extraBwrapArgs ? [ ],
 }:
 
 # Inspired by: https://github.com/nix-community/nix-environments
 buildFHSEnv {
-  inherit name runScript profile;
+  inherit
+    name
+    runScript
+    profile
+    extraBwrapArgs
+    ;
   targetPkgs =
     pkgs:
     with pkgs;
@@ -23,18 +29,22 @@ buildFHSEnv {
       bash
       coreutils
       dbus
+      fuse
       gnumake
       procps
+      ratarmount
+      util-linux
       which
 
       # libraries
+      libtinfo
+      libusb1
+      libyaml
       lsb-release
       ncurses'
-      (ncurses'.override { unicodeSupport = false; })
       stdenv.cc.cc
       zlib
-      libyaml
-      libusb1
+      (ncurses'.override { unicodeSupport = false; })
 
       # gui libraries
       fontconfig
@@ -42,6 +52,8 @@ buildFHSEnv {
       glib
       gtk2
       gtk3
+      libxcrypt-legacy # required for Vivado
+      python3
       xorg.libX11
       xorg.libXext
       xorg.libXft
@@ -49,10 +61,8 @@ buildFHSEnv {
       xorg.libXrender
       xorg.libXtst
       xorg.libxcb
-      xorg.xorgserver
       xorg.xlsclients
-      libxcrypt-legacy # required for Vivado
-      python3
+      xorg.xorgserver
       (libidn.overrideAttrs (_old: {
         # we need libidn.so.11 but nixpkgs has libidn.so.12
         src = fetchurl {
@@ -67,10 +77,10 @@ buildFHSEnv {
       opencl-headers
 
       # misc for installLibs.sh
-      (lib.hiPrio gcc)
       graphviz
       nettools
       unzip
+      (lib.hiPrio gcc)
     ];
   multiPkgs = null;
 }

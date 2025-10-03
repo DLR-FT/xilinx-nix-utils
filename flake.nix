@@ -80,11 +80,14 @@
         in
         {
           xilinx-unified = pkgs.xilinx-unified;
+          # xilinx-unified-versions = pkgs.xilinx-unified-versions;
+
           xilinx-lab = pkgs.xilinx-lab;
+          # xilinx-lab-versions = pkgs.xilinx-lab-versions;
 
           bootgen = pkgs.zynq-utils.bootgen;
 
-          xilinx-fhs = pkgs.genXilinxFhs { runScript = ""; };
+          xilinx-fhs = pkgs.xilinx-unified-utils.genFhs { runScript = ""; };
 
           hwplat = example.hwplat;
           sdt = example.sdt;

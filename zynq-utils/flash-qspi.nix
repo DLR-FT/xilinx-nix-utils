@@ -2,7 +2,7 @@
   lib,
   runCommand,
   writeScript,
-  xilinx-common,
+  xilinx-unified-or-lab,
 }:
 
 lib.makeOverridable (
@@ -59,7 +59,7 @@ lib.makeOverridable (
         shift
       done
 
-      ${xilinx-common}/bin/vivado_lab -nolog -nojournal -mode batch -source ${../scripts/program-flash.tcl} -notrace -tclargs \
+      ${xilinx-unified-or-lab}/bin/vivado_lab -nolog -nojournal -mode batch -source ${../scripts/program-flash.tcl} -notrace -tclargs \
         -target "$target" \
         -device "$device" \
         -flash_part "$flash_part" \

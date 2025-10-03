@@ -2,9 +2,11 @@
   stdenvNoCC,
   makeWrapper,
   genXilinxFhs,
-  inputDerivation,
 }:
 
+{
+  inputDerivation,
+}:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = inputDerivation.pname + "-wrapped";
   version = inputDerivation.version;
@@ -26,6 +28,10 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       done < <(find "$dir" -maxdepth 2 -path '*/bin/*' -type f -executable -print0)
     done < <(find ${inputDerivation}/ -maxdepth 3 -type f -name 'settings64.sh' -printf '%h\0')
   '';
+
+  passthru = {
+    unwrapped = inputDerivation;
+  };
 
   meta = inputDerivation.meta // {
     mainProgram = "vivado";

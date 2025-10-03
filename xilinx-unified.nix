@@ -1,85 +1,91 @@
-final: prev: rec {
-  xilinx-unified-unwrapped = final.xilinx-unified-2024-2-unwrapped;
-  xilinx-unified = final.xilinx-unified-2024-2;
+final: prev: {
+  xilinx-unified = final.xilinx-unified-versions.latest.wrapped;
+  xilinx-unified-or-lab = final.xilinx-unified;
 
-  xilinx-unified-2024-2-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
-    name = "xilinx-unified";
-    version = "2024.2_1113_1001";
-    installTar = final.requireFile {
-      name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-l0+S90m9FeOMRdhwfEWznvkDgZMQ3Blryq+2brFsjzw=";
+  xilinx-unified-versions = {
+    latest = final.xilinx-unified-versions."2024-2";
+
+    "2025-1" =
+      let
+        args = rec {
+          name = "xilinx-unified";
+          version = "2025.1_0530_0145";
+          installTar = final.requireFile {
+            name = "FPGAs_AdaptiveSoCs_Unified_SDI_${version}.tar";
+            url = "https://www.xilinx.com/";
+            hash = "sha256-9LASrgJAzRczREYpaXxg9qwVmP9SwMYDwrUyWK1SMqw=";
+          };
+          installConfig = ./xilinx-pkgs/install-configs/xlnx-unified-2025-1.txt;
+        };
+      in
+      {
+        installConfig = final.xilinx-unified-utils.genInstallConfig args;
+
+        unwrapped = final.xilinx-unified-utils.install args;
+        wrapped = final.xilinx-unified-utils.wrap {
+          inputDerivation = final.xilinx-unified-versions."2025-1".unwrapped;
+        };
+      };
+
+    "2024-2" =
+      let
+        args = rec {
+          name = "xilinx-unified";
+          version = "2024.2_1113_1001";
+          installTar = final.requireFile {
+            name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar";
+            url = "https://www.xilinx.com/";
+            hash = "sha256-l0+S90m9FeOMRdhwfEWznvkDgZMQ3Blryq+2brFsjzw=";
+          };
+          installConfig = ./xilinx-pkgs/install-configs/xlnx-unified-2024-2.txt;
+        };
+      in
+      {
+        installConfig = final.xilinx-unified-utils.genInstallConfig args;
+
+        unwrapped = final.xilinx-unified-utils.install args;
+        wrapped = final.xilinx-unified-utils.wrap {
+          inputDerivation = final.xilinx-unified-versions."2024-2".unwrapped;
+        };
+      };
+
+    "2024-1" =
+      let
+        args = rec {
+          name = "xilinx-unified";
+          version = "2024.1_0522_2023";
+          installTar = final.requireFile {
+            name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar.gz";
+            url = "https://www.xilinx.com/";
+            hash = "sha256-AH7MJNhTMnaCCENluF26orxVCiZU/RF9bNbaHAnH8QM=";
+          };
+          installConfig = ./xilinx-pkgs/install-configs/xlnx-unified-2024-1.txt;
+        };
+      in
+      {
+        installConfig = final.xilinx-unified-utils.genInstallConfig args;
+
+        unwrapped = final.xilinx-unified-utils.install args;
+        wrapped = final.xilinx-unified-utils.wrap {
+          inputDerivation = final.xilinx-unified-versions."2024-1".unwrapped;
+        };
+      };
+  };
+
+  xilinx-unified-utils = {
+    genFhs = final.callPackage ./xilinx-pkgs/fhs.nix { };
+
+    genInstallConfig = final.callPackage ./xilinx-pkgs/install.nix {
+      genXilinxFhs = final.xilinx-unified-utils.genFhs;
+      genInstallConfig = true;
     };
-    install_config = ./xilinx-unified/install-configs/xlnx-unified-2024-2.txt;
-  };
 
-  xilinx-unified-2024-2 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
-    inputDerivation = final.xilinx-unified-2024-2-unwrapped;
-  };
-
-  xilinx-unified-2024-1-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
-    name = "xilinx-unified";
-    version = "2024.1_0522_2023";
-    installTar = final.requireFile {
-      name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar.gz";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-AH7MJNhTMnaCCENluF26orxVCiZU/RF9bNbaHAnH8QM=";
+    install = final.callPackage ./xilinx-pkgs/install.nix {
+      genXilinxFhs = final.xilinx-unified-utils.genFhs;
     };
-    install_config = ./xilinx-unified/install-configs/xlnx-unified-2024-1.txt;
-  };
 
-  xilinx-unified-2024-1 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
-    inputDerivation = final.xilinx-unified-2024-1-unwrapped;
-  };
-
-  xilinx-unified-2023-2-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
-    name = "xilinx-unified";
-    version = "2023.2_1013_2256";
-    installTar = final.requireFile {
-      name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar.gz";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-SCRztYAKux101RudvueXp19EPUBfxGqQMfMMIBa2r6o=";
+    wrap = final.callPackage ./xilinx-pkgs/wrap.nix {
+      genXilinxFhs = final.xilinx-unified-utils.genFhs;
     };
   };
-
-  xilinx-unified-2023-2 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
-    inputDerivation = final.xilinx-unified-2023-2-unwrapped;
-  };
-
-  xilinx-unified-2023-1-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
-    pname = "xilinx-unified";
-    version = "2023.1_0507_1903";
-    installTar = final.requireFile {
-      name = "Xilinx_Unified_${version}.tar.gz";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-Kq7GwlDvdTP+X3+u1bjQUkcy7+7FNFnbOiIJXF87nDk=";
-    };
-  };
-
-  xilinx-unified-2023-1 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
-    inputDerivation = final.xilinx-unified-2023-1-unwrapped;
-  };
-
-  xilinx-vivado-2019-2-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
-    pname = "xilinx-vivado";
-    version = "2019.2_1106_2127";
-    installTar = final.requireFile {
-      name = "Xilinx_Vivado_${version}.tar.gz";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-sGeBz7KUW6lI8Eo1nobWZmxkK+d2VidnxZ91FcqaDpY=";
-    };
-    agreements = [
-      "XilinxEULA"
-      "3rdPartyEULA"
-      "WebTalkTerms"
-    ];
-  };
-
-  xilinx-vivado-2019-2 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
-    inputDerivation = final.xilinx-vivado-2019-2-unwrapped;
-  };
-
-  xilinx-common = xilinx-unified;
-
-  genXilinxFhs = final.callPackage ./xilinx-unified/xilinx-fhs.nix { };
 }

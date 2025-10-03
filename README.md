@@ -4,7 +4,7 @@ This repo provides a Nix package for the Xilinx Unfied Toolchain (Vivado, Vitis,
 
 ## Getting Started
 
-- Download Xilinx Unified Offline installer (tar.gz): [Xilinx Unfied 2024.2](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2024-2.html)
+- Download Xilinx Unified Offline installer (tar): [Xilinx Unfied 2024.2](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2024-2.html)
 
 - Add archive to the Nix store: `nix store add-file FPGAs_AdaptiveSoCs_Unified_2024.2_1113_1001.tar`
 
@@ -52,13 +52,23 @@ nix build .#flash
 
 This repo provides multiple Nix overlays for easy and flexible use:
 
-- `overlays.default`: Contains the Nix packages for the Xilinx-Unfied Toolchain/IDE. Can be used standalone
+- `overlays.xilinx-unified`: Contains Nix packages for the full (~100GB) Xilinx-Unfied Toolchain/IDE. Can be used standalone
+
+- `overlays.xilinx-lab`: Contains Nix packages for the Xilinx-Lab tool. This tool can only be used for flashing, debugging, etc, but it is much smaller than the full Xilinx-Unified IDE. Can be used standalone
 
 - `overlays.zynq-srcs`: Contains the Xilinx source repos for the Zynq Firmware components. For easy versioning and overrideability in a central place
 
 - `overlays.zynq-utils`: Contains Nix packages for the Zynq Firmware components (PMUFW, FSBL, TF-A, U-Boot, etc) and utilities for building and deploying boot images. Depends on `zynq-srcs` and `default`
 
 - `overlays.zynq-boards`: Contains complete example boards. Depends on `overlays.zynq-utils`
+
+## DevShells
+
+This flake provides three dev-shells:
+
+- `default`: Provides only basic stuff, for development in this flake
+- `xilinx-unified`: Provides the entire Xilinx-Unified Toolchain/IDE
+- `xilinx-lab`: Provides the leightweight Xilinx-Lab tools. Can be used for debugging (xsdb), flashing, etc
 
 ## Example Flake
 
@@ -103,7 +113,8 @@ This repo provides multiple Nix overlays for easy and flexible use:
           })
 
           # Lets add the overlays
-          xlnx-utils.overlays.default
+          xlnx-utils.overlays.xilinx-unified
+          xlnx-utils.overlays.xilinx-lab
           xlnx-utils.overlays.zynq-srcs
           xlnx-utils.overlays.zynq-utils
           xlnx-utils.overlays.zynq-boards

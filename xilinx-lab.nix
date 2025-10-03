@@ -1,22 +1,72 @@
 final: prev: rec {
-  xilinx-lab-unwrapped = final.xilinx-lab-2024-2-unwrapped;
-  xilinx-lab = final.xilinx-lab-2024-2;
+  xilinx-lab = final.xilinx-lab-versions.latest.wrapped;
 
-  xilinx-lab-2024-2-unwrapped = final.callPackage ./xilinx-unified/xilinx-unified.nix rec {
-    name = "xilinx-lab";
-    version = "2024.2_1113_1001";
-    installTar = final.requireFile {
-      name = "Vivado_Lab_Lin_${version}.tar";
-      url = "https://www.xilinx.com/";
-      hash = "sha256-2ONg2GWi9vbt7bK7NfpPiaJLM29Glot8/94oP2Rp+zg=";
+  # Provide xilinx-unified-or-lab, if it does not already exist
+  xilinx-unified-or-lab =
+    if (prev ? xilinx-unified-or-lab) then prev.xilinx-unified-or-lab else xilinx-lab;
+
+  xilinx-lab-versions = {
+    latest = final.xilinx-lab-versions."2024-2";
+
+    "2025-1" =
+      let
+        args = rec {
+          name = "xilinx-lab";
+          version = "2025.1_0530_0145";
+          installTar = final.requireFile {
+            name = "Vivado_Lab_Lin_${version}.tar";
+            url = "https://www.xilinx.com/";
+            hash = "sha256-2VogZ3cb1nUNu0Nv20NVuxTZJp9fwkwAZbTJG8av86k=";
+          };
+          installConfig = ./xilinx-pkgs/install-configs/xlnx-lab-2025-1.txt;
+        };
+      in
+      {
+        installConfig = final.xilinx-lab-utils.genInstallConfig args;
+
+        unwrapped = final.xilinx-lab-utils.install args;
+        wrapped = final.xilinx-lab-utils.wrap {
+          inputDerivation = final.xilinx-lab-versions."2025-1".unwrapped;
+        };
+      };
+
+    "2024-2" =
+      let
+        args = rec {
+          name = "xilinx-lab";
+          version = "2024.2_1113_1001";
+          installTar = final.requireFile {
+            name = "Vivado_Lab_Lin_${version}.tar";
+            url = "https://www.xilinx.com/";
+            hash = "sha256-2ONg2GWi9vbt7bK7NfpPiaJLM29Glot8/94oP2Rp+zg=";
+          };
+          installConfig = ./xilinx-pkgs/install-configs/xlnx-lab-2024-2.txt;
+        };
+      in
+      {
+        installConfig = final.xilinx-lab-utils.genInstallConfig args;
+
+        unwrapped = final.xilinx-lab-utils.install args;
+        wrapped = final.xilinx-lab-utils.wrap {
+          inputDerivation = final.xilinx-lab-versions."2024-2".unwrapped;
+        };
+      };
+  };
+
+  xilinx-lab-utils = {
+    genFhs = final.callPackage ./xilinx-pkgs/fhs.nix { };
+
+    genInstallConfig = final.callPackage ./xilinx-pkgs/install.nix {
+      genXilinxFhs = final.xilinx-lab-utils.genFhs;
+      genInstallConfig = true;
     };
-    install_config = null;
-  };
 
-  xilinx-lab-2024-2 = final.callPackage ./xilinx-unified/wrap-xilinx.nix {
-    inputDerivation = final.xilinx-lab-2024-2-unwrapped;
-  };
+    install = final.callPackage ./xilinx-pkgs/install.nix {
+      genXilinxFhs = final.xilinx-lab-utils.genFhs;
+    };
 
-  # Provide xilinx-common, if it does not already exist
-  xilinx-common = if (prev ? xilinx-common) then prev.xilinx-common else xilinx-lab;
+    wrap = final.callPackage ./xilinx-pkgs/wrap.nix {
+      genXilinxFhs = final.xilinx-lab-utils.genFhs;
+    };
+  };
 }

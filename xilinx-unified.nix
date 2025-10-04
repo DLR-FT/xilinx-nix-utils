@@ -1,5 +1,5 @@
 final: prev: {
-  xilinx-unified = final.xilinx-unified-versions.latest.wrapped;
+  xilinx-unified = final.xilinx-unified-versions.latest.xilinx-unified;
 
   # Provides xilinx-unified, or xilinx-lab, depending on which overlays are loaded.
   # Prioritizes always xilinx-unified, independently of the overlay order.
@@ -26,7 +26,7 @@ final: prev: {
         installConfig = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;
-        wrapped = final.xilinx-unified-utils.wrap {
+        xilinx-unified = final.xilinx-unified-utils.wrap {
           inputDerivation = final.xilinx-unified-versions."2025-1".unwrapped;
         };
       };
@@ -48,7 +48,7 @@ final: prev: {
         installConfig = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;
-        wrapped = final.xilinx-unified-utils.wrap {
+        xilinx-unified = final.xilinx-unified-utils.wrap {
           inputDerivation = final.xilinx-unified-versions."2024-2".unwrapped;
         };
       };
@@ -70,7 +70,7 @@ final: prev: {
         installConfig = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;
-        wrapped = final.xilinx-unified-utils.wrap {
+        xilinx-unified = final.xilinx-unified-utils.wrap {
           inputDerivation = final.xilinx-unified-versions."2024-1".unwrapped;
         };
       };

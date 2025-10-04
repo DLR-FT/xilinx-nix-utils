@@ -80,14 +80,9 @@
         in
         {
           xilinx-unified = pkgs.xilinx-unified;
-          # xilinx-unified-versions = pkgs.xilinx-unified-versions;
-
           xilinx-lab = pkgs.xilinx-lab;
-          # xilinx-lab-versions = pkgs.xilinx-lab-versions;
 
           bootgen = pkgs.zynq-utils.bootgen;
-
-          xilinx-fhs = pkgs.xilinx-unified-utils.genFhs { runScript = ""; };
 
           hwplat = example.hwplat;
           sdt = example.sdt;
@@ -100,6 +95,11 @@
           boot = example.boot-jtag;
           flash = example.flash-qspi;
         };
+
+      nonPackages = {
+        xilinx-unified-versions = pkgs.xilinx-unified-versions;
+        xilinx-lab-versions = pkgs.xilinx-lab-versions;
+      };
 
       devShells.${system} = {
         default = pkgs.devshell.mkShell {

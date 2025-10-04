@@ -1,5 +1,5 @@
 final: prev: rec {
-  xilinx-lab = final.xilinx-lab-versions.latest.wrapped;
+  xilinx-lab = final.xilinx-lab-versions.latest.xilinx-lab;
 
   # Provide xilinx-unified-or-lab, if it does not already exist
   xilinx-unified-or-lab =
@@ -25,7 +25,7 @@ final: prev: rec {
         installConfig = final.xilinx-lab-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-lab-utils.install args;
-        wrapped = final.xilinx-lab-utils.wrap {
+        xilinx-lab = final.xilinx-lab-utils.wrap {
           inputDerivation = final.xilinx-lab-versions."2025-1".unwrapped;
         };
       };
@@ -47,7 +47,7 @@ final: prev: rec {
         installConfig = final.xilinx-lab-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-lab-utils.install args;
-        wrapped = final.xilinx-lab-utils.wrap {
+        xilinx-lab = final.xilinx-lab-utils.wrap {
           inputDerivation = final.xilinx-lab-versions."2024-2".unwrapped;
         };
       };

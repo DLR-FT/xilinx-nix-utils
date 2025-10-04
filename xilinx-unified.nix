@@ -1,5 +1,8 @@
 final: prev: {
   xilinx-unified = final.xilinx-unified-versions.latest.wrapped;
+
+  # Provides xilinx-unified, or xilinx-lab, depending on which overlays are loaded.
+  # Prioritizes always xilinx-unified, independently of the overlay order.
   xilinx-unified-or-lab = final.xilinx-unified;
 
   xilinx-unified-versions = {
@@ -19,6 +22,7 @@ final: prev: {
         };
       in
       {
+        # generates the default install_config.txt from the installer.
         installConfig = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;

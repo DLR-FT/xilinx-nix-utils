@@ -22,7 +22,7 @@ final: prev: rec {
         };
       in
       {
-        installConfig = final.xilinx-lab-utils.genInstallConfig args;
+        install-config = final.xilinx-lab-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-lab-utils.install args;
         xilinx-lab = final.xilinx-lab-utils.wrap {
@@ -44,29 +44,23 @@ final: prev: rec {
         };
       in
       {
-        installConfig = final.xilinx-lab-utils.genInstallConfig args;
+        install-config = final.xilinx-lab-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-lab-utils.install args;
         xilinx-lab = final.xilinx-lab-utils.wrap {
           inputDerivation = final.xilinx-lab-versions."2024-2".unwrapped;
+          extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };
   };
 
   xilinx-lab-utils = {
-    genFhs = final.callPackage ./xilinx-pkgs/fhs.nix { };
-
     genInstallConfig = final.callPackage ./xilinx-pkgs/install.nix {
-      genXilinxFhs = final.xilinx-lab-utils.genFhs;
       genInstallConfig = true;
     };
 
-    install = final.callPackage ./xilinx-pkgs/install.nix {
-      genXilinxFhs = final.xilinx-lab-utils.genFhs;
-    };
+    install = final.callPackage ./xilinx-pkgs/install.nix { };
 
-    wrap = final.callPackage ./xilinx-pkgs/wrap.nix {
-      genXilinxFhs = final.xilinx-lab-utils.genFhs;
-    };
+    wrap = final.callPackage ./xilinx-pkgs/wrap.nix { };
   };
 }

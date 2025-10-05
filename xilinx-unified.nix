@@ -23,7 +23,7 @@ final: prev: {
       in
       {
         # generates the default install_config.txt from the installer.
-        installConfig = final.xilinx-unified-utils.genInstallConfig args;
+        install-config = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;
         xilinx-unified = final.xilinx-unified-utils.wrap {
@@ -45,11 +45,12 @@ final: prev: {
         };
       in
       {
-        installConfig = final.xilinx-unified-utils.genInstallConfig args;
+        install-config = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;
         xilinx-unified = final.xilinx-unified-utils.wrap {
           inputDerivation = final.xilinx-unified-versions."2024-2".unwrapped;
+          extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };
 
@@ -67,29 +68,22 @@ final: prev: {
         };
       in
       {
-        installConfig = final.xilinx-unified-utils.genInstallConfig args;
+        install-config = final.xilinx-unified-utils.genInstallConfig args;
 
         unwrapped = final.xilinx-unified-utils.install args;
         xilinx-unified = final.xilinx-unified-utils.wrap {
           inputDerivation = final.xilinx-unified-versions."2024-1".unwrapped;
+          extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };
   };
 
   xilinx-unified-utils = {
-    genFhs = final.callPackage ./xilinx-pkgs/fhs.nix { };
-
     genInstallConfig = final.callPackage ./xilinx-pkgs/install.nix {
-      genXilinxFhs = final.xilinx-unified-utils.genFhs;
       genInstallConfig = true;
     };
 
-    install = final.callPackage ./xilinx-pkgs/install.nix {
-      genXilinxFhs = final.xilinx-unified-utils.genFhs;
-    };
-
-    wrap = final.callPackage ./xilinx-pkgs/wrap.nix {
-      genXilinxFhs = final.xilinx-unified-utils.genFhs;
-    };
+    install = final.callPackage ./xilinx-pkgs/install.nix { };
+    wrap = final.callPackage ./xilinx-pkgs/wrap.nix { };
   };
 }

@@ -2,7 +2,7 @@
   description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     treefmt.url = "github:numtide/treefmt-nix";
@@ -18,37 +18,29 @@
     }:
     let
       system = "x86_64-linux";
+
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
 
         overlays = [
-          # https://github.com/NixOS/nixpkgs/pull/42637
-          (final: prev: {
-            requireFile =
-              args:
-              (prev.requireFile args).overrideAttrs (_: {
-                allowSubstitutes = true;
-              });
-          })
+          # (final: prev: {
+          #   pkgsCross = prev.pkgsCross // {
+          #     armhf-embedded = import nixpkgs {
+          #       localSystem = system;
+          #       crossSystem = {
+          #         config = "arm-none-eabihf";
+          #         gcc.arch = "armv7-a+fp";
+          #         gcc.tune = "cortex-a9";
+          #       };
 
-          (final: prev: {
-            pkgsCross = prev.pkgsCross // {
-              armhf-embedded = import nixpkgs {
-                localSystem = system;
-                crossSystem = {
-                  config = "arm-none-eabihf";
-                  gcc.arch = "armv7-a+fp";
-                  gcc.tune = "cortex-a9";
-                };
-
-                overlays = [
-                  self.overlays.zynq-srcs
-                  self.overlays.zynq-utils
-                ];
-              };
-            };
-          })
+          #       overlays = [
+          #         self.overlays.zynq-srcs
+          #         self.overlays.zynq-utils
+          #       ];
+          #     };
+          #   };
+          # })
 
           self.overlays.xilinx-lab
           self.overlays.xilinx-unified
@@ -96,17 +88,15 @@
           flash = example.flash-qspi;
         };
 
-      nonPackages = {
-        xilinx-unified-versions = pkgs.xilinx-unified-versions;
-        xilinx-lab-versions = pkgs.xilinx-lab-versions;
-      };
+      xilinx-unified-versions = pkgs.xilinx-unified-versions;
+      xilinx-lab-versions = pkgs.xilinx-lab-versions;
 
       devShells.${system} = {
         default = pkgs.devshell.mkShell {
           name = "xilinx-nix-utils";
           imports = [ "${devshell}/extra/git/hooks.nix" ];
 
-          packages = [ ];
+          packages = [ pkgs.nix-tree ];
 
           git.hooks = {
             enable = true;
@@ -124,7 +114,9 @@
 
         xilinx-unified = pkgs.devshell.mkShell {
           name = "xilinx-unified";
-          packages = [ pkgs.xilinx-unified ];
+          packages = [
+            pkgs.xilinx-unified
+          ];
         };
       };
 

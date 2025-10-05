@@ -1,12 +1,12 @@
-final: prev: rec {
-  xilinx-lab = final.xilinx-lab-versions.latest.xilinx-lab;
+final: prev: {
+  xilinx-lab = final.xilinx-lab-versions.default.xilinx-lab;
 
   # Provide xilinx-unified-or-lab, if it does not already exist
   xilinx-unified-or-lab =
-    if (prev ? xilinx-unified-or-lab) then prev.xilinx-unified-or-lab else xilinx-lab;
+    if (prev ? xilinx-unified-or-lab) then prev.xilinx-unified-or-lab else final.xilinx-lab;
 
   xilinx-lab-versions = {
-    latest = final.xilinx-lab-versions."2024.2";
+    default = final.xilinx-lab-versions."2024.2";
 
     "2025.1" =
       let
@@ -24,9 +24,9 @@ final: prev: rec {
       {
         install-config = final.xilinx-lab-utils.genInstallConfig args;
 
-        unwrapped = final.xilinx-lab-utils.install args;
+        xilinx-lab-unwrapped = final.xilinx-lab-utils.install args;
         xilinx-lab = final.xilinx-lab-utils.wrap {
-          inputDerivation = final.xilinx-lab-versions."2025.1".unwrapped;
+          inputDerivation = final.xilinx-lab-versions."2025.1".xilinx-lab-unwrapped;
         };
       };
 
@@ -46,9 +46,9 @@ final: prev: rec {
       {
         install-config = final.xilinx-lab-utils.genInstallConfig args;
 
-        unwrapped = final.xilinx-lab-utils.install args;
+        xilinx-lab-unwrapped = final.xilinx-lab-utils.install args;
         xilinx-lab = final.xilinx-lab-utils.wrap {
-          inputDerivation = final.xilinx-lab-versions."2024.2".unwrapped;
+          inputDerivation = final.xilinx-lab-versions."2024.2".xilinx-lab-unwrapped;
           extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };

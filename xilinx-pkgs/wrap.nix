@@ -12,7 +12,6 @@
 let
   fhs = buildFHSEnv {
     name = "xilinx-fhs";
-    runScript = "";
     targetPkgs =
       pkgs:
       with pkgs;

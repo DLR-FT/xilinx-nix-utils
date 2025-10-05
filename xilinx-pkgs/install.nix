@@ -2,15 +2,14 @@
   buildFHSEnv,
   lib,
   rapidgzip,
-  stdenv,
+  stdenvNoCC,
   writeShellScript,
 
   # Just generate the default install_config.txt from the installer
   genInstallConfig ? false,
 }:
-
 {
-  name,
+  baseName,
   version,
   installTar,
   installConfig,
@@ -18,7 +17,8 @@
     "3rdPartyEULA"
     "XilinxEULA"
   ],
-}@args:
+}:
+
 let
   agreedLicenses = lib.strings.concatStringsSep "," agreements;
 
@@ -89,8 +89,8 @@ let
     fi
   '';
 in
-stdenv.mkDerivation {
-  pname = "${name}-unwrapped";
+stdenvNoCC.mkDerivation {
+  pname = "${baseName}-unwrapped";
   inherit version;
 
   src = installTar;
@@ -165,7 +165,7 @@ stdenv.mkDerivation {
   noAuditTmpdir = true;
 
   passthru = {
-    inherit args;
+    inherit baseName fhs;
   };
 
   meta = {

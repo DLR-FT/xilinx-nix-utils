@@ -6,12 +6,12 @@ final: prev: rec {
     if (prev ? xilinx-unified-or-lab) then prev.xilinx-unified-or-lab else xilinx-lab;
 
   xilinx-lab-versions = {
-    latest = final.xilinx-lab-versions."2024-2";
+    latest = final.xilinx-lab-versions."2024.2";
 
-    "2025-1" =
+    "2025.1" =
       let
         args = rec {
-          name = "xilinx-lab";
+          baseName = "xilinx-lab";
           version = "2025.1_0530_0145";
           installTar = final.requireFile {
             name = "Vivado_Lab_Lin_${version}.tar";
@@ -26,14 +26,14 @@ final: prev: rec {
 
         unwrapped = final.xilinx-lab-utils.install args;
         xilinx-lab = final.xilinx-lab-utils.wrap {
-          inputDerivation = final.xilinx-lab-versions."2025-1".unwrapped;
+          inputDerivation = final.xilinx-lab-versions."2025.1".unwrapped;
         };
       };
 
-    "2024-2" =
+    "2024.2" =
       let
         args = rec {
-          name = "xilinx-lab";
+          baseName = "xilinx-lab";
           version = "2024.2_1113_1001";
           installTar = final.requireFile {
             name = "Vivado_Lab_Lin_${version}.tar";
@@ -48,7 +48,7 @@ final: prev: rec {
 
         unwrapped = final.xilinx-lab-utils.install args;
         xilinx-lab = final.xilinx-lab-utils.wrap {
-          inputDerivation = final.xilinx-lab-versions."2024-2".unwrapped;
+          inputDerivation = final.xilinx-lab-versions."2024.2".unwrapped;
           extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };
@@ -60,7 +60,6 @@ final: prev: rec {
     };
 
     install = final.callPackage ./xilinx-pkgs/install.nix { };
-
     wrap = final.callPackage ./xilinx-pkgs/wrap.nix { };
   };
 }

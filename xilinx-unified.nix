@@ -6,12 +6,12 @@ final: prev: {
   xilinx-unified-or-lab = final.xilinx-unified;
 
   xilinx-unified-versions = {
-    latest = final.xilinx-unified-versions."2024-2";
+    latest = final.xilinx-unified-versions."2024.2";
 
-    "2025-1" =
+    "2025.1" =
       let
         args = rec {
-          name = "xilinx-unified";
+          baseName = "xilinx-unified";
           version = "2025.1_0530_0145";
           installTar = final.requireFile {
             name = "FPGAs_AdaptiveSoCs_Unified_SDI_${version}.tar";
@@ -27,14 +27,14 @@ final: prev: {
 
         unwrapped = final.xilinx-unified-utils.install args;
         xilinx-unified = final.xilinx-unified-utils.wrap {
-          inputDerivation = final.xilinx-unified-versions."2025-1".unwrapped;
+          inputDerivation = final.xilinx-unified-versions."2025.1".unwrapped;
         };
       };
 
-    "2024-2" =
+    "2024.2" =
       let
         args = rec {
-          name = "xilinx-unified";
+          baseName = "xilinx-unified";
           version = "2024.2_1113_1001";
           installTar = final.requireFile {
             name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar";
@@ -49,15 +49,15 @@ final: prev: {
 
         unwrapped = final.xilinx-unified-utils.install args;
         xilinx-unified = final.xilinx-unified-utils.wrap {
-          inputDerivation = final.xilinx-unified-versions."2024-2".unwrapped;
+          inputDerivation = final.xilinx-unified-versions."2024.2".unwrapped;
           extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };
 
-    "2024-1" =
+    "2024.1" =
       let
         args = rec {
-          name = "xilinx-unified";
+          baseName = "xilinx-unified";
           version = "2024.1_0522_2023";
           installTar = final.requireFile {
             name = "FPGAs_AdaptiveSoCs_Unified_${version}.tar.gz";
@@ -72,7 +72,7 @@ final: prev: {
 
         unwrapped = final.xilinx-unified-utils.install args;
         xilinx-unified = final.xilinx-unified-utils.wrap {
-          inputDerivation = final.xilinx-unified-versions."2024-1".unwrapped;
+          inputDerivation = final.xilinx-unified-versions."2024.1".unwrapped;
           extraTargetPkgs = pkgs: [ pkgs.libxcrypt-legacy ];
         };
       };

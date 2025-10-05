@@ -1,14 +1,14 @@
 {
-  stdenv,
   buildFHSEnv,
-  stdenvNoCC,
   makeWrapper,
+  stdenv,
+  stdenvNoCC,
 }:
-
 {
   inputDerivation,
   extraTargetPkgs ? pkgs: [ ],
 }:
+
 let
   fhs = buildFHSEnv {
     name = "xilinx-fhs";
@@ -17,8 +17,8 @@ let
       pkgs:
       with pkgs;
       let
-        ncurses5' = callPackage (import ../nixpkgs/ncurses-patched-25-05.nix) { abiVersion = "5"; };
-        ncurses6' = callPackage (import ../nixpkgs/ncurses-patched-25-05.nix) { };
+        ncurses5' = callPackage ../nixpkgs/ncurses-patched-25-05.nix { abiVersion = "5"; };
+        ncurses6' = callPackage ../nixpkgs/ncurses-patched-25-05.nix { };
       in
       [
         coreutils
@@ -57,7 +57,7 @@ let
   };
 in
 stdenvNoCC.mkDerivation (finalAttrs: {
-  pname = inputDerivation.args.name + "-wrapped";
+  pname = inputDerivation.baseName + "-wrapped";
   version = inputDerivation.version;
 
   dontUnpack = true;
@@ -71,6 +71,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
+    runHook preInstall
+
     mkdir --parent -- "$out/bin"
     while IFS= read -r -d "" dir ; do
       echo $dir
@@ -84,12 +86,15 @@ stdenvNoCC.mkDerivation (finalAttrs: {
             --add-flags "\"$file\""
       done < <(find "$dir" -maxdepth 2 -path '*/bin/*' -type f -executable -print0)
     done < <(find ${inputDerivation}/ -maxdepth 3 -type f -name 'settings64.sh' -printf '%h\0')
+
+    runHook postInstall
   '';
 
   dontFixup = true;
 
   passthru = {
     inherit fhs;
+    inherit (inputDerivation) baseName;
     unwrapped = inputDerivation;
   };
 

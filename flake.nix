@@ -88,9 +88,6 @@
           flash = example.flash-qspi;
         };
 
-      xilinx-unified-versions = pkgs.xilinx-unified-versions;
-      xilinx-lab-versions = pkgs.xilinx-lab-versions;
-
       devShells.${system} = {
         default = pkgs.devshell.mkShell {
           name = "xilinx-nix-utils";

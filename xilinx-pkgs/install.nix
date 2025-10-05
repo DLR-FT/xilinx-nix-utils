@@ -1,5 +1,5 @@
 {
-  genXilinxFhs,
+  buildFHSEnv,
   lib,
   rapidgzip,
   stdenv,
@@ -18,10 +18,38 @@
     "3rdPartyEULA"
     "XilinxEULA"
   ],
-}:
-
+}@args:
 let
   agreedLicenses = lib.strings.concatStringsSep "," agreements;
+
+  fhs = buildFHSEnv {
+    name = "xilinx-installer-fhs";
+
+    # use unshare so that we can use ratarmount to mount the tar archive.
+    # otherwise we get a permission error on mount attempt
+    runScript = "unshare -m -r bash";
+
+    # /nix/store is mounted read-only in the fhs by default:
+    # https://github.com/NixOS/nixpkgs/pull/381032
+    # add extra read-write mount for $out, so that we can directly install into the nix store
+    extraBwrapArgs = [ "--bind $out $out" ];
+
+    targetPkgs =
+      pkgs: with pkgs; [
+        fuse3
+        ratarmount
+        (util-linux.override {
+          capabilitiesSupport = false;
+          # cryptsetupSupport = false;
+          ncursesSupport = false;
+          nlsSupport = false;
+          pamSupport = false;
+          shadowSupport = false;
+          systemdSupport = false;
+          writeSupport = false;
+        })
+      ];
+  };
 
   genInstallConfigScript = writeShellScript "xilinx-install" ''
     if [ -e /dev/fuse ]; then
@@ -62,22 +90,14 @@ let
   '';
 in
 stdenv.mkDerivation {
-  pname = "${name}";
+  pname = "${name}-unwrapped";
   inherit version;
 
   src = installTar;
 
   nativeBuildInputs = [
+    fhs
     rapidgzip
-    (genXilinxFhs {
-      # use unshare so that we can use ratarmount to mount the tar archive.
-      # otherwise we get a permission error on mount attempt
-      runScript = "unshare -m -r bash";
-      # /nix/store is mounted read-only in the fhs by default:
-      # https://github.com/NixOS/nixpkgs/pull/381032
-      # add extra read-write mount for $out, so that we can directly install into the nix store
-      extraBwrapArgs = [ "--bind $out $out" ];
-    })
   ];
 
   # As an alternative to unpacking the installer archive before running the installer,
@@ -118,7 +138,7 @@ stdenv.mkDerivation {
     ${
       if genInstallConfig then
         ''
-          xilinx-fhs ${genInstallConfigScript}
+          xilinx-installer-fhs ${genInstallConfigScript}
         ''
       else
         ''
@@ -128,7 +148,7 @@ stdenv.mkDerivation {
           substituteInPlace ./.Xilinx/install_config.txt \
             --replace-fail /tools/Xilinx $out
 
-          xilinx-fhs ${installScript}
+          xilinx-installer-fhs ${installScript}
         ''
     }
 
@@ -143,6 +163,10 @@ stdenv.mkDerivation {
   dontPruneLibtoolFiles = true;
   dontStrip = true;
   noAuditTmpdir = true;
+
+  passthru = {
+    inherit args;
+  };
 
   meta = {
     description = "AMD/Xilinx toolchain";

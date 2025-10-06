@@ -75,8 +75,8 @@ This flake provides three dev-shells:
 ```
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
-    xlnx-utils.url = "github:moritz-meier/xilinx-nix-utils?ref=2024.2";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    xlnx-utils.url = "github:dlr-ft/xilinx-nix-utils?ref=2025.1";
   };
 
   outputs =
@@ -104,7 +104,6 @@ This flake provides three dev-shells:
                 };
 
                 overlays = [
-
                   xlnx-utils.overlays.zynq-srcs
                   xlnx-utils.overlays.zynq-utils
                 ];
@@ -120,23 +119,23 @@ This flake provides three dev-shells:
           xlnx-utils.overlays.zynq-boards
 
           # Default versions can be changed like this
-          (final: prev: {
-            xilinx-lab = prev.xilinx-lab-versions."2024.2".xilinx-lab;
-            xilinx-unified = prev.xilinx-unified-versions."2024.2".xilinx-unified;
-            zynq-srcs = prev.zynq-srcs-versions."2024.2";
-          })
+          # (final: prev: {
+          #   xilinx-lab = prev.xilinx-lab-versions."2025.1".xilinx-lab;
+          #   xilinx-unified = prev.xilinx-unified-versions."2025.1".xilinx-unified;
+          #   zynq-srcs = prev.zynq-srcs-versions."2025.1";
+          # })
 
-          # Zynq sources are overrideable; Lets override the U-Boot source
-          (final: prev: {
-            zynq-srcs = prev.zynq-srcs // {
-              uboot-src = pkgs.fetchFromGitHub {
-                owner = "Xilinx";
-                repo = "u-boot-xlnx";
-                rev = "xlnx_rebase_v2025.01";
-                hash = "sha256-uN6oXoa6huclsz1c5Z2IyIvJoRfMr1QsfKF6Y2Z4zf4=";
-              };
-            };
-          })
+          # Zynq sources are also overrideable; Lets override the U-Boot source
+          # (final: prev: {
+          #   zynq-srcs = prev.zynq-srcs // {
+          #     uboot-src = prev.fetchFromGitHub {
+          #       owner = "Xilinx";
+          #       repo = "u-boot-xlnx";
+          #       rev = "xilinx-v2025.1";
+          #       hash = "sha256-RTcd7MR37E4yVGWP3RMruyKBI4tz8ex7mY1f5F2xd00=";
+          #     };
+          #   };
+          # })
         ];
       };
     in

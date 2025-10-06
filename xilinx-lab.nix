@@ -6,7 +6,7 @@ final: prev: {
     if (prev ? xilinx-unified-or-lab) then prev.xilinx-unified-or-lab else final.xilinx-lab;
 
   xilinx-lab-versions = {
-    default = final.xilinx-lab-versions."2024.2";
+    default = final.xilinx-lab-versions."2025.1";
 
     "2025.1" =
       let

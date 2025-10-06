@@ -6,7 +6,7 @@ final: prev: {
   xilinx-unified-or-lab = final.xilinx-unified;
 
   xilinx-unified-versions = {
-    default = final.xilinx-unified-versions."2024.2";
+    default = final.xilinx-unified-versions."2025.1";
 
     "2025.1" =
       let

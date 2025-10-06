@@ -70,11 +70,13 @@ lib.makeOverridable (
 
       mkdir ./pmufw-bsp
       pushd ./pmufw-bsp
+      python $ESW_REPO/scripts/pyesw/repo.py -st $ESW_REPO
       python $ESW_REPO/scripts/pyesw/create_bsp.py -t ${template} -s ${sdt.dts} -p ${proc} ${lib.strings.optionalString (lib.strings.hasInfix "cortexa53" proc) "-m ${mode}"}
       popd
 
       mkdir ./pmufw
       pushd ./pmufw
+      python $ESW_REPO/scripts/pyesw/repo.py -st $ESW_REPO
       python $ESW_REPO/scripts/pyesw/create_app.py -t ${template} -d ../pmufw-bsp
       popd
 

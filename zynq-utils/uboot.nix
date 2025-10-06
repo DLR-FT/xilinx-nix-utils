@@ -64,13 +64,12 @@ lib.makeOverridable (
       KBUILD_OUTPUT = "build";
     };
 
-    makeFlags =
-      [
-        "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
-      ]
-      ++ lib.lists.optional (deviceTree != null) "DEVICE_TREE=${deviceTree}"
-      ++ lib.lists.optional (extDeviceTreeBlob != null) "EXT_DTB=${extDeviceTreeBlob}"
-      ++ extraMakeFlags;
+    makeFlags = [
+      "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+    ]
+    ++ lib.lists.optional (deviceTree != null) "DEVICE_TREE=${deviceTree}"
+    ++ lib.lists.optional (extDeviceTreeBlob != null) "EXT_DTB=${extDeviceTreeBlob}"
+    ++ extraMakeFlags;
 
     patches = [ ] ++ extraPatches;
 

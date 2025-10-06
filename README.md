@@ -119,6 +119,13 @@ This flake provides three dev-shells:
           xlnx-utils.overlays.zynq-utils
           xlnx-utils.overlays.zynq-boards
 
+          # Default versions can be changed like this
+          (final: prev: {
+            xilinx-lab = prev.xilinx-lab-versions."2024.2".xilinx-lab;
+            xilinx-unified = prev.xilinx-unified-versions."2024.2".xilinx-unified;
+            zynq-srcs = prev.zynq-srcs-versions."2024.2";
+          })
+
           # Zynq sources are overrideable; Lets override the U-Boot source
           (final: prev: {
             zynq-srcs = prev.zynq-srcs // {

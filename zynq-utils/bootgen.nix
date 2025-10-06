@@ -19,10 +19,13 @@ stdenv.mkDerivation rec {
   ];
 
   installPhase = ''
-    mkdir $out
+    runHook preInstall
 
-    mkdir $out/bin
-    cp bootgen $out/bin
+    mkdir -p $out/bin
+    [ -f ./bootgen ] && cp -- ./bootgen $out/bin
+    [ -f ./build/bin/bootgen ] && cp -- ./build/bin/bootgen $out/bin
+
+    runHook postInstall
   '';
 
   meta = {

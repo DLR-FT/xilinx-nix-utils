@@ -2,7 +2,7 @@
   description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     treefmt.url = "github:numtide/treefmt-nix";
@@ -24,40 +24,29 @@
         config.allowUnfree = true;
 
         overlays = [
-          # (final: prev: {
-          #   pkgsCross = prev.pkgsCross // {
-          #     armhf-embedded = import nixpkgs {
-          #       localSystem = system;
-          #       crossSystem = {
-          #         config = "arm-none-eabihf";
-          #         gcc.arch = "armv7-a+fp";
-          #         gcc.tune = "cortex-a9";
-          #       };
+          (final: prev: {
+            pkgsCross = prev.pkgsCross // {
+              armhf-embedded = import nixpkgs {
+                localSystem = system;
+                crossSystem = {
+                  config = "arm-none-eabihf";
+                  gcc.arch = "armv7-a+fp";
+                  gcc.tune = "cortex-a9";
+                };
 
-          #       overlays = [
-          #         self.overlays.zynq-srcs
-          #         self.overlays.zynq-utils
-          #       ];
-          #     };
-          #   };
-          # })
+                overlays = [
+                  self.overlays.zynq-srcs
+                  self.overlays.zynq-utils
+                ];
+              };
+            };
+          })
 
           self.overlays.xilinx-lab
           self.overlays.xilinx-unified
           self.overlays.zynq-srcs
           self.overlays.zynq-utils
           self.overlays.zynq-boards
-
-          (final: prev: {
-            zynq-srcs = prev.zynq-srcs // {
-              uboot-src = pkgs.fetchFromGitHub {
-                owner = "Xilinx";
-                repo = "u-boot-xlnx";
-                rev = "xlnx_rebase_v2025.01";
-                hash = "sha256-RTcd7MR37E4yVGWP3RMruyKBI4tz8ex7mY1f5F2xd00=";
-              };
-            };
-          })
 
           devshell.overlays.default
         ];

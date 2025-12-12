@@ -2,13 +2,13 @@ final: prev:
 let
   meta = rec {
     baseName = "xilinx-unified";
-    version = "2025.1_0530_0145";
+    version = "2025.2_1114_2157";
     installTar = final.requireFile {
       name = "FPGAs_AdaptiveSoCs_Unified_SDI_${version}.tar";
       url = "https://www.xilinx.com/";
-      hash = "sha256-9LASrgJAzRczREYpaXxg9qwVmP9SwMYDwrUyWK1SMqw=";
+      hash = "sha256-+oZpgb9q+7NeVXO5t9EuzAzIhMy5Zj9jqvEQeUzzTBU=";
     };
-    installConfig = ./xilinx-pkgs/install-configs/xlnx-unified-2025-1.txt;
+    installConfig = ./xilinx-pkgs/install-configs/xlnx-unified-2025-2.txt;
   };
 in
 {

@@ -8,6 +8,7 @@
   packaging,
   pyyaml,
   ruamel-yaml,
+  setuptools,
   zynq-srcs,
 }:
 
@@ -26,6 +27,10 @@ buildPythonPackage rec {
     pyyaml
     ruamel-yaml
   ];
+
+  pyproject = true;
+
+  build-system = [ setuptools ];
 
   pythonImportsCheck = [ "lopper" ];
 

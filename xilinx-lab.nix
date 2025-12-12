@@ -2,13 +2,13 @@ final: prev:
 let
   meta = rec {
     baseName = "xilinx-lab";
-    version = "2025.1_0530_0145";
+    version = "2025.2_1114_2157";
     installTar = final.requireFile {
       name = "Vivado_Lab_Lin_${version}.tar";
       url = "https://www.xilinx.com/";
-      hash = "sha256-2VogZ3cb1nUNu0Nv20NVuxTZJp9fwkwAZbTJG8av86k=";
+      hash = "sha256-0w8YZFzYz7DfD/TM4GcwN5spKiXYF3UEDB5URVIdOv4=";
     };
-    installConfig = ./xilinx-pkgs/install-configs/xlnx-lab-2025-1.txt;
+    installConfig = ./xilinx-pkgs/install-configs/xlnx-lab-2025-2.txt;
   };
 in
 {

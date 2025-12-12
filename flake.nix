@@ -2,7 +2,12 @@
   description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+
+    # TODO: remove
+    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     treefmt.url = "github:numtide/treefmt-nix";
@@ -13,6 +18,8 @@
     {
       self,
       nixpkgs,
+      nixpkgs-2505,
+      nixpkgs-unstable,
       devshell,
       treefmt,
     }:
@@ -24,6 +31,33 @@
         config.allowUnfree = true;
 
         overlays = [
+
+          # TODO: remove
+          # https://github.com/NixOS/nixpkgs/pull/459393
+          (
+            final: prev:
+            let
+              pkgs = import nixpkgs-2505 { inherit system; };
+            in
+            {
+              ratarmount = pkgs.ratarmount;
+              cmake-compat35 = pkgs.cmake;
+            }
+          )
+
+          # TODO: remove
+          # https://github.com/NixOS/nixpkgs/pull/390887
+          (
+            final: prev:
+            let
+              pkgs = import nixpkgs-unstable { inherit system; };
+            in
+            {
+              # ncurses5 = pkgs.ncurses5;
+              ncurses6 = pkgs.ncurses6;
+            }
+          )
+
           (final: prev: {
             pkgsCross = prev.pkgsCross // {
               armhf-embedded = import nixpkgs {

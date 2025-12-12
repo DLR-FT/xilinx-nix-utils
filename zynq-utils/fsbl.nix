@@ -1,6 +1,6 @@
 {
   buildPackages,
-  cmake,
+  cmake-compat35,
   lib,
   libclang,
   ninja,
@@ -49,7 +49,7 @@ lib.makeOverridable (
     inherit src;
 
     nativeBuildInputs = [
-      cmake
+      cmake-compat35
       libclang
       ninja
       (buildPackages.python3.withPackages (pyPkgs: [

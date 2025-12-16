@@ -165,7 +165,12 @@ stdenvNoCC.mkDerivation {
   noAuditTmpdir = true;
 
   passthru = {
-    inherit baseName fhs;
+    inherit
+      baseName
+      fhs
+      installTar
+      installConfig
+      ;
   };
 
   meta = {

@@ -28,6 +28,13 @@ final: prev: {
       hash = "sha256-HIqfsenTlAU+e3SmKfHZNLrPDcUZIWF222Ur0BYS7zc=";
     };
 
+    optee-os-src = prev.fetchFromGitHub {
+      owner = "Xilinx";
+      repo = "optee_os";
+      rev = "xlnx_rebase_v4.5.0_2025.1";
+      hash = "sha256-VkGWxXMDSmmctZn8HlPCcUiFBOrlcZrtm40jauwuWK0=";
+    };
+
     dt-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "device-tree-xlnx";

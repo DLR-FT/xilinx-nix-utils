@@ -2,73 +2,73 @@
   lib,
   stdenv,
   xilinx-unified,
+
+  name ? null,
+  version ? null,
+  src,
+
+  sourceTcl ? src + "/vivado.tcl",
+  extraPatches ? [ ],
 }:
+let
+  buildHwplatTcl = ''
+    open_project ./${name}/${name}.xpr
 
-lib.makeOverridable (
-  {
-    # Name of the project
-    name,
-    # Optional: Vivado project source tcl file (write_project_tcl ...)
-    sourceTcl ? src + "/vivado.tcl",
-    extraPatches ? [ ],
-    src,
-  }@args:
-  let
-    baseName = name;
+    launch_runs impl_1 -to_step write_bitstream -job $env(NIX_BUILD_CORES)
+    wait_on_run impl_1
 
-    buildHwplatTcl = ''
-      open_project ./${name}/${name}.xpr
+    open_run impl_1
 
-      launch_runs impl_1 -to_step write_bitstream -job $env(NIX_BUILD_CORES)
-      wait_on_run impl_1
+    write_bitstream ./${name}/${name}.bit
+    write_hw_platform ./${name}/${name}.xsa
+  '';
+in
+stdenv.mkDerivation (finalAttrs: {
+  name = if name != null then name else "zynq-hwplat";
+  version =
+    if version != null then
+      version
+    else if (finalAttrs.src ? rev) then
+      finalAttrs.src.rev
+    else
+      "";
 
-      open_run impl_1
+  inherit src;
 
-      write_bitstream ./${name}/${name}.bit
-      write_hw_platform ./${name}/${name}.xsa
-    '';
-  in
-  stdenv.mkDerivation (finalAttrs: {
-    name = "${baseName}-hwplat";
+  nativeBuildInputs = [ (lib.lowPrio xilinx-unified) ];
 
-    inherit src;
+  patches = [ ] ++ extraPatches;
 
-    nativeBuildInputs = [ (lib.lowPrio xilinx-unified) ];
+  configurePhase = ''
+    runHook preConfigure
 
-    patches = [ ] ++ extraPatches;
+    vivado -nolog -nojournal -mode batch -source ${sourceTcl} -tclargs --origin_dir ./. --project_name ${name}
+    echo ${lib.strings.escapeShellArg buildHwplatTcl} > ./${name}/build-hw.tcl
 
-    configurePhase = ''
-      runHook preConfigure
+    runHook postConfigure
+  '';
 
-      vivado -nolog -nojournal -mode batch -source ${sourceTcl} -tclargs --origin_dir ./. --project_name ${name}
-      echo ${lib.strings.escapeShellArg buildHwplatTcl} > ./${name}/build-hw.tcl
+  buildPhase = ''
+    runHook preBuild
 
-      runHook postConfigure
-    '';
+    vivado -nolog -nojournal -mode batch -source ./${name}/build-hw.tcl
 
-    buildPhase = ''
-      runHook preBuild
+    runHook postBuild
+  '';
 
-      vivado -nolog -nojournal -mode batch -source ./${name}/build-hw.tcl
+  installPhase = ''
+    runHook preInstall
 
-      runHook postBuild
-    '';
+    cp -r -- ./${name} $out
 
-    installPhase = ''
-      runHook preInstall
+    runHook postInstall
+  '';
 
-      cp -r -- ./${name} $out
+  dontFixup = true;
 
-      runHook postInstall
-    '';
-
-    dontFixup = true;
-
-    passthru = {
-      inherit args baseName;
-      bit = "${finalAttrs.finalPackage.out}/${name}.bit";
-      xsa = "${finalAttrs.finalPackage.out}/${name}.xsa";
-      xpr = "${finalAttrs.finalPackage.out}/${name}.xpr";
-    };
-  })
-)
+  passthru = {
+    bit = "${finalAttrs.finalPackage.out}/${name}.bit";
+    xsa = "${finalAttrs.finalPackage.out}/${name}.xsa";
+    xpr = "${finalAttrs.finalPackage.out}/${name}.xpr";
+  };
+})

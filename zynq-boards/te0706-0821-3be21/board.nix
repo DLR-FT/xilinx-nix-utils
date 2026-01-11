@@ -1,45 +1,41 @@
 {
-  zynq-pkgs,
+  zynq-modules,
 }:
-zynq-pkgs.zynqmp.board {
-  name = "te0706-0821-3be21";
+zynq-modules.mkZynqFirmware {
+  modules = [
+    {
+      name = "te0706-0821-3be21";
 
-  hwplat = {
-    src = ./vivado-srcs;
-  };
+      plat = "zynqmp";
 
-  linux-dt = {
-    extraLops = [
-      "./lopper/lops/lop-a53-imux.dts"
-    ];
-    extraDtsi = [ ./dts/board.dtsi ];
-  };
+      hwplat.src = ./vivado-srcs;
 
-  uboot = {
-    extraConfig = ''
-      CONFIG_ENV_IS_NOWHERE=n
-      CONFIG_ENV_IS_IN_FAT=n
-      CONFIG_ENV_IS_IN_NAND=n
+      linux-dt = {
+        extraLops = [
+          "./lopper/lops/lop-a53-imux.dts"
+        ];
+        extraDtsi = [ ./dts/board.dtsi ];
+      };
 
-      CONFIG_TFTP_PORT=y
+      uboot.extraConfig = ''
+        CONFIG_ENV_IS_NOWHERE=n
+        CONFIG_ENV_IS_IN_FAT=n
+        CONFIG_ENV_IS_IN_NAND=n
 
-      CONFIG_LOG=y
-      CONFIG_CMD_LOG=y
-      CONFIG_LOG_DEFAULT_LEVEL=4
-      CONFIG_LOG_MAX_LEVEL=7
-      CONFIG_LOG_CONSOLE=y
-    '';
-  };
+        CONFIG_TFTP_PORT=y
 
-  boot-image = {
-    dualQspiMode = "parallel";
-  };
+        CONFIG_LOG=y
+        CONFIG_CMD_LOG=y
+        CONFIG_LOG_DEFAULT_LEVEL=4
+        CONFIG_LOG_MAX_LEVEL=7
+        CONFIG_LOG_CONSOLE=y
+      '';
 
-  boot-jtag = {
-    forceBootModeJtag = true;
-  };
+      boot-image.dualQspiMode = "parallel";
 
-  flash-qspi = {
-    flashPart = "mt25qu512-qspi-x8-parallel";
-  };
+      boot-jtag.forceBootModeJtag = true;
+
+      flash-qspi.flashPart = "mt25qu512-qspi-x8-parallel";
+    }
+  ];
 }

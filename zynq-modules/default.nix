@@ -1,7 +1,7 @@
 {
   lib,
   pkgs,
-  runCommand,
+  linkFarmFromDrvs,
 }:
 let
   defaultPkgs = pkgs;
@@ -23,26 +23,33 @@ let
         };
     in
     lib.evalModules {
-      modules = [ baseModule ] ++ modules;
+      modules = [
+        baseModule
+        (import ./modules)
+      ]
+      ++ modules;
     };
 
   buildFw =
     eval:
-    runCommand ""
-      {
-        passthru = {
-          inherit eval;
-          extendFirmware =
-            {
-              modules ? [ ],
-            }:
-            buildFw (eval.extendModules { inherit modules; });
-        };
-      }
-      ''
-        mkdir $out
-        echo ${lib.escapeShellArg (builtins.toJSON eval.config)} >> $out/config.json
-      '';
+    let
+      configPkg =
+        with eval;
+        pkgs.runCommand "${config.name}-config.json" { nativeBuildInputs = [ pkgs.jq ]; } ''
+          echo ${lib.escapeShellArg (builtins.toJSON config)} | jq >> $out
+        '';
+      fw = with eval.config; linkFarmFromDrvs name (fwPackages ++ [ configPkg ]);
+    in
+    fw.overrideAttrs {
+      passthru = {
+        inherit eval;
+        extendFirmware =
+          {
+            modules ? [ ],
+          }:
+          buildFw (eval.extendModules { inherit modules; });
+      };
+    };
 in
 {
   mkZynqFirmware = lib.makeOverridable (

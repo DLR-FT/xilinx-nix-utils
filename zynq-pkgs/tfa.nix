@@ -4,67 +4,75 @@
   lib,
   stdenv,
   zynq-srcs,
+
+  name ? null,
+  version ? null,
+  src ? zynq-srcs.tfa-src,
+
+  plat,
+  extraMakeFlags ? [ ],
+  extraPatches ? [ ],
 }:
 
-lib.makeOverridable (
-  {
-    # Platform name (zynqmp, ...)
-    plat,
-    extraMakeFlags ? [ ],
-    extraPatches ? [ ],
-    src ? zynq-srcs.tfa-src,
-  }@args:
-  stdenv.mkDerivation (finalAttrs: rec {
-    name = "trusted-firmware-a-${plat}";
-    version = src.rev;
+let
+  _name = name;
+  _version = version;
+in
+stdenv.mkDerivation (finalAttrs: rec {
+  name = if _name != null then _name else "zynq-tfa";
+  version =
+    if _version != null then
+      _version
+    else if (finalAttrs.src ? rev) then
+      finalAttrs.src.rev
+    else
+      "";
 
-    inherit src;
+  inherit src;
 
-    nativeBuildInputs = [
-      dtc
-    ];
+  nativeBuildInputs = [
+    dtc
+  ];
 
-    depsBuildBuild = [ buildPackages.stdenv.cc ];
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
 
-    makeFlags = [
-      "HOSTCC=$(CC_FOR_BUILD)"
-      "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
-      "CC=${stdenv.cc.targetPrefix}cc"
-      "LD=${stdenv.cc.targetPrefix}cc"
-      "AS=${stdenv.cc.targetPrefix}cc"
-      "OC=${stdenv.cc.targetPrefix}objcopy"
-      "OD=${stdenv.cc.targetPrefix}objdump"
+  makeFlags = [
+    "HOSTCC=$(CC_FOR_BUILD)"
+    "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+    "CC=${stdenv.cc.targetPrefix}cc"
+    "LD=${stdenv.cc.targetPrefix}cc"
+    "AS=${stdenv.cc.targetPrefix}cc"
+    "OC=${stdenv.cc.targetPrefix}objcopy"
+    "OD=${stdenv.cc.targetPrefix}objdump"
 
-      "PLAT=${plat}"
-    ]
-    ++ extraMakeFlags;
+    "PLAT=${plat}"
+  ]
+  ++ extraMakeFlags;
 
-    patches = [ ] ++ extraPatches;
+  patches = [ ] ++ extraPatches;
 
-    dontConfigure = true;
+  dontConfigure = true;
 
-    buildPhase = ''
-      runHook preBuild
+  buildPhase = ''
+    runHook preBuild
 
-      make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES bl31
+    make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES bl31
 
-      runHook postBuild
-    '';
+    runHook postBuild
+  '';
 
-    installPhase = ''
-      runHook preInstall
+  installPhase = ''
+    runHook preInstall
 
-      mkdir $out
-      cp -r ./build/. $out/
+    mkdir $out
+    cp -r ./build/. $out/
 
-      runHook postInstall
-    '';
+    runHook postInstall
+  '';
 
-    dontFixup = true;
+  dontFixup = true;
 
-    passthru = {
-      inherit args;
-      elf = "${finalAttrs.finalPackage.out}/${plat}/release/bl31/bl31.elf";
-    };
-  })
-)
+  passthru = {
+    elf = "${finalAttrs.finalPackage.out}/${plat}/release/bl31/bl31.elf";
+  };
+})

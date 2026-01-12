@@ -112,6 +112,13 @@
         };
       };
 
+      templates = {
+        default = {
+          path = ./templates/default;
+          description = "Default template for reusing or configuring a firmware.";
+        };
+      };
+
       # for `nix fmt`
       formatter.${system} = treefmtEval.config.build.wrapper;
 

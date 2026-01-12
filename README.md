@@ -4,15 +4,15 @@ This repo provides a Nix package for the Xilinx Unfied Toolchain (Vivado, Vitis,
 
 ## Getting Started
 
-- Download Xilinx Unified Offline installer (tar): [Xilinx Unfied 2024.2](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2024-2.html)
+- Download Xilinx Unified Offline installer (tar): [Xilinx Unfied 2025.1](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2025-1.html)
 
-- Add archive to the Nix store: `nix store add-file FPGAs_AdaptiveSoCs_Unified_2024.2_1113_1001.tar`
+- Add archive to the Nix store: `nix store add-file FPGAs_AdaptiveSoCs_Unified_SDI_2025.1_0530_0145.tar`
 
 - `git clone https://github.com/DLR-FT/xilinx-nix-utils.git && cd xilinx-nix-utils`
 
 - Enter DevShell: `nix develop`
 
-- Build example Firmware Boot-Image (Kria KR260): `nix build .#fw`
+- Build example Firmware Boot-Image (Kria KR260): `nix build .#kria-kr260`
 
 - Install Udev rules for Xilinx FTDI JTAG/Serial Probe:
 
@@ -36,14 +36,14 @@ ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", TAG+="uaccess"
 
 ```
 nix build .#boot
-./result/boot-jtag.tcl
+./result/kria-kr260-boot-jtag.tcl
 ```
 
 - Flash QSPI:
 
 ```
 nix build .#flash
-./result/flash-qspi.sh
+./result/kria-kr260-flash-qspi.sh
 ```
 
 (For the Kria Starter Kit make sure Boot Image A is selected and marked as bootable in the [Recovery Firmware](https://xilinx.github.io/kria-apps-docs/bootfw/build/html/docs/bootfw_image_recovery.html))
@@ -56,11 +56,13 @@ This repo provides multiple Nix overlays for easy and flexible use:
 
 - `overlays.xilinx-lab`: Contains Nix packages for the Xilinx-Lab tool. This tool can only be used for flashing, debugging, etc, but it is much smaller than the full Xilinx-Unified IDE. Can be used standalone
 
-- `overlays.zynq-srcs`: Contains the Xilinx source repos for the Zynq Firmware components. For easy versioning and overrideability in a central place
+- `overlays.zynq-srcs`: Contains the Xilinx source repos for the Zynq Firmware components. For easy versioning and overrideability in a central place.
 
-- `overlays.zynq-pkgs`: Contains Nix packages for the Zynq Firmware components (PMUFW, FSBL, TF-A, U-Boot, etc) and utilities for building and deploying boot images. Depends on `zynq-srcs` and `default`
+- `overlays.zynq-pkgs`: Contains Nix packages for the Zynq Firmware components (PMUFW, FSBL, TF-A, U-Boot, etc) and utilities for building and deploying boot images.
 
-- `overlays.zynq-boards`: Contains complete example boards. Depends on `overlays.zynq-pkgs`
+- `overlays.zynq-modules`: Contains Nix Modules for configuring and building Zynq firmware.
+
+- `overlays.zynq-boards`: Contains complete, reusable example boards.
 
 ## DevShells
 
@@ -72,148 +74,4 @@ This flake provides three dev-shells:
 
 ## Example Flake
 
-```
-{
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    xlnx-utils.url = "github:dlr-ft/xilinx-nix-utils?ref=2025.1";
-  };
-
-  outputs =
-    {
-      self,
-      nixpkgs,
-      xlnx-utils,
-    }:
-    let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-
-        overlays = [
-          # For ARMv7A Cortex-A9 support; otherwise FSBL build will fail
-          (final: prev: {
-            pkgsCross = prev.pkgsCross // {
-              armhf-embedded = import nixpkgs {
-                localSystem = system;
-                crossSystem = {
-                  config = "arm-none-eabihf";
-                  gcc.arch = "armv7-a+fp";
-                  gcc.tune = "cortex-a9";
-                };
-
-                overlays = [
-                  xlnx-utils.overlays.zynq-srcs
-                  xlnx-utils.overlays.zynq-pkgs
-                ];
-              };
-            };
-          })
-
-          # Lets add the overlays
-          xlnx-utils.overlays.xilinx-unified
-          xlnx-utils.overlays.xilinx-lab
-          xlnx-utils.overlays.zynq-srcs
-          xlnx-utils.overlays.zynq-pkgs
-          xlnx-utils.overlays.zynq-boards
-
-          # Default versions can be changed like this
-          # (final: prev: {
-          #   xilinx-lab = prev.xilinx-lab-versions."2025.1".xilinx-lab;
-          #   xilinx-unified = prev.xilinx-unified-versions."2025.1".xilinx-unified;
-          #   zynq-srcs = prev.zynq-srcs-versions."2025.1";
-          # })
-
-          # Zynq sources are also overrideable; Lets override the U-Boot source
-          # (final: prev: {
-          #   zynq-srcs = prev.zynq-srcs // {
-          #     uboot-src = prev.fetchFromGitHub {
-          #       owner = "Xilinx";
-          #       repo = "u-boot-xlnx";
-          #       rev = "xilinx-v2025.1";
-          #       hash = "sha256-RTcd7MR37E4yVGWP3RMruyKBI4tz8ex7mY1f5F2xd00=";
-          #     };
-          #   };
-          # })
-        ];
-      };
-    in
-    {
-      packages.${system} =
-        let
-          # Boards are overrideable: Lets override the U-Boot config:
-          board = pkgs.zynq-boards.kria-kr260.overrideAttrs (final: prev {
-            # Firmware components are overrideable as well:
-            # (The derivations they produce are of course also overrideable with overrideAttrs)
-            uboot = prev.uboot.override (prev: { extraConfig = prev.extraConfig + "CONFIG_FOO=y"; });
-          });
-        in
-        {
-          # A Board is just an attribute set of the firmware components and commands
-          hwplat = board.hwplat; # This is the Zynq hardware platform (bitsteam, xsa)
-          sdt = board.sdt; # This is the xilinx system-device-tree
-          pmufw = board.pmufw; # This is the Microblaze PMU firmware (ZynqMP Only)
-          fsbl = board.fsbl; # This is the First-Stage bootloader (BL2)
-          tfa = board.tfa; # This is the ARM Trusted-Firmware-A (BL31)
-          linux-dt = board.linux-dt; # This is the Linux device-tree for the Cortex-A; used in U-Boot
-          uboot = board.uboot; # U-Boot (BL33)
-          fw = board.boot-image; # This is the fully assembled boot image.
-          boot = board.boot-jtag; # Script for booting the firmware components via JTAG
-          flash = board.flash-qspi; # Script for downloading the boot image into QSPI flash.
-        };
-
-      devShells.${system}.default = pkgs.mkShell {
-        packages = [
-          pkgs.xilinx-unified
-        ];
-      };
-    };
-}
-```
-
-## Example Board
-
-```
-{
-  zynq-pkgs,
-}:
-zynq-pkgs.zynqmp.board {
-  name = "my-zynq-board";
-
-  # Mandaory: Supply the exported (write_project_tcl) Vivado project
-  hwplat = {
-    src = ./vivado-srcs;
-    # Optionally override the vivado source tcl file (default is vivado.tcl):
-    # sourceTcl = ./vivado-srcs/vivado.tcl;
-  };
-
-  # Optional: Override Firmware components args
-  linux-dt = {
-    # Lets add an additional board device tree file
-    extraDtsi = ./dts/board.dtsi;
-  };
-
-  uboot = {
-    # Lets add some U-Boot configs
-    extraConfig = ''
-      CONFIG_LOG=y
-      CONFIG_CMD_LOG=y
-      CONFIG_LOG_DEFAULT_LEVEL=4
-      CONFIG_LOG_MAX_LEVEL=7
-      CONFIG_LOG_CONSOLE=y
-    '';
-  };
-
-  boot-jtag = {
-    forceBootModeJtag = true;
-  };
-
-  flash-qspi = {
-    # Mandatory: Provide the QSPI flash type and density (see program_flash -help)
-    flashType = "qspi-x4-single";
-    flashDensity = 64;
-  };
-}
-
-```
+See `./templates/` for full example.

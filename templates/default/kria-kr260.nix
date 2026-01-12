@@ -1,0 +1,27 @@
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  name = "my-custom-kria-kr260-fw";
+
+  uboot.extraConfig = ''
+    CONFIG_ENV_IS_NOWHERE=n
+    CONFIG_ENV_IS_IN_FAT=n
+    CONFIG_ENV_IS_IN_NAND=n
+    CONFIG_ENV_SIZE=0x20000
+    CONFIG_ENV_SECT_SIZE=0x20000
+    CONFIG_ENV_OFFSET=0x2200000
+    CONFIG_ENV_OFFSET_REDUND=0x2220000
+
+    CONFIG_USB_ONBOARD_HUB=y
+
+    CONFIG_LOG=y
+    CONFIG_CMD_LOG=y
+    CONFIG_LOG_DEFAULT_LEVEL=4
+    CONFIG_LOG_MAX_LEVEL=7
+    CONFIG_LOG_CONSOLE=y
+  '';
+}

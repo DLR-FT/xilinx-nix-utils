@@ -6,7 +6,6 @@
 
     # TODO: remove
     nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
@@ -19,7 +18,6 @@
       self,
       nixpkgs,
       nixpkgs-2505,
-      nixpkgs-unstable,
       devshell,
       treefmt,
     }:
@@ -31,33 +29,20 @@
         config.allowUnfree = true;
 
         overlays = [
-
-          # TODO: remove
           # https://github.com/NixOS/nixpkgs/pull/459393
           (
             final: prev:
             let
-              pkgs = import nixpkgs-2505 { inherit system; };
+              pkgs = import nixpkgs-2505 {
+                inherit system;
+              };
             in
             {
               ratarmount = pkgs.ratarmount;
-              cmake-compat35 = pkgs.cmake;
             }
           )
 
-          # TODO: remove
-          # https://github.com/NixOS/nixpkgs/pull/390887
-          (
-            final: prev:
-            let
-              pkgs = import nixpkgs-unstable { inherit system; };
-            in
-            {
-              # ncurses5 = pkgs.ncurses5;
-              ncurses6 = pkgs.ncurses6;
-            }
-          )
-
+          # Otherwise FSBL does not compile for Zynq7 Cortex-A9
           (final: prev: {
             pkgsCross = prev.pkgsCross // {
               armhf-embedded = import nixpkgs {
@@ -68,10 +53,7 @@
                   gcc.tune = "cortex-a9";
                 };
 
-                overlays = [
-                  self.overlays.zynq-srcs
-                  self.overlays.zynq-utils
-                ];
+                overlays = prev.overlays;
               };
             };
           })
@@ -79,6 +61,7 @@
           self.overlays.xilinx-lab
           self.overlays.xilinx-unified
           self.overlays.zynq-srcs
+          self.overlays.zynq-patches
           self.overlays.zynq-utils
           self.overlays.zynq-boards
 
@@ -150,6 +133,7 @@
       overlays.xilinx-unified = import ./xilinx-unified.nix;
       overlays.zynq-boards = import ./zynq-boards.nix;
       overlays.zynq-srcs = import ./zynq-srcs.nix;
+      overlays.zynq-patches = import ./zynq-patches.nix;
       overlays.zynq-utils = import ./zynq-utils.nix;
     };
 }

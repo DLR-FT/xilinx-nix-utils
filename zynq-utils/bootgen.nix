@@ -10,8 +10,6 @@ stdenv.mkDerivation rec {
 
   src = zynq-srcs.bootgen-src;
 
-  patches = [ ../patches/bootgen-pr42.patch ];
-
   buildInputs = [
     openssl
   ];

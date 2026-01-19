@@ -1,6 +1,6 @@
 {
   buildPackages,
-  cmake-compat35,
+  cmake,
   lib,
   libclang,
   ninja,
@@ -42,7 +42,7 @@ lib.makeOverridable (
     inherit src;
 
     nativeBuildInputs = [
-      cmake-compat35
+      cmake
       libclang
       ninja
       (buildPackages.python3.withPackages (pyPkgs: [
@@ -51,11 +51,13 @@ lib.makeOverridable (
       ]))
     ];
 
-    patches = [ ] ++ extraPatches;
-
     env = {
       LOPPER_DTC_FLAGS = "-@";
     };
+
+    hardeningDisable = [ "all" ];
+
+    patches = [ ] ++ extraPatches;
 
     configurePhase = ''
       runHook preConfigure

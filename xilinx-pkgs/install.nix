@@ -40,7 +40,7 @@ let
         ratarmount
         (util-linux.override {
           capabilitiesSupport = false;
-          # cryptsetupSupport = false;
+          cryptsetupSupport = false;
           ncursesSupport = false;
           nlsSupport = false;
           pamSupport = false;

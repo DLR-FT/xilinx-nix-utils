@@ -39,9 +39,12 @@ let
           echo ${lib.escapeShellArg (builtins.toJSON config)} | jq >> $out
         '';
       fw = with eval.config; linkFarmFromDrvs name (fwPackages ++ [ configPkg ]);
+      passthruPkgs = lib.mapAttrs (name: subAttrs: subAttrs.package) (
+        lib.filterAttrs (name: subAttrs: subAttrs ? package) eval.config
+      );
     in
     fw.overrideAttrs {
-      passthru = {
+      passthru = passthruPkgs // {
         inherit eval;
         extendFirmware =
           {

@@ -4,9 +4,9 @@
   stdenv,
   zynq-srcs,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   name = "bootgen";
-  version = src.rev;
+  version = if (finalAttrs.src ? rev) then finalAttrs.src.rev else "unstable";
 
   src = zynq-srcs.bootgen-src;
 
@@ -34,4 +34,4 @@ stdenv.mkDerivation rec {
     license = lib.licenses.asl20;
     mainProgram = "bootgen";
   };
-}
+})

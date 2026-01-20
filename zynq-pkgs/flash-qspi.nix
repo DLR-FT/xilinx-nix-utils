@@ -10,11 +10,11 @@
   flashPart,
   initFsbl,
   offset ? null,
-}:
+}@args:
 
 let
-  _name = if name != null then name else "zynq-flash-qspi";
-  _version = if version != null then version else "";
+  name = if args.name != null then args.name else "zynq-flash-qspi";
+  version = if args.version != null then args.version else "unstable";
 
   file_args =
     files:
@@ -22,10 +22,10 @@ let
       lib.lists.zipListsWith (a: b: "${a} ${b}") [ "-file" "-sec_file" ] (lib.lists.toList files)
     );
 in
-writeScript "${_name}.sh" ''
+writeScript "${name}.sh" ''
   #!/usr/bin/env sh
 
-  # defaults for ${_name} ${_version}
+  # defaults for ${name} ${version}
   target="*" # the jtag probe, default is the first one
   device="*" # the device in the jtag chain, default is the first one
   flash_part="${flashPart}"

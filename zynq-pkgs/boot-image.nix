@@ -10,11 +10,11 @@
   bootBif,
   dualQspiMode ? null,
   extraArgs ? [ ],
-}:
+}@args:
 
 stdenv.mkDerivation (finalAttrs: {
-  name = if name != null then name else "boot-image";
-  version = if version != null then version else "";
+  name = if args.name != null then args.name else "boot-image";
+  version = if args.version != null then args.version else "unstable";
 
   nativeBuildInputs = [ zynq-pkgs.bootgen ];
 

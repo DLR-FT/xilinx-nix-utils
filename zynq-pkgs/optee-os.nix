@@ -12,21 +12,17 @@
   plat,
   extraMakeFlags ? [ ],
   extraPatches ? [ ],
-}:
+}@args:
 
-let
-  _name = name;
-  _version = version;
-in
 stdenv.mkDerivation (finalAttrs: rec {
-  name = if _name != null then _name else "zynq-optee-os";
+  name = if args.name != null then args.name else "zynq-optee-os";
   version =
-    if _version != null then
-      _version
+    if args.version != null then
+      args.version
     else if (finalAttrs.src ? rev) then
       finalAttrs.src.rev
     else
-      "";
+      "unstable";
 
   inherit src;
 

@@ -13,16 +13,16 @@
   uboot,
   dtbLoadAddr ? "0x00100000",
   forceBootModeJtag ? false,
-}:
+}@args:
 
 let
-  _name = if name != null then name else "zynq-boot-jtag";
-  _version = if version != null then version else "";
+  name = if args.name != null then args.name else "zynq-boot-jtag";
+  version = if args.version != null then args.version else "unstable";
 in
-writeScript "${_name}.tcl" ''
+writeScript "${name}.tcl" ''
   #!${xilinx-unified-or-lab}/bin/xsdb
 
-  # Boot JTAG: ${_name} ${_version}
+  # Boot JTAG: ${name} ${version}
 
   proc boot_jtag { } {
     ############################

@@ -25,22 +25,20 @@
   extraConfig ? "",
   extraMakeFlags ? [ ],
   extraPatches ? [ ],
-}:
+}@args:
 
 let
-  _name = name;
-  _version = version;
   extraConfigPath = writeText ".extra-config" extraConfig;
 in
 stdenv.mkDerivation (finalAttrs: rec {
-  name = if _name != null then _name else "zynq-uboot";
+  name = if args.name != null then args.name else "zynq-uboot";
   version =
-    if _version != null then
-      _version
+    if args.version != null then
+      args.version
     else if (finalAttrs.src ? rev) then
       finalAttrs.src.rev
     else
-      "";
+      "unstable";
 
   inherit src;
 

@@ -14,13 +14,13 @@
   extraLops ? [ ],
   extraDtsi ? [ ],
   extraPatches ? [ ],
-}:
+}@args:
 
 stdenv.mkDerivation (finalAttrs: {
-  name = if name != null then name else "zynq-linux-dt";
+  name = if args.name != null then args.name else "zynq-linux-dt";
   version =
-    if version != null then
-      version
+    if args.version != null then
+      args.version
     else if (sdt.src ? rev) then
       sdt.src.rev
     else

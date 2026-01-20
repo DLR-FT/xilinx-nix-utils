@@ -15,7 +15,7 @@
   plat,
   proc,
   extraPatches ? [ ],
-}:
+}@args:
 
 let
   template =
@@ -33,14 +33,14 @@ let
     .${proc};
 in
 stdenv.mkDerivation (finalAttrs: {
-  name = if name != null then name else "zynq-pmufw";
+  name = if args.name != null then args.name else "zynq-pmufw";
   version =
-    if version != null then
-      version
+    if args.version != null then
+      args.version
     else if (finalAttrs.src ? rev) then
       finalAttrs.src.rev
     else
-      "";
+      "unstable";
 
   inherit src;
 

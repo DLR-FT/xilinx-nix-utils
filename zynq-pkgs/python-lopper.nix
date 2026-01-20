@@ -14,7 +14,7 @@
 
 buildPythonPackage rec {
   pname = "python-lopper";
-  version = src.rev;
+  version = if (src ? rev) then src.rev else "unstable";
 
   src = zynq-srcs.lopper-src;
 

@@ -15,10 +15,10 @@ let
   name = if args.name != null then args.name else "zynq-boot-jtag";
   version = if args.version != null then args.version else "unstable";
 in
-writeScript "${pname}-${version}.tcl" ''
+writeScript "${name}.tcl" ''
   #!${xilinx-unified-or-lab}/bin/xsdb
 
-  # Boot JTAG: ${pname} ${version}
+  # Boot JTAG: ${name} ${version}
 
   connect
   target

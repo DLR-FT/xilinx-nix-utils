@@ -24,9 +24,15 @@
     };
 
     sourceTcl = lib.mkOption {
-      type = with lib.types; path;
-      description = "Source tcl file path.";
-      default = lib.path.append config.hwplat.src "./vivado.tcl";
+      type = with lib.types; nullOr singleLineStr;
+      description = "Source tcl file path. Set to ${null} to skip project sourcing from tcl.";
+      default = "./vivado.tcl";
+    };
+
+    originDir = lib.mkOption {
+      type = with lib.types; nullOr singleLineStr;
+      description = "Origin directory, that contains the project source files.";
+      default = "./.";
     };
 
     extraPatches = lib.mkOption {
@@ -51,6 +57,7 @@
           version = config.hwplat.version;
           src = config.hwplat.src;
           sourceTcl = config.hwplat.sourceTcl;
+          originDir = config.hwplat.originDir;
           extraPatches = config.hwplat.extraPatches;
         }
       );

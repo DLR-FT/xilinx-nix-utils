@@ -7,22 +7,12 @@
   version ? null,
   src,
 
-  sourceTcl ? src + "/vivado.tcl",
+  sourceTcl ? "./vivado.tcl",
+  originDir ? "./.",
+
   extraPatches ? [ ],
 }@args:
-let
-  buildHwplatTcl = ''
-    open_project ./${name}/${name}.xpr
 
-    launch_runs impl_1 -to_step write_bitstream -job $env(NIX_BUILD_CORES)
-    wait_on_run impl_1
-
-    open_run impl_1
-
-    write_bitstream ./${name}/${name}.bit
-    write_hw_platform ./${name}/${name}.xsa
-  '';
-in
 stdenv.mkDerivation (finalAttrs: {
   name = if args.name != null then args.name else "zynq-hwplat";
   version =
@@ -42,8 +32,21 @@ stdenv.mkDerivation (finalAttrs: {
   configurePhase = ''
     runHook preConfigure
 
-    vivado -nolog -nojournal -mode batch -source ${sourceTcl} -tclargs --origin_dir ./. --project_name ${name}
-    echo ${lib.strings.escapeShellArg buildHwplatTcl} > ./${name}/build-hw.tcl
+    ${lib.optionalString (sourceTcl != null) ''
+      vivado -nolog -nojournal -mode batch \
+        -source ${sourceTcl} \
+        -tclargs \
+        ${lib.optionalString (originDir != null) "--origin_dir ${originDir}"} \
+        --project_name ${name}
+    ''}
+
+    prj_file=$(find . -type f -name "*.xpr")
+    if [ ! -e "$prj_file" ]; then
+      echo "Project *.xpr not found!"
+      exit 1
+    fi
+
+    prj_dir=$(dirname $prj_file)
 
     runHook postConfigure
   '';
@@ -51,7 +54,13 @@ stdenv.mkDerivation (finalAttrs: {
   buildPhase = ''
     runHook preBuild
 
-    vivado -nolog -nojournal -mode batch -source ./${name}/build-hw.tcl
+    vivado -nolog -nojournal -mode batch \
+      -source ${../scripts/build-hwplat.tcl} \
+      -tclargs \
+      -prj_file $prj_file \
+      -name ${name} \
+      -out $prj_dir \
+      -jobs $NIX_BUILD_CORES
 
     runHook postBuild
   '';
@@ -59,7 +68,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    cp -r -- ./${name} $out
+    cp -r -- $prj_dir $out
 
     runHook postInstall
   '';
@@ -69,6 +78,5 @@ stdenv.mkDerivation (finalAttrs: {
   passthru = {
     bit = "${finalAttrs.finalPackage.out}/${name}.bit";
     xsa = "${finalAttrs.finalPackage.out}/${name}.xsa";
-    xpr = "${finalAttrs.finalPackage.out}/${name}.xpr";
   };
 })

@@ -80,7 +80,6 @@
         bootgen = pkgs.zynq-pkgs.bootgen;
 
         kria-kr260 = pkgs.zynq-boards.kria-kr260;
-        trenz-small = pkgs.zynq-boards.te0706-0821-3be21;
       };
 
       devShells.${system} = {

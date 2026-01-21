@@ -26,4 +26,4 @@ wait_on_run impl_1
 
 open_run impl_1
 write_bitstream -force [file join $out_dir $name.bit]
-write_hw_platform -force [file join $out_dir $name.xsa]
+write_hw_platform -fixed -force [file join $out_dir $name.xsa]

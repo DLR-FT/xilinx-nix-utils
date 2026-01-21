@@ -22,14 +22,11 @@
   bl31 ? null,
   tee ? null,
   deviceTree ? null,
-  extraConfig ? "",
+  extraConfigs ? [ ],
   extraMakeFlags ? [ ],
   extraPatches ? [ ],
 }@args:
 
-let
-  extraConfigPath = writeText ".extra-config" extraConfig;
-in
 stdenv.mkDerivation (finalAttrs: rec {
   name = if args.name != null then args.name else "zynq-uboot";
   version =
@@ -98,7 +95,7 @@ stdenv.mkDerivation (finalAttrs: rec {
     runHook preConfigure
 
     make ${defconfig}
-    cat ${extraConfigPath} >> $KBUILD_OUTPUT/.config
+    echo ${lib.escapeShellArg (lib.concatStringsSep "\n" extraConfigs)} >> $KBUILD_OUTPUT/.config
 
     runHook postConfigure
   '';

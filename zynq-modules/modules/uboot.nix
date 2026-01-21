@@ -47,10 +47,10 @@
       default = config.linux-dt.package.dtb;
     };
 
-    extraConfig = lib.mkOption {
-      type = with lib.types; str;
+    extraConfigs = lib.mkOption {
+      type = with lib.types; listOf singleLineStr;
       description = "Extra config options.";
-      default = "";
+      default = [ ];
     };
 
     extraMakeFlags = lib.mkOption {
@@ -93,7 +93,7 @@
           bl31 = config.tfa.package.elf;
           tee = if config.optee-os.enable then config.optee-os.package.elf else null;
           deviceTree = config.uboot.deviceTree;
-          extraConfig = config.uboot.extraConfig;
+          extraConfigs = config.uboot.extraConfigs;
           extraMakeFlags = config.uboot.extraMakeFlags;
           extraPatches = config.uboot.extraPatches;
         }

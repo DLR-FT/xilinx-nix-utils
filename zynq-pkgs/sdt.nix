@@ -24,7 +24,7 @@ let
       ${
         lib.strings.optionalString (
           extraDtsi != null
-        ) "-include_dts ../extra-dtsi/${builtins.baseNameOf extraDtsi}"
+        ) "-user_dts ../extra-dtsi/${builtins.baseNameOf extraDtsi}"
       } \
       -dir ./build
     sdtgen generate_sdt

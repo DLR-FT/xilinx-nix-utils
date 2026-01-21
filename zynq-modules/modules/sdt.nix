@@ -20,19 +20,19 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "SDT source repo. (github: xilinx/system-device-tree-xlnx)";
+      description = "SDT source repo. (github:xilinx/system-device-tree-xlnx)";
       default = pkgs.zynq-srcs.sdt-src;
     };
 
     boardDts = lib.mkOption {
       type = with lib.types; nullOr singleLineStr;
-      description = "";
+      description = "Board specific .dtsi file, from the SDT repo (see github:Xilinx/system-device-tree-xlnx).";
       default = null;
     };
 
     extraDtsi = lib.mkOption {
       type = with lib.types; nullOr singleLineStr;
-      description = "";
+      description = "User defined custom .dtsi file (see github:Xilinx/system-device-tree-xlnx).";
       default = null;
     };
 

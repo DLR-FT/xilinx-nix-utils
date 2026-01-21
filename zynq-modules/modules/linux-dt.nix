@@ -20,7 +20,7 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "Lopper source repo (github: devicetree-org/lopper).";
+      description = "Lopper source repo (github:devicetree-org/lopper).";
       default = pkgs.zynq-srcs.lopper-src;
     };
 
@@ -32,13 +32,13 @@
 
     extraLops = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra lops to apply. See github.com/devicetree-org/lopper";
+      description = "Extra lops to apply (see github:devicetree-org/lopper).";
       default = [ ];
     };
 
     extraDtsi = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra dtsi to include in the Linux dtb.";
+      description = "Extra dtsi to include in the linux dtb.";
       default = [ ];
     };
 

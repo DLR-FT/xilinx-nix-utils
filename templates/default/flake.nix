@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
 
     xlnx-utils.url = "github:dlr-ft/xilinx-nix-utils/zynq-modules";
     xlnx-utils.inputs.nixpkgs.follows = "nixpkgs";
@@ -13,6 +14,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-2505,
       xlnx-utils,
       treefmt,
     }:
@@ -24,6 +26,19 @@
         config.allowUnfree = true;
 
         overlays = [
+          # https://github.com/NixOS/nixpkgs/pull/459393
+          (
+            final: prev:
+            let
+              pkgs = import nixpkgs-2505 {
+                inherit system;
+              };
+            in
+            {
+              ratarmount = pkgs.ratarmount;
+            }
+          )
+
           # For ARMv7A Cortex-A9 support; otherwise FSBL build will fail
           (final: prev: {
             pkgsCross = prev.pkgsCross // {
@@ -47,10 +62,10 @@
           xlnx-utils.overlays.xilinx-unified
           xlnx-utils.overlays.xilinx-lab
           xlnx-utils.overlays.zynq-srcs
+          xlnx-utils.overlays.zynq-patches
           xlnx-utils.overlays.zynq-pkgs
           xlnx-utils.overlays.zynq-modules
           xlnx-utils.overlays.zynq-boards
-
         ];
       };
 
@@ -60,21 +75,19 @@
       packages.${system} = {
         # Use an existing firmware as a starting point
         kria-kr260 = pkgs.zynq-boards.kria-kr260.extendFirmware {
-          # Add additional modules to add or overwrite config options.
+          # And add additional modules to add, or overwrite config options.
           modules = [
-            ./kria-kr260.nix
-
-            ({ config, lib, ... }: { })
+            ./kria-kr260-customization.nix
           ];
         };
 
         # Or configure a new firmware
-        my-custom-board = pkgs.callPackage ./my-custum-board.nix;
+        custom-board = pkgs.callPackage ./custum-board.nix;
       };
 
       devShells.${system} = {
         default = pkgs.mkShell {
-          name = "xilinx-nix-utils";
+          name = "default";
           packages = [ ];
         };
 

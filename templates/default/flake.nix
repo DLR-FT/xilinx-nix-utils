@@ -91,12 +91,12 @@
           packages = [ ];
         };
 
-        xilinx-lab = pkgs.devshell.mkShell {
+        xilinx-lab = pkgs.mkShell {
           name = "xilinx-lab";
           packages = [ pkgs.xilinx-lab ];
         };
 
-        xilinx-unified = pkgs.devshell.mkShell {
+        xilinx-unified = pkgs.mkShell {
           name = "xilinx-unified";
           packages = [
             pkgs.xilinx-unified

@@ -33,12 +33,20 @@ let
   buildFw =
     eval:
     let
-      configPkg =
+      assertsDrv = with eval.config; lib.asserts.checkAssertWarn assertions warnings;
+
+      configDrv =
+        let
+          # filterEnabled = lib.attrsets.filterAttrsRecursive (n: v: (v ? enable) -> v.enable);
+          tryEvalConfig = lib.filterAttrsRecursive (n: v: (builtins.tryEval v).success);
+        in
         with eval;
         pkgs.runCommand "${config.name}-config.json" { nativeBuildInputs = [ pkgs.jq ]; } ''
-          echo ${lib.escapeShellArg (builtins.toJSON config)} | jq >> $out
+          echo ${lib.escapeShellArg (builtins.toJSON (tryEvalConfig config))} | jq >> $out
         '';
-      fw = with eval.config; linkFarmFromDrvs name (fwPackages ++ [ configPkg ]);
+
+      fw = with eval.config; assertsDrv (linkFarmFromDrvs name (fwPackages ++ [ configDrv ]));
+
       passthruPkgs = lib.mapAttrs (name: subAttrs: subAttrs.package) (
         lib.filterAttrs (name: subAttrs: subAttrs ? package) eval.config
       );
@@ -46,6 +54,7 @@ let
     fw.overrideAttrs {
       passthru = passthruPkgs // {
         inherit eval;
+
         extendFirmware =
           {
             modules ? [ ],

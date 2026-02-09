@@ -6,7 +6,7 @@
 }:
 {
   options.optee-os = {
-    enable = lib.mkEnableOption "Enable BL32 OPTEE-OS";
+    enable = lib.mkEnableOption "Enable BL32 OPTEE-OS build.";
 
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
@@ -26,10 +26,9 @@
       default = pkgs.zynq-srcs.optee-os-src;
     };
 
-    proc = lib.mkOption {
+    plat = lib.mkOption {
       type = with lib.types; singleLineStr;
-      description = "Zynq processor id (ps7_cortexa9_0, psu_cortexa53_0, psu_pmu_0, ...).";
-      default = { zynqmp = "psu_cortexa53_0"; }.${config.plat};
+      description = "OPTEE-OS build platform (zynq7k-zc702, zynqmp-zcu102, ...).";
     };
 
     extraMakeFlags = lib.mkOption {
@@ -47,17 +46,12 @@
     stdenv = lib.mkOption {
       type = with lib.types; package;
       description = "stdenv used to build the TF-A firmware.";
-      default =
-        {
-          "psu_cortexa53_0" = pkgs.pkgsCross.aarch64-multiplatform.stdenv;
-        }
-        .${config.optee-os.proc};
+      default = pkgs.pkgsCross.aarch64-multiplatform.stdenv;
     };
 
     package = lib.mkOption {
-      type = with lib.types; nullOr package;
+      type = with lib.types; package;
       description = "Package containing the OPTEE-OS firmware.";
-      default = null;
     };
   };
 
@@ -65,6 +59,21 @@
     fwPackages = [ config.optee-os.package ];
 
     optee-os = {
+      plat = lib.mkDefault (
+        {
+          zynq7 = "zynq7k-zc702";
+          zynqmp = "zynqmp-zcu102";
+        }
+        .${config.plat}
+      );
+
+      stdenv = lib.mkDefault (
+        {
+          zynqmp = pkgs.pkgsCross.aarch64-multiplatform.stdenv;
+        }
+        .${config.plat}
+      );
+
       package = lib.mkDefault (
         pkgs.zynq-pkgs.optee-os {
           name = config.optee-os.name;
@@ -72,17 +81,21 @@
           src = config.optee-os.src;
           stdenv = config.optee-os.stdenv;
 
-          plat =
-            {
-              zynq7 = "zynq7k-zc702";
-              zynqmp = "zynqmp-zcu102";
-            }
-            .${config.plat};
-
+          plat = config.optee-os.plat;
           extraMakeFlags = config.optee-os.extraMakeFlags;
           extraPatches = config.optee-os.extraPatches;
         }
       );
+    };
+
+    uboot.tee = lib.mkDefault config.optee-os.package.elf;
+    boot-image.partitions.optee-os = {
+      order = 500;
+      options = {
+        trustzone = true;
+        exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-1");
+      };
+      file = config.optee-os.package.elf;
     };
   };
 }

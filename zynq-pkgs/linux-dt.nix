@@ -18,13 +18,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   name = if args.name != null then args.name else "zynq-linux-dt";
-  version =
-    if args.version != null then
-      args.version
-    else if (sdt.src ? rev) then
-      sdt.src.rev
-    else
-      "";
+  version = if args.version != null then args.version else "";
 
   srcs = [
     src

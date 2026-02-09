@@ -15,14 +15,8 @@ final: prev: {
 
     boot-image = prev.callPackage ./zynq-pkgs/boot-image.nix;
 
+    boot-jtag = prev.callPackage ./zynq-pkgs/boot-jtag.nix;
+
     flash-qspi = prev.callPackage ./zynq-pkgs/flash-qspi.nix;
-
-    zynq7 = {
-      boot-jtag = prev.callPackage ./zynq-pkgs/zynq7/boot-jtag.nix;
-    };
-
-    zynqmp = {
-      boot-jtag = prev.callPackage ./zynq-pkgs/zynqmp/boot-jtag.nix;
-    };
   };
 }

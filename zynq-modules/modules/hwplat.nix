@@ -6,6 +6,8 @@
 }:
 {
   options.hwplat = {
+    enable = lib.mkEnableOption "Enable hardware platform build.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -20,7 +22,7 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "Exported (write_project_tcl) Vivado project directory path.";
+      description = "Hardware platform source directory.";
     };
 
     sourceTcl = lib.mkOption {
@@ -47,7 +49,7 @@
     };
   };
 
-  config = {
+  config = lib.mkIf config.hwplat.enable {
     fwPackages = [ config.hwplat.package ];
 
     hwplat = {
@@ -56,11 +58,22 @@
           name = config.hwplat.name;
           version = config.hwplat.version;
           src = config.hwplat.src;
+
           sourceTcl = config.hwplat.sourceTcl;
           originDir = config.hwplat.originDir;
           extraPatches = config.hwplat.extraPatches;
         }
       );
     };
+
+    sdt.hwDef = lib.mkDefault config.hwplat.package.xsa;
+    boot-image.partitions.pl = {
+      order = lib.mkDefault 300;
+      options = {
+        destination_device = lib.mkIf (config.plat == "zynqmp") "pl";
+      };
+      file = lib.mkDefault config.hwplat.package.bit;
+    };
+    boot-jtag.bit = lib.mkDefault config.hwplat.package.bit;
   };
 }

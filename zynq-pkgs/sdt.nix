@@ -10,7 +10,7 @@
   version ? null,
   src ? zynq-srcs.sdt-src,
 
-  hwplat,
+  xsa,
   boardDts ? null,
   extraDtsi ? null,
   extraPatches ? [ ],
@@ -19,7 +19,7 @@
 let
   sdtTcl = ''
     sdtgen set_dt_param \
-      -xsa ${hwplat.xsa} \
+      -xsa ${xsa} \
       ${lib.strings.optionalString (boardDts != null) "-board_dts ${boardDts}"} \
       ${
         lib.strings.optionalString (

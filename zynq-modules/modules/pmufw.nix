@@ -6,6 +6,8 @@
 }:
 {
   options.pmufw = {
+    enable = lib.mkEnableOption "Enable PMU firmware build.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -24,10 +26,14 @@
       default = pkgs.zynq-srcs.embeddedsw-src;
     };
 
-    proc = lib.mkOption {
+    systemDeviceTree = lib.mkOption {
+      type = with lib.types; path;
+      description = "System-Device-Tree sources.";
+    };
+
+    procId = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "Zynq processor id (ps7_cortexa9_0, psu_cortexa53_0, psu_pmu_0, ...).";
-      default = { zynqmp = "psu_pmu_0"; }.${config.plat};
     };
 
     extraPatches = lib.mkOption {
@@ -39,20 +45,27 @@
     stdenv = lib.mkOption {
       type = with lib.types; package;
       description = "stdenv used to build the pmufw.";
-      default = { "psu_pmu_0" = pkgs.pkgsCross.microblaze-embedded.stdenv; }.${config.pmufw.proc};
     };
 
     package = lib.mkOption {
-      type = with lib.types; nullOr package;
+      type = with lib.types; package;
       description = "Package containing the PMU firmware.";
-      default = null;
     };
   };
 
-  config = {
+  config = lib.mkIf config.pmufw.enable {
     fwPackages = [ config.pmufw.package ];
 
     pmufw = {
+      procId = lib.mkDefault ({ zynqmp = "psu_pmu_0"; }.${config.plat});
+
+      stdenv = lib.mkDefault (
+        if lib.hasInfix "pmu" config.pmufw.procId then
+          pkgs.pkgsCross.microblaze-embedded.stdenv
+        else
+          throw ""
+      );
+
       package = lib.mkDefault (
         pkgs.zynq-pkgs.pmufw {
           name = config.pmufw.name;
@@ -60,12 +73,21 @@
           src = config.pmufw.src;
           stdenv = config.pmufw.stdenv;
 
-          sdt = config.sdt.package;
+          sdt = config.pmufw.systemDeviceTree;
           plat = config.plat;
-          proc = config.pmufw.proc;
+          proc = config.pmufw.procId;
           extraPatches = config.pmufw.extraPatches;
         }
       );
     };
+
+    boot-image.partitions.pmufw = {
+      order = lib.mkDefault 200;
+      options = {
+        pmufw_image = true;
+      };
+      file = lib.mkDefault config.pmufw.package.elf;
+    };
+    boot-jtag.pmufw = lib.mkDefault config.pmufw.package.elf;
   };
 }

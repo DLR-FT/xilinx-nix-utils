@@ -6,6 +6,8 @@
 }:
 {
   options.sdt = {
+    enable = lib.mkEnableOption "Enable System-Device-Tree build.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -22,6 +24,11 @@
       type = with lib.types; path;
       description = "SDT source repo. (github:xilinx/system-device-tree-xlnx)";
       default = pkgs.zynq-srcs.sdt-src;
+    };
+
+    hwDef = lib.mkOption {
+      type = with lib.types; path;
+      description = "Hardware definition file (*.xsa).";
     };
 
     boardDts = lib.mkOption {
@@ -43,13 +50,12 @@
     };
 
     package = lib.mkOption {
-      type = with lib.types; nullOr package;
+      type = with lib.types; package;
       description = "Package containing the System-Device-Tree";
-      default = null;
     };
   };
 
-  config = {
+  config = lib.mkIf config.sdt.enable {
     fwPackages = [ config.sdt.package ];
 
     sdt = {
@@ -59,12 +65,16 @@
           version = config.sdt.version;
           src = config.sdt.src;
 
-          hwplat = config.hwplat.package;
+          xsa = config.sdt.hwDef;
           boardDts = config.sdt.boardDts;
           extraDtsi = config.sdt.extraDtsi;
           extraPatches = config.sdt.extraPatches;
         }
       );
     };
+
+    pmufw.systemDeviceTree = lib.mkDefault config.sdt.package;
+    fsbl.systemDeviceTree = lib.mkDefault config.sdt.package;
+    linux-dt.systemDeviceTree = lib.mkDefault config.sdt.package;
   };
 }

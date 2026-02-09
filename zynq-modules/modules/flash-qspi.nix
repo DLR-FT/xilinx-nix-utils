@@ -6,6 +6,8 @@
 }:
 {
   options.flash-qspi = {
+    enable = lib.mkEnableOption "Enable script for QSPI flashing.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -18,6 +20,22 @@
       default = null;
     };
 
+    bootImage = lib.mkOption {
+      type = with lib.types; either path (listOf path);
+      description = "Specifies the boot-image(s) to be flashed.";
+    };
+
+    initFsbl = lib.mkOption {
+      type = with lib.types; path;
+      description = ''
+        FSBL used for initializing the hardware before flashing
+        In most cases this can be the same as the fsbl in the boot image
+        Only for Zynq7 devices which cannnot be physically switched into JTAG boot mode
+        a modified FSBL is necessary.
+        (https://adaptivesupport.amd.com/s/article/70548?language=en_US)
+      '';
+    };
+
     flashPart = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = ''
@@ -27,21 +45,9 @@
       '';
     };
 
-    initFsbl = lib.mkOption {
-      type = with lib.types; package;
-      description = ''
-        FSBL used for initializing the hw before flashing
-        In most cases this can be the same as the fsbl in the boot image
-        Only for Zynq7 devices which cannnot be physically switched into JTAG boot mode
-        a modified FSBL is necessary.
-        (https://adaptivesupport.amd.com/s/article/70548?language=en_US)
-      '';
-      default = config.fsbl.package;
-    };
-
     offset = lib.mkOption {
       type = with lib.types; nullOr (either int singleLineStr);
-      description = "Offset at which the image is flashed";
+      description = "Offset at which the image is flashed.";
       default = null;
     };
 
@@ -51,7 +57,7 @@
     };
   };
 
-  config = {
+  config = lib.mkIf config.flash-qspi.enable {
     fwPackages = [ config.flash-qspi.package ];
 
     flash-qspi = {
@@ -60,9 +66,9 @@
           name = config.flash-qspi.name;
           version = config.flash-qspi.version;
 
-          bootImage = config.boot-image.package;
-          flashPart = config.flash-qspi.flashPart;
+          bootImage = config.flash-qspi.bootImage;
           initFsbl = config.flash-qspi.initFsbl;
+          flashPart = config.flash-qspi.flashPart;
           offset = config.flash-qspi.offset;
         }
       );

@@ -6,6 +6,8 @@
 }:
 {
   options.boot-jtag = {
+    enable = lib.mkEnableOption "Enable script for booting via JTAG.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -18,21 +20,51 @@
       default = null;
     };
 
-    dtbLoadAddr = lib.mkOption {
-      type = with lib.types; either int singleLineStr;
-      description = "Load address of the dtb.";
-      default =
-        {
-          zynq7 = "0x00100000";
-          zynqmp = "0x00100000";
-        }
-        .${config.plat};
-    };
-
     forceBootModeJtag = lib.mkOption {
       type = with lib.types; bool;
-      description = "Switch Zynq boot mode to JTAG by software before downloading firmware.";
+      description = "Switch ZynqMP boot mode to JTAG by software before downloading firmware.";
       default = false;
+    };
+
+    bit = lib.mkOption {
+      type = with lib.types; nullOr path;
+      description = "";
+      default = null;
+    };
+
+    pmufw = lib.mkOption {
+      type = with lib.types; nullOr path;
+      description = "";
+      default = null;
+    };
+
+    fsbl = lib.mkOption {
+      type = with lib.types; nullOr path;
+      description = "";
+      default = null;
+    };
+
+    tfa = lib.mkOption {
+      type = with lib.types; nullOr path;
+      description = "";
+      default = null;
+    };
+
+    dtb = lib.mkOption {
+      type = with lib.types; nullOr path;
+      description = "";
+      default = null;
+    };
+
+    dtbAddr = lib.mkOption {
+      type = with lib.types; nullOr (either int singleLineStr);
+      description = null;
+    };
+
+    uboot = lib.mkOption {
+      type = with lib.types; nullOr path;
+      description = "";
+      default = null;
     };
 
     package = lib.mkOption {
@@ -41,38 +73,25 @@
     };
   };
 
-  config = {
+  config = lib.mkIf config.boot-jtag.enable {
     fwPackages = [ config.boot-jtag.package ];
 
     boot-jtag = {
       package = lib.mkDefault (
-        {
-          zynq7 = pkgs.zynq-pkgs.zynq7.boot-jtag {
-            name = config.boot-jtag.name;
-            version = config.boot-jtag.version;
+        pkgs.zynq-pkgs.boot-jtag {
+          name = config.boot-jtag.name;
+          version = config.boot-jtag.version;
 
-            hwplat = config.hwplat.package;
-            fsbl = config.fsbl.package;
-            uboot = config.uboot.package;
-
-            dtbLoadAddr = config.boot-jtag.dtbLoadAddr;
-          };
-
-          zynqmp = pkgs.zynq-pkgs.zynqmp.boot-jtag {
-            name = config.boot-jtag.name;
-            version = config.boot-jtag.version;
-
-            hwplat = config.hwplat.package;
-            pmufw = config.pmufw.package;
-            fsbl = config.fsbl.package;
-            tfa = config.tfa.package;
-            uboot = config.uboot.package;
-
-            dtbLoadAddr = config.boot-jtag.dtbLoadAddr;
-            forceBootModeJtag = config.boot-jtag.forceBootModeJtag;
-          };
+          plat = config.plat;
+          forceBootModeJtag = config.boot-jtag.forceBootModeJtag;
+          bit = config.boot-jtag.bit;
+          pmufw = config.boot-jtag.pmufw;
+          fsbl = config.boot-jtag.fsbl;
+          tfa = config.boot-jtag.tfa;
+          dtb = config.boot-jtag.dtb;
+          dtbAddr = config.boot-jtag.dtbAddr;
+          uboot = config.boot-jtag.uboot;
         }
-        .${config.plat}
       );
     };
   };

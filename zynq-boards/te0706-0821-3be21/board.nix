@@ -7,6 +7,7 @@ zynq-modules.mkZynqFirmware {
       { lib, ... }:
       {
         name = lib.mkDefault "te0706-0821-3be21";
+        description = "Base Firmware for the Trenz TE0706 Base Board with the 3EG ZynqMP with 2GB RAM (TE0821-3BE21)";
 
         plat = "zynqmp";
 
@@ -34,8 +35,6 @@ zynq-modules.mkZynqFirmware {
         ];
 
         boot-image.dualQspiMode = "parallel";
-
-        boot-jtag.forceBootModeJtag = true;
 
         flash-qspi.flashPart = "mt25qu512-qspi-x8-parallel";
       }

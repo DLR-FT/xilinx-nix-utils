@@ -76,7 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir ./pmufw-bsp
     pushd ./pmufw-bsp
     python $ESW_REPO/scripts/pyesw/repo.py -st $ESW_REPO
-    python $ESW_REPO/scripts/pyesw/create_bsp.py -t ${template} -s ${sdt.dts} -p ${proc} ${lib.strings.optionalString (lib.strings.hasInfix "cortexa53" proc) "-m ${mode}"}
+    python $ESW_REPO/scripts/pyesw/create_bsp.py -t ${template} -s ${sdt}/system-top.dts -p ${proc} ${lib.strings.optionalString (lib.strings.hasInfix "cortexa53" proc) "-m ${mode}"}
     popd
 
     mkdir ./pmufw

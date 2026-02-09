@@ -6,6 +6,8 @@
 }:
 {
   options.fsbl = {
+    enable = lib.mkEnableOption "Enable BL2 FSBL build.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -24,10 +26,14 @@
       default = pkgs.zynq-srcs.embeddedsw-src;
     };
 
-    proc = lib.mkOption {
+    systemDeviceTree = lib.mkOption {
+      type = with lib.types; path;
+      description = "System-Device-Tree sources.";
+    };
+
+    procId = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "Zynq processor id (ps7_cortexa9_0, psu_cortexa53_0, psu_pmu_0, ...).";
-      default = { zynqmp = "psu_cortexa53_0"; }.${config.plat};
     };
 
     extraPatches = lib.mkOption {
@@ -39,20 +45,35 @@
     stdenv = lib.mkOption {
       type = with lib.types; package;
       description = "stdenv used to build the fsbl.";
-      default = { "psu_cortexa53_0" = pkgs.pkgsCross.aarch64-embedded.stdenv; }.${config.fsbl.proc};
     };
 
     package = lib.mkOption {
-      type = with lib.types; nullOr package;
+      type = with lib.types; package;
       description = "Package containing the FSBL firmware";
-      default = null;
     };
   };
 
-  config = {
+  config = lib.mkIf config.fsbl.enable {
     fwPackages = [ config.fsbl.package ];
 
     fsbl = {
+      procId = lib.mkDefault (
+        {
+          zynq7 = "ps7_cortexa9_0";
+          zynqmp = "psu_cortexa53_0";
+        }
+        .${config.plat}
+      );
+
+      stdenv = lib.mkDefault (
+        if lib.hasInfix "cortexa9" config.fsbl.procId then
+          pkgs.pkgsCross.armhf-embedded.stdenv
+        else if lib.hasInfix "cortexa53" config.fsbl.procId then
+          pkgs.pkgsCross.aarch64-embedded.stdenv
+        else
+          throw ""
+      );
+
       package = lib.mkDefault (
         pkgs.zynq-pkgs.fsbl {
           name = config.fsbl.name;
@@ -60,12 +81,23 @@
           src = config.fsbl.src;
           stdenv = config.fsbl.stdenv;
 
-          sdt = config.sdt.package;
+          sdt = config.fsbl.systemDeviceTree;
           plat = config.plat;
-          proc = config.fsbl.proc;
+          proc = config.fsbl.procId;
           extraPatches = config.fsbl.extraPatches;
         }
       );
     };
+
+    boot-image.partitions.bootloader = lib.mkDefault {
+      order = lib.mkDefault 100;
+      options = {
+        bootloader = lib.mkDefault true;
+        exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-3");
+      };
+      file = config.fsbl.package.elf;
+    };
+    boot-jtag.fsbl = lib.mkDefault config.fsbl.package.elf;
+    flash-qspi.initFsbl = lib.mkDefault config.fsbl.package.elf;
   };
 }

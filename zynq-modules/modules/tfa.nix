@@ -6,6 +6,8 @@
 }:
 {
   options.tfa = {
+    enable = lib.mkEnableOption "Enable BL31 Trusted Firmware-A build.";
+
     name = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = "name";
@@ -24,10 +26,9 @@
       default = pkgs.zynq-srcs.tfa-src;
     };
 
-    proc = lib.mkOption {
+    plat = lib.mkOption {
       type = with lib.types; singleLineStr;
-      description = "Zynq processor id (ps7_cortexa9_0, psu_cortexa53_0, psu_pmu_0, ...).";
-      default = { zynqmp = "psu_cortexa53_0"; }.${config.plat};
+      description = "TF-A build platform (zynqmp, ...).";
     };
 
     extraMakeFlags = lib.mkOption {
@@ -45,20 +46,32 @@
     stdenv = lib.mkOption {
       type = with lib.types; package;
       description = "stdenv used to build the TF-A firmware.";
-      default = { "psu_cortexa53_0" = pkgs.pkgsCross.aarch64-multiplatform.stdenv; }.${config.tfa.proc};
     };
 
     package = lib.mkOption {
-      type = with lib.types; nullOr package;
+      type = with lib.types; package;
       description = "Package containing the TF-A firmware.";
-      default = null;
     };
   };
 
-  config = {
+  config = lib.mkIf config.tfa.enable {
     fwPackages = [ config.tfa.package ];
 
     tfa = {
+      plat = lib.mkDefault (
+        {
+          zynqmp = "zynqmp";
+        }
+        .${config.plat}
+      );
+
+      stdenv = lib.mkDefault (
+        {
+          zynqmp = pkgs.pkgsCross.aarch64-multiplatform.stdenv;
+        }
+        .${config.plat}
+      );
+
       package = lib.mkDefault (
         pkgs.zynq-pkgs.tfa {
           name = config.tfa.name;
@@ -66,11 +79,22 @@
           src = config.tfa.src;
           stdenv = config.tfa.stdenv;
 
-          plat = config.plat;
+          plat = config.tfa.plat;
           extraMakeFlags = config.tfa.extraMakeFlags;
           extraPatches = config.tfa.extraPatches;
         }
       );
     };
+
+    uboot.bl31 = lib.mkDefault config.tfa.package.elf;
+    boot-image.partitions.tfa = {
+      order = 400;
+      options = {
+        trustzone = true;
+        exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-3");
+      };
+      file = config.tfa.package.elf;
+    };
+    boot-jtag.tfa = lib.mkDefault config.tfa.package.elf;
   };
 }

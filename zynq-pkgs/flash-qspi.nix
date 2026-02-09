@@ -7,8 +7,8 @@
   version ? null,
 
   bootImage,
-  flashPart,
   initFsbl,
+  flashPart,
   offset ? null,
 }@args:
 
@@ -64,6 +64,6 @@ writeScript "${name}.sh" ''
     -blank_check "$blank_check" \
     -program "$program" \
     -verify "$verify" \
-    -zynq_fsbl ${initFsbl.elf} \
-    ${file_args bootImage.bin}
+    -zynq_fsbl ${initFsbl} \
+    ${file_args bootImage}
 ''

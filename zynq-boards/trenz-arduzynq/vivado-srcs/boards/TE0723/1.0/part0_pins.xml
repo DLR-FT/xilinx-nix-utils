@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?> 
+<!-- ##################################################################### -->
+<!-- ##TE File Version:1.0-->
+<!-- ##TE Last Modification:2016.10.04-->
+<!-- ##################################################################### -->
+<!-- ## replace part_name with correct FPGA PART from board.xml-->
+<part_info part_name="xc7z010clg225-1">
+  <pins>
+    <!--insert ip pin settings and locations here, see ug895 or other board part files-->
+    <pin index="0" name="led"  loc="H11"/>
+    <pin index="1" name="J1_1"  loc="P9"/>
+    <pin index="2" name="J1_2"  loc="R10"/>
+    <pin index="3" name="J1_3"  loc="P10"/>
+    <pin index="4" name="J1_4"  loc="R11"/>
+    <pin index="5" name="J1_5"  loc="P11"/>
+    <pin index="6" name="J1_6"  loc="R12"/>
+    <pin index="7" name="J1_9"  loc="R13"/>
+    <pin index="8" name="J1_10"  loc="P13"/>
+
+    <pin index="9" name="J2_1"  loc="N11"/>
+    <pin index="10" name="J2_2"  loc="M11"/>
+    <pin index="11" name="J2_3"  loc="N12"/>
+    <pin index="12" name="J2_4"  loc="N7"/>
+    <pin index="13" name="J2_5"  loc="R7"/>
+    <pin index="14" name="J2_6"  loc="P8"/>
+    <pin index="15" name="J2_7"  loc="R8"/>
+    <pin index="16" name="J2_8"  loc="N8"/>
+
+    <pin index="17" name="J4_1"  loc="E13"/>
+    <pin index="18" name="J4_2"  loc="E12"/>
+    <pin index="19" name="J4_3"  loc="F12"/>
+    <pin index="20" name="J4_4"  loc="E11"/>
+    <pin index="21" name="J4_5"  loc="F14"/>
+    <pin index="22" name="J4_6"  loc="F13"/>
+      
+    <pin index="23" name="J5_5"  loc="G15"/>
+
+    <pin index="24" name="BDBUS0"  loc="H13" iostandard="LVCMOS33"/>
+    <pin index="25" name="BDBUS1"  loc="H14" iostandard="LVCMOS33"/>
+    <pin index="26" name="BDBUS2"  loc="J15" iostandard="LVCMOS33"/>
+    <pin index="27" name="BDBUS3"  loc="J14" iostandard="LVCMOS33"/>
+    <pin index="28" name="BDBUS4"  loc="K15" iostandard="LVCMOS33"/>
+    <pin index="29" name="BDBUS5"  loc="L15" iostandard="LVCMOS33"/>	  
+    <pin index="30" name="BDBUS6"  loc="L14" iostandard="LVCMOS33"/>
+    <pin index="31" name="BDBUS7"  loc="M15" iostandard="LVCMOS33"/>
+    <pin index="32" name="BCBUS0"  loc="M14" iostandard="LVCMOS33"/>
+    <pin index="33" name="BCBUS1"  loc="N14" iostandard="LVCMOS33"/>	
+    <pin index="34" name="BCBUS2"  loc="P15" iostandard="LVCMOS33"/>
+    <pin index="35" name="BCBUS3"  loc="N13" iostandard="LVCMOS33"/>		  
+    <pin index="36" name="BCBUS4"  loc="R15" iostandard="LVCMOS33"/>
+    <pin index="37" name="BCBUS7"  loc="P14" iostandard="LVCMOS33"/>	
+
+    <pin index="38" name="AMUX_S0"  loc="G12"/>
+    <pin index="39" name="AMUX_S1"  loc="G11"/>
+    <pin index="40" name="AMUX_S2"  loc="H12"/>
+
+    <pin index="41" name="USB_OC"  loc="F15"/>
+  </pins>
+</part_info>

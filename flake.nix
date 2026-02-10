@@ -79,6 +79,7 @@
 
         bootgen = pkgs.zynq-pkgs.bootgen;
 
+        arduzynq = pkgs.zynq-boards.trenz-arduzynq;
         kria-kr260 = pkgs.zynq-boards.kria-kr260;
         trenz-small = pkgs.zynq-boards.te0706-0821-3be21;
       };

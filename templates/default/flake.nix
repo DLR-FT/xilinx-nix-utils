@@ -1,9 +1,13 @@
 {
+  description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
 
-    xlnx-utils.url = "github:dlr-ft/xilinx-nix-utils/zynq-modules";
+    # Just as a workaround
+    nixpkgs2505.url = "github:nixos/nixpkgs/nixos-25.05";
+
+    xlnx-utils.url = "github:dlr-ft/xilinx-nix-utils";
     xlnx-utils.inputs.nixpkgs.follows = "nixpkgs";
 
     treefmt.url = "github:numtide/treefmt-nix";
@@ -14,7 +18,7 @@
     {
       self,
       nixpkgs,
-      nixpkgs-2505,
+      nixpkgs2505,
       xlnx-utils,
       treefmt,
     }:
@@ -30,16 +34,14 @@
           (
             final: prev:
             let
-              pkgs = import nixpkgs-2505 {
-                inherit system;
-              };
+              pkgs = import nixpkgs2505 { inherit system; };
             in
             {
               ratarmount = pkgs.ratarmount;
             }
           )
 
-          # For ARMv7A Cortex-A9 support; otherwise FSBL build will fail
+          # Otherwise FSBL does not compile for Zynq7 Cortex-A9
           (final: prev: {
             pkgsCross = prev.pkgsCross // {
               armhf-embedded = import nixpkgs {
@@ -50,22 +52,13 @@
                   gcc.tune = "cortex-a9";
                 };
 
-                overlays = [
-                  xlnx-utils.overlays.zynq-srcs
-                  xlnx-utils.overlays.zynq-pkgs
-                ];
+                overlays = prev.overlays;
               };
             };
           })
 
-          # import xlnx-utils overlays
-          xlnx-utils.overlays.xilinx-unified
-          xlnx-utils.overlays.xilinx-lab
-          xlnx-utils.overlays.zynq-srcs
-          xlnx-utils.overlays.zynq-patches
-          xlnx-utils.overlays.zynq-pkgs
-          xlnx-utils.overlays.zynq-modules
-          xlnx-utils.overlays.zynq-boards
+          # Add xilinx-nix-utils overlay
+          xlnx-utils.overlays.default
         ];
       };
 
@@ -73,35 +66,17 @@
     in
     {
       packages.${system} = {
-        # Use an existing firmware as a starting point
         kria-kr260 = pkgs.zynq-boards.kria-kr260.extendFirmware {
-          # And add additional modules to add, or overwrite config options.
-          modules = [
-            ./kria-kr260-customization.nix
-          ];
+          modules = [ ./kria-kr260-extra.nix ];
         };
 
-        # Or configure a new firmware
-        custom-board = pkgs.callPackage ./custum-board.nix;
+        custom-board = pkgs.zynq-modules.mkZynqFirmware {
+          modules = [ ./custom-board.nix ];
+        };
       };
 
-      devShells.${system} = {
-        default = pkgs.mkShell {
-          name = "default";
-          packages = [ ];
-        };
-
-        xilinx-lab = pkgs.mkShell {
-          name = "xilinx-lab";
-          packages = [ pkgs.xilinx-lab ];
-        };
-
-        xilinx-unified = pkgs.mkShell {
-          name = "xilinx-unified";
-          packages = [
-            pkgs.xilinx-unified
-          ];
-        };
+      devShells.${system}.default = pkgs.mkShell {
+        packages = [ pkgs.xilinx-unified ];
       };
 
       # for `nix fmt`

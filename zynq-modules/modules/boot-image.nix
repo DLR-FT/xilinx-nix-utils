@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable Boot-Image build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-boot-image";
     };
@@ -27,8 +27,9 @@
             order = lib.mkOption {
               type = with lib.types; int;
               description = ''
-                Order of the partition. Determines the position in the boot BIF file, in relation to other partitions.
-                Lower orders appear before higher orders.
+                Specifies the order of the partition in relation to other partitions in the final boot BIF.
+                Lower numbers appear before higher numbers.
+                The default partitions use order 100, 200, 300, etc ,to enable extra partitions to be inserted before, between and after.
               '';
               default = 1000;
             };
@@ -45,43 +46,55 @@
                     ])
                   )
                 );
-              description = "";
+              description = ''
+                Specifies the options of the partition. Suc as [bootloader, destination_cpu=\"a53-0\", ...].
+                Boolean are formatted into an empty string or a single keyword, depending on the value.
+                Options that are null are omitted.'';
               default = { };
             };
 
             file = lib.mkOption {
               type = with lib.types; path;
-              description = "";
+              description = "The file containing the data of the partition.";
             };
           };
         };
       in
       lib.mkOption {
         type = with lib.types; attrsOf (nullOr partition);
-        description = "Defines partitions in the boot image.";
+        description = ''
+          Defines partitions in the boot image.
+          Partitions that are null are omitted.'';
         default = { };
       };
 
     bootBif = lib.mkOption {
       type = with lib.types; str;
-      description = "Boot BIF used to generate the boot image.";
+      description = ''
+        Boot BIF used to generate the boot image.
+        By default it is generated from the specified partitions.'';
     };
 
     dualQspiMode = lib.mkOption {
-      type = with lib.types; nullOr singleLineStr;
-      description = "Generate boot-image for dual-qspi flash. Either \"parallel\" or \"stacked <size>\". See Xilinx bootgen.";
+      type =
+        with lib.types;
+        nullOr (enum [
+          "parallel"
+          "stacked"
+        ]);
+      description = "Specifies that the boot image targets a dual (either 'parallel' or 'stacked') QSPI flash.";
       default = null;
     };
 
     extraArgs = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra args for bootgen.";
+      description = "Extra args for bootgen tool invocation.";
       default = [ ];
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the Hardware-Platform and Bitstream.";
+      description = "Package containing the generated boot image.";
     };
   };
 
@@ -152,6 +165,6 @@
       );
     };
 
-    flash-qspi.bootImage = lib.mkDefault config.boot-image.package.bin;
+    flash-qspi.bootImages = lib.mkDefault config.boot-image.package.bin;
   };
 }

@@ -16,7 +16,7 @@
 
   options = {
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "Name of the firmware.";
     };
 

@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable PMU firmware build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-pmufw";
     };
@@ -22,7 +22,7 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "PMU source repo (github: xilinx/embdeddedsw).";
+      description = "Specifies the PMU source repo (e.g. github:xilinx/embdeddedsw).";
       default = pkgs.zynq-srcs.embeddedsw-src;
     };
 
@@ -32,24 +32,24 @@
     };
 
     procId = lib.mkOption {
-      type = with lib.types; singleLineStr;
-      description = "Zynq processor id (ps7_cortexa9_0, psu_cortexa53_0, psu_pmu_0, ...).";
+      type = with lib.types; enum [ "psu_pmu_0" ];
+      description = "Specifies the Zynq processor (psu_pmu_0, ...) for which the PMU firmware is build.";
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src repo.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 
     stdenv = lib.mkOption {
       type = with lib.types; package;
-      description = "stdenv used to build the pmufw.";
+      description = "Specifies the stdenv toolchain used to build the PMU firmware.";
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the PMU firmware.";
+      description = "Package containing the build PMU firmware.";
     };
   };
 
@@ -63,7 +63,7 @@
         if lib.hasInfix "pmu" config.pmufw.procId then
           pkgs.pkgsCross.microblaze-embedded.stdenv
         else
-          throw ""
+          throw "Unknown PMU processor id."
       );
 
       package = lib.mkDefault (

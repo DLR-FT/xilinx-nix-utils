@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable System-Device-Tree build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-sdt";
     };
@@ -22,30 +22,30 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "SDT source repo. (github:xilinx/system-device-tree-xlnx)";
+      description = "Specifies the SDT source repo. (e.g. github:xilinx/system-device-tree-xlnx)";
       default = pkgs.zynq-srcs.sdt-src;
     };
 
     hwDef = lib.mkOption {
       type = with lib.types; path;
-      description = "Hardware definition file (*.xsa).";
+      description = "Specifies the hardware definition file (*.xsa) from which the System-Device-Tree is generated.";
     };
 
     boardDts = lib.mkOption {
       type = with lib.types; nullOr singleLineStr;
-      description = "Board specific .dtsi file, from the SDT repo (see github:Xilinx/system-device-tree-xlnx).";
+      description = "Specifies extra, board specific device-tree include file, from the SDT repo (see github:Xilinx/system-device-tree-xlnx).";
       default = null;
     };
 
     extraDtsi = lib.mkOption {
       type = with lib.types; nullOr singleLineStr;
-      description = "User defined custom .dtsi file (see github:Xilinx/system-device-tree-xlnx).";
+      description = "Specifies extra, user defined device-tree include file (see github:Xilinx/system-device-tree-xlnx).";
       default = null;
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src repo.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 

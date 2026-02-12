@@ -1,4 +1,4 @@
-array set optional [list -url "localhost:3121" -target "*" -device "*" -flash_part "" -addr_range "use_file" -bin_offset '0' -erase '1' -blank_check '0' -program '1' -verify '1' -zynq_fsbl "" -file "" -sec_file "" {*}$argv]
+array set optional [list -url "" -target "*" -device "*" -flash_part "" -addr_range "use_file" -bin_offset '0' -erase '1' -blank_check '0' -program '1' -verify '1' -zynq_fsbl "" -file "" -sec_file "" {*}$argv]
 
 set url $optional(-url)
 set target $optional(-target)
@@ -17,7 +17,11 @@ set sec_file $optional(-sec_file)
 
 open_hw_manager
 
-connect_hw_server -url ${url}
+if {$url eq ""} {
+    connect_hw_server
+} else {
+    connect_hw_server -url ${url}
+}
 
 set hw_targets [get_hw_targets $target]
 if {[llength $hw_targets] > 1} {

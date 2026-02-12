@@ -1,19 +1,3 @@
-proc usage {} {
-    puts "Usage: "
-    puts "-url <url>                    Specifies the url of the hw_server. Start a new local hw_server if empty."
-    puts "-plat <zynq7, zynqmp>         Specifies the platform."
-    puts "-force_bootmode_jtag <bool>   Specifies wheather to force ZynqMP into JTAG boot-mode. (Only ZynqMP)"
-    puts "-bit <*.bit>                  Specifies the bitstream to download."
-    puts "-pmufw <*.elf>                Specifies the PMU firmware to run. (Only ZynqMP)"
-    puts "-fsbl <*.elf>                 Specifies the FSBL firmware to run."
-    puts "-fsbl_target <name>           Specifies the target core to run the FSBL on. Defaults to -target if empty. (Only ZynqMP)"
-    puts "-tfa <*.elf>                  Specifies the Trusted Firmware-A to run. (Only ZynqMP)"
-    puts "-dtb <*.dtb>                  Specifies the device-tree blob to download."
-    puts "-dtb_addr <addr>              Specifies the address at which the device-tree blob will be loaded."
-    puts "-uboot <*.elf>                Specifies the uboot image to download."
-    puts "-target <name>                Specifies the target core to boot."
-}
-
 proc boot_jtag { } {
     puts "Switching to bootmode JTAG ..."
     targets -set -filter {name =~ "PSU"}
@@ -23,11 +7,6 @@ proc boot_jtag { } {
     mwr 0xff5e0200 0x0100
     # reset
     rst -system
-}
-
-if {$argv eq "-help"} {
-    usage
-    exit 0
 }
 
 array set args [list -url "" -plat "" -force_bootmode_jtag false -bit "" -pmufw "" -fsbl "" -fsbl_target "" -tfa "" -dtb "" -dtb_addr "0x00100000" -uboot "" -target "" {*}$argv]
@@ -64,7 +43,6 @@ switch $plat {
     }
     default {
         puts "Platform arg -plat not specified."
-        usage
         exit 1
     }
 }

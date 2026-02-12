@@ -6,14 +6,14 @@ zynq-modules.mkZynqFirmware {
     (
       { lib, ... }:
       {
-        name = "kria-kr260";
-        description = "Base Firmware for the Kria KR260 Robotics Starter Kit";
+        name = lib.mkDefault "kria-k260";
+        description = lib.mkDefault "Base Firmware for the Kria KR260 Robotics Starter Kit";
 
         plat = "zynqmp";
 
-        hwplat.src = ./vivado-srcs;
+        hwplat.src = lib.mkDefault ./vivado-srcs;
 
-        sdt.boardDts = "zynqmp-sck-kr-g-revb";
+        sdt.boardDts = lib.mkDefault "zynqmp-sck-kr-g-revb";
 
         linux-dt = {
           extraLops = [
@@ -23,8 +23,6 @@ zynq-modules.mkZynqFirmware {
         };
 
         tfa.extraMakeFlags = lib.mkBefore [ "ZYNQMP_CONSOLE=cadence1" ];
-
-        optee-os.enable = true;
 
         uboot.extraConfigs = lib.mkBefore [
           "CONFIG_ENV_IS_NOWHERE=n"
@@ -46,9 +44,9 @@ zynq-modules.mkZynqFirmware {
           "CONFIG_LOG_CONSOLE=y"
         ];
 
-        flash-qspi = {
+        flash-qspi = lib.mkDefault {
           flashPart = "mt25qu512-qspi-x4-single";
-          offset = lib.mkDefault "0x00200000";
+          offset = "0x00200000";
         };
       }
     )

@@ -24,8 +24,21 @@ in
 writeScript "${name}.sh" ''
   #!/usr/bin/env sh
 
-  # ${name} ${version}
-
+  usage() {
+    echo "${name} ${version}"
+    echo "Optional args: "
+    echo "-url <url>                    Specifies the url of the hw_server. Start a new local hw_server if empty."
+    echo "-force_bootmode_jtag <bool>   Specifies wheather to force ZynqMP into JTAG boot-mode. (Only ZynqMP)"
+    echo "-bit <*.bit>                  Specifies the bitstream to download."
+    echo "-pmufw <*.elf>                Specifies the PMU firmware to run. (Only ZynqMP)"
+    echo "-fsbl <*.elf>                 Specifies the FSBL firmware to run."
+    echo "-fsbl_target <name>           Specifies the target core to run the FSBL on. Defaults to -target if empty. (Only ZynqMP)"
+    echo "-tfa <*.elf>                  Specifies the Trusted Firmware-A to run. (Only ZynqMP)"
+    echo "-dtb <*.dtb>                  Specifies the device-tree blob to download."
+    echo "-dtb_addr <addr>              Specifies the address at which the device-tree blob will be loaded."
+    echo "-uboot <*.elf>                Specifies the uboot image to download."
+    echo "-target <name>                Specifies the target core to boot."
+  }
 
   url=""
   force_bootmode_jtag="${
@@ -46,12 +59,15 @@ writeScript "${name}.sh" ''
       -url) url="$2";                                 shift;;
       -force_bootmode_jtag) force_bootmode_jtag="$2"; shift;;
       -bit) bit="$2";                                 shift;;
+      -pmufw) pmufw="$2";                             shift;;
       -fsbl) fsbl="$2";                               shift;;
       -fsbl_target) fsbl_target="$2";                 shift;;
+      -tfa) tfa="$2";                                 shift;;
       -dtb) dtb="$2";                                 shift;;
       -dtb_addr) dtb_addr="$2";                       shift;;
       -uboot) uboot="$2";                             shift;;
       -target) target="$2";                           shift;;
+      -help) usage;                                   exit 0;;
       *) echo "Unknown arg: $1";                      exit 1;;
     esac
     shift

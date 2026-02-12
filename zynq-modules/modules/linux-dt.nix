@@ -11,7 +11,7 @@
     };
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-linux-dt";
     };
@@ -24,18 +24,27 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "Lopper source repo (github:devicetree-org/lopper).";
+      description = "Specifies the Lopper source repo (e.g. github:devicetree-org/lopper).";
       default = pkgs.zynq-srcs.lopper-src;
     };
 
     systemDeviceTree = lib.mkOption {
       type = with lib.types; path;
-      description = "System-Device-Tree sources.";
+      description = "Specifies the System-Device-Tree that is used to generate the Linux-Device-Tree.";
     };
 
     procId = lib.mkOption {
-      type = with lib.types; singleLineStr;
-      description = "Zynq processor id (ps7_cortexa9_0, psu_cortexa53_0, psu_pmu_0, ...).";
+      type =
+        with lib.types;
+        enum [
+          "ps7_cortexa9_0"
+          "ps7_cortexa9_1"
+          "psu_cortexa53_0"
+          "psu_cortexa53_1"
+          "psu_cortexa53_2"
+          "psu_cortexa53_3"
+        ];
+      description = "Specifies the Zynq processor (ps7_cortexa9_0, psu_cortexa53_0, ...) for which the Linux-Device-Tree is build.";
       default =
         {
           zynq7 = "ps7_cortexa9_0";
@@ -46,25 +55,27 @@
 
     extraLops = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra lops to apply (see github:devicetree-org/lopper).";
+      description = ''
+        Specifies extra lops (overrides, modifications, etc) to apply,
+        when generating the Linux-Device-Tree from the System-Device-Tree (see github:devicetree-org/lopper).'';
       default = [ ];
     };
 
     extraDtsi = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra dtsi to include in the linux dtb.";
+      description = "Specifies extra device-tree includes for the Linux DTB.";
       default = [ ];
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src repo.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the Linux Device-Tree";
+      description = "Package containing the build Linux Device-Tree";
     };
   };
 

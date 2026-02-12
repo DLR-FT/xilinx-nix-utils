@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable BL31 Trusted Firmware-A build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-tfa";
     };
@@ -22,35 +22,35 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "Trusted-Firmware-A source repo (github: xilinx/arm-trusted-firmware).";
+      description = "Specified the Trusted-Firmware-A source repo (e.g. github:xilinx/arm-trusted-firmware).";
       default = pkgs.zynq-srcs.tfa-src;
     };
 
     plat = lib.mkOption {
       type = with lib.types; singleLineStr;
-      description = "TF-A build platform (zynqmp, ...).";
+      description = "Specifies the TF-A build platform (zynqmp, ...).";
     };
 
     extraMakeFlags = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra make flags.";
+      description = "Specifies extra Make flags for the build.";
       default = [ ];
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src repo.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 
     stdenv = lib.mkOption {
       type = with lib.types; package;
-      description = "stdenv used to build the TF-A firmware.";
+      description = "Specifies the stdenv toolchain used to build the TF-A firmware.";
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the TF-A firmware.";
+      description = "Package containing the build TF-A firmware.";
     };
   };
 

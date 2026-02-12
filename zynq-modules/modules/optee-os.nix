@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable BL32 OPTEE-OS build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-optee-os";
     };
@@ -22,36 +22,36 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "OPTEE-OS source repo (github: xilinx/optee_os).";
+      description = "Specifies the OPTEE-OS source repo (e.g. github:xilinx/optee_os).";
       default = pkgs.zynq-srcs.optee-os-src;
     };
 
     plat = lib.mkOption {
       type = with lib.types; singleLineStr;
-      description = "OPTEE-OS build platform (zynq7k-zc702, zynqmp-zcu102, ...).";
+      description = "Specfies OPTEE-OS build platform (zynq7k-zc702, zynqmp-zcu102, ...).";
     };
 
     extraMakeFlags = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra make flags.";
+      description = "Specifies extra Make flags for the build.";
       default = [ ];
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src repo.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 
     stdenv = lib.mkOption {
       type = with lib.types; package;
-      description = "stdenv used to build the TF-A firmware.";
+      description = "Specifies the stdenv toolchain used to build the OPTEE-OS firmware.";
       default = pkgs.pkgsCross.aarch64-multiplatform.stdenv;
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the OPTEE-OS firmware.";
+      description = "Package containing the build OPTEE-OS firmware.";
     };
   };
 

@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable script for QSPI flashing.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-flash-qspi";
     };
@@ -20,16 +20,18 @@
       default = null;
     };
 
-    bootImage = lib.mkOption {
+    bootImages = lib.mkOption {
       type = with lib.types; either path (listOf path);
-      description = "Specifies the boot-image(s) to be flashed.";
+      description = ''
+        Specifies the boot-image(s) to be flashed.
+        Can be either a single image or two images for a dual flash configurations.'';
     };
 
     initFsbl = lib.mkOption {
       type = with lib.types; path;
       description = ''
-        FSBL used for initializing the hardware before flashing
-        In most cases this can be the same as the fsbl in the boot image
+        Specifies the first-stage bootloader (FSBL) used for initializing the hardware
+        before flashing. In most cases this can be the same as the FSBL in the boot image itself.
         Only for Zynq7 devices which cannnot be physically switched into JTAG boot mode
         a modified FSBL is necessary.
         (https://adaptivesupport.amd.com/s/article/70548?language=en_US)
@@ -39,9 +41,8 @@
     flashPart = lib.mkOption {
       type = with lib.types; singleLineStr;
       description = ''
-        Flash part e.g. mt25qu512-qspi-x4-single, ...
-        Use program-flash.tcl -flash "" to get known flash parts
-        See vivado tcl function "get_cfgmem_parts"
+        Flash part / configuration e.g. mt25qu512-qspi-x4-single, ... to flash.
+        Use program-flash.sh -flash_part "*" for a list of known flash parts.
       '';
     };
 
@@ -66,7 +67,7 @@
           name = config.flash-qspi.name;
           version = config.flash-qspi.version;
 
-          bootImage = config.flash-qspi.bootImage;
+          bootImages = config.flash-qspi.bootImages;
           initFsbl = config.flash-qspi.initFsbl;
           flashPart = config.flash-qspi.flashPart;
           offset = config.flash-qspi.offset;

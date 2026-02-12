@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable script for booting via JTAG.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-boot-jtag";
     };
@@ -28,48 +28,61 @@
 
     bit = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "";
+      description = ''
+        Specifies the bitstream file to download.
+        Can be null to skip bitstream loading.'';
       default = null;
     };
 
     pmufw = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "";
+      description = ''
+        Specifies the PMU firmware to download and run (ZynqMP only).
+        Can be null to skip PMU firmware download and run.'';
       default = null;
     };
 
     fsbl = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "";
+      description = ''
+        Specifies the first-stage bootloader (FSBL) firmware to download and run.
+        Can be null to skip FSBL download and run.'';
       default = null;
     };
 
     tfa = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "";
+      description = ''
+        Specifies the Trusted Firmware-A to download and run (ZynqMP only).
+        Can be null to skip Trusted Firmware-A download and run.'';
       default = null;
     };
 
     dtb = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "";
+      description = ''
+        Specifies the device-tree binary to download.
+        Can be null to skip device-tree download.'';
       default = null;
     };
 
     dtbAddr = lib.mkOption {
       type = with lib.types; nullOr (either int singleLineStr);
-      description = null;
+      description = "Specifies the address at which the device-tree will be loaded.";
+      default = "0x00100000";
     };
 
     uboot = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "";
+      description = ''
+        Specifies the U-Boot firmware to download and run.
+        Can be null to skip U-Boot download and run.'';
       default = null;
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the JTAG boot script.";
+      description = "Package containing the generated JTAG boot script.";
     };
   };
 

@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable hardware platform build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-hwplat";
     };
@@ -22,30 +22,32 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "Hardware platform source directory.";
+      description = "Specifies the source directory from which the hardware platform is build.";
     };
 
     sourceTcl = lib.mkOption {
       type = with lib.types; nullOr singleLineStr;
-      description = "Source tcl file path. Set to ${null} to skip project sourcing from tcl.";
+      description = ''
+        Specifies a tcl file in the source directory that will be sourced to restore the exported Vivado project.
+        Set to null to skip project restore from tcl.'';
       default = "./vivado.tcl";
     };
 
     originDir = lib.mkOption {
       type = with lib.types; nullOr singleLineStr;
-      description = "Origin directory, that contains the project source files.";
+      description = "Specifies the origin directory in the source directory, that contains the source files for the exported Vivado project.";
       default = "./.";
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src directory.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the Hardware-Platform and Bitstream.";
+      description = "Package containing the build Hardware-Platform and Bitstream.";
     };
   };
 

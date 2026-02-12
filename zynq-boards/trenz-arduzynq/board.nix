@@ -15,7 +15,7 @@ zynq-modules.mkZynqFirmware {
       in
       {
         name = lib.mkDefault "trenz-arduzynq";
-        description = "Base Firmware for the Trenz ArduZynq (TE0723-03-41C64-A).";
+        description = lib.mkDefault "Base Firmware for the Trenz ArduZynq (TE0723-03-41C64-A).";
 
         plat = "zynq7";
 
@@ -32,7 +32,7 @@ zynq-modules.mkZynqFirmware {
         flash-qspi.initFsbl = init-fsbl.elf;
         fwPackages = [ init-fsbl ];
 
-        flash-qspi.flashPart = "s25fl127s-3.3v-qspi-x4-single";
+        flash-qspi.flashPart = lib.mkDefault "s25fl127s-3.3v-qspi-x4-single";
       }
     )
   ];

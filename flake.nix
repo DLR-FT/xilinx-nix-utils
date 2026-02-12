@@ -4,8 +4,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 
-    # TODO: remove
-    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
+    # Just as a workaround
+    nixpkgs2505.url = "github:nixos/nixpkgs/nixos-25.05";
 
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +17,7 @@
     {
       self,
       nixpkgs,
-      nixpkgs-2505,
+      nixpkgs2505,
       devshell,
       treefmt,
     }:
@@ -33,9 +33,7 @@
           (
             final: prev:
             let
-              pkgs = import nixpkgs-2505 {
-                inherit system;
-              };
+              pkgs = import nixpkgs2505 { inherit system; };
             in
             {
               ratarmount = pkgs.ratarmount;
@@ -58,13 +56,8 @@
             };
           })
 
+          self.overlays.default
           self.overlays.xilinx-lab
-          self.overlays.xilinx-unified
-          self.overlays.zynq-srcs
-          self.overlays.zynq-patches
-          self.overlays.zynq-pkgs
-          self.overlays.zynq-modules
-          self.overlays.zynq-boards
 
           devshell.overlays.default
         ];
@@ -73,15 +66,23 @@
       treefmtEval = treefmt.lib.evalModule pkgs ./treefmt.nix;
     in
     {
-      packages.${system} = {
+      packages.${system} = rec {
         xilinx-unified = pkgs.xilinx-unified;
         xilinx-lab = pkgs.xilinx-lab;
 
         bootgen = pkgs.zynq-pkgs.bootgen;
 
-        arduzynq = pkgs.zynq-boards.trenz-arduzynq;
         kria-kr260 = pkgs.zynq-boards.kria-kr260;
-        trenz-small = pkgs.zynq-boards.te0706-0821-3be21;
+        trenz-arduzynq = pkgs.zynq-boards.trenz-arduzynq;
+        trenz-te0706 = pkgs.zynq-boards.trenz-te0706;
+
+        zynq-options-md =
+          let
+            optionsMd = pkgs.nixosOptionsDoc {
+              inherit (kria-kr260.eval) options;
+            };
+          in
+          optionsMd.optionsCommonMark;
       };
 
       devShells.${system} = {
@@ -89,13 +90,18 @@
           name = "xilinx-nix-utils";
           imports = [ "${devshell}/extra/git/hooks.nix" ];
 
-          packages = [ pkgs.nix-tree ];
+          packages = [ ];
 
           git.hooks = {
             enable = true;
             pre-commit.text = ''
               nix fmt
               nix flake check
+
+              zynq_opts=$(mktemp -d)
+              nix build .#zynq-options-md -o $zynq_opts/zynq-options.md
+              cp -f $zynq_opts/zynq-options.md ./docs/zynq-options.md
+              git add ./docs/zynq-options.md
             '';
           };
         };
@@ -107,16 +113,14 @@
 
         xilinx-unified = pkgs.devshell.mkShell {
           name = "xilinx-unified";
-          packages = [
-            pkgs.xilinx-unified
-          ];
+          packages = [ pkgs.xilinx-unified ];
         };
       };
 
       templates = {
         default = {
           path = ./templates/default;
-          description = "Default template for reusing or configuring a firmware.";
+          description = "Default template";
         };
       };
 
@@ -125,6 +129,18 @@
 
       # for `nix flake check`
       checks.${system}.formatting = treefmtEval.config.build.check self;
+
+      # Merge common overlays into a single overlay
+      overlays.default =
+        final: prev:
+        prev.lib.foldl (prev: overlay: prev // (overlay final prev)) prev [
+          self.overlays.xilinx-unified
+          self.overlays.zynq-srcs
+          self.overlays.zynq-patches
+          self.overlays.zynq-pkgs
+          self.overlays.zynq-modules
+          self.overlays.zynq-boards
+        ];
 
       overlays.xilinx-lab = import ./xilinx-lab.nix;
       overlays.xilinx-unified = import ./xilinx-unified.nix;

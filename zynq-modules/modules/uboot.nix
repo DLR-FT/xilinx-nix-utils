@@ -9,7 +9,7 @@
     enable = lib.mkEnableOption "Enable BL33 U-Boot build.";
 
     name = lib.mkOption {
-      type = with lib.types; singleLineStr;
+      type = with lib.types; strMatching "[a-zA-Z0-9_-]+";
       description = "name";
       default = config.name + "-uboot";
     };
@@ -22,59 +22,59 @@
 
     src = lib.mkOption {
       type = with lib.types; path;
-      description = "U-Boot source repo (github: xilinx/u-boot-xlnx).";
+      description = "Specifies the U-Boot source repo (e.g. github:xilinx/u-boot-xlnx).";
       default = pkgs.zynq-srcs.uboot-src;
     };
 
     defconfig = lib.mkOption {
       type = with lib.types; singleLineStr;
-      description = "U-Boot defconfig to build.";
+      description = "Specifies the U-Boot defconfig for the build.";
     };
 
     bl31 = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "BL31 binary (*.elf).";
+      description = "Specifies the BL31 binary (*.elf) for the U-Boot build. Can be null to ignore BL31.";
       default = null;
     };
 
     tee = lib.mkOption {
       type = with lib.types; nullOr path;
-      description = "TEE / BL32 binary (*.elf).";
+      description = "Specifies the TEE / BL32 binary (*.elf) for the U-Boot build. Can be null to ignore BL32.";
       default = null;
     };
 
     deviceTree = lib.mkOption {
       type = with lib.types; nullOr (either path singleLineStr);
-      description = "U-Boot device-tree name.";
+      description = "Specifies either an U-Boot interal device-tree name or an external device-tree blob to be included in the U-Boot build.";
       default = null;
     };
 
     extraConfigs = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra config options.";
+      description = "Specifies extra config options to append to the U-Boot defconfig.";
       default = [ ];
     };
 
     extraMakeFlags = lib.mkOption {
       type = with lib.types; listOf singleLineStr;
-      description = "Extra make flags.";
+      description = "Specifies extra Make flags for the build.";
       default = [ ];
     };
 
     extraPatches = lib.mkOption {
       type = with lib.types; listOf path;
-      description = "Extra patches to apply to the src repo.";
+      description = "Specifies extra patches to apply to the source directory before the build.";
       default = [ ];
     };
 
     stdenv = lib.mkOption {
       type = with lib.types; package;
-      description = "stdenv used to build the U-Boot firmware.";
+      description = "Specifies the stdenv toolchain used to build the U-Boot firmware.";
     };
 
     package = lib.mkOption {
       type = with lib.types; package;
-      description = "Package containing the U-Boot firmware.";
+      description = "Package containing the build U-Boot firmware.";
     };
   };
 

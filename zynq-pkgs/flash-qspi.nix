@@ -78,8 +78,6 @@ writeScript "${name}.sh" ''
     shift
   done
 
-  exit 13
-
   ${xilinx-unified-or-lab}/bin/vivado_lab -nolog -nojournal -mode batch -source ${../scripts/program-flash.tcl} -notrace -tclargs \
     -url "$url" \
     -target "$target" \

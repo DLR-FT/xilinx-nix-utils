@@ -94,13 +94,13 @@
       );
     };
 
-    boot-image.partitions.bootloader = lib.mkDefault {
-      order = lib.mkDefault 100;
+    boot-image.partitions.bootloader = {
+      order = 100;
       options = {
         bootloader = lib.mkDefault true;
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-3");
       };
-      file = config.fsbl.package.elf;
+      file = lib.mkDefault config.fsbl.package.elf;
     };
     boot-jtag.fsbl = lib.mkDefault config.fsbl.package.elf;
     flash-qspi.initFsbl = lib.mkDefault config.fsbl.package.elf;

@@ -82,9 +82,9 @@
     };
 
     boot-image.partitions.pmufw = {
-      order = lib.mkDefault 200;
+      order = 200;
       options = {
-        pmufw_image = true;
+        pmufw_image = lib.mkDefault true;
       };
       file = lib.mkDefault config.pmufw.package.elf;
     };

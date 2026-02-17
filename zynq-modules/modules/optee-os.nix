@@ -92,10 +92,10 @@
     boot-image.partitions.optee-os = {
       order = 500;
       options = {
-        trustzone = true;
+        trustzone = lib.mkDefault true;
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-1");
       };
-      file = config.optee-os.package.elf;
+      file = lib.mkDefault config.optee-os.package.elf;
     };
   };
 }

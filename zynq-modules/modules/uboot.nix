@@ -121,7 +121,7 @@
       options = lib.mkIf (config.plat == "zynqmp") {
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-2");
       };
-      file = config.uboot.package.elf;
+      file = lib.mkDefault config.uboot.package.elf;
     };
     boot-jtag.uboot = lib.mkDefault config.uboot.package.elf;
   };

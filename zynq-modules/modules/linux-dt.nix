@@ -102,9 +102,9 @@
     boot-image.partitions.dtb = {
       order = 700;
       options = {
-        load = "0x00100000";
+        load = lib.mkDefault "0x00100000";
       };
-      file = config.linux-dt.package.dtb;
+      file = lib.mkDefault config.linux-dt.package.dtb;
     };
     boot-jtag.dtb = lib.mkDefault config.linux-dt.package.dtb;
     boot-jtag.dtbAddr = lib.mkDefault (

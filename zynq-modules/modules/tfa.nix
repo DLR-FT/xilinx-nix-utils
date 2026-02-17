@@ -90,10 +90,10 @@
     boot-image.partitions.tfa = {
       order = 400;
       options = {
-        trustzone = true;
+        trustzone = lib.mkDefault true;
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-3");
       };
-      file = config.tfa.package.elf;
+      file = lib.mkDefault config.tfa.package.elf;
     };
     boot-jtag.tfa = lib.mkDefault config.tfa.package.elf;
   };

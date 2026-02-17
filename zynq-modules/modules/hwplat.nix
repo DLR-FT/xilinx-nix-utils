@@ -70,9 +70,9 @@
 
     sdt.hwDef = lib.mkDefault config.hwplat.package.xsa;
     boot-image.partitions.pl = {
-      order = lib.mkDefault 300;
+      order = 300;
       options = {
-        destination_device = lib.mkIf (config.plat == "zynqmp") "pl";
+        destination_device = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "pl");
       };
       file = lib.mkDefault config.hwplat.package.bit;
     };

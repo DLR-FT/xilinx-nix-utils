@@ -89,13 +89,5 @@
     };
 
     uboot.tee = lib.mkDefault config.optee-os.package.elf;
-    boot-image.partitions.optee-os = {
-      order = 500;
-      options = {
-        trustzone = lib.mkDefault true;
-        exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-1");
-      };
-      file = lib.mkDefault config.optee-os.package.elf;
-    };
   };
 }

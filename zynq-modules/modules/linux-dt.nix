@@ -102,6 +102,7 @@
     boot-image.partitions.dtb = {
       order = 700;
       options = {
+        destination_cpu = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "a53-0");
         load = lib.mkDefault "0x00100000";
       };
       file = lib.mkDefault config.linux-dt.package.dtb;

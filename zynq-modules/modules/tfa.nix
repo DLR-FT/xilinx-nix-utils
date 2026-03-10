@@ -90,8 +90,9 @@
     boot-image.partitions.tfa = {
       order = 400;
       options = {
-        trustzone = lib.mkDefault true;
+        destination_cpu = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "a53-0");
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-3");
+        trustzone = lib.mkDefault true;
       };
       file = lib.mkDefault config.tfa.package.elf;
     };

@@ -98,6 +98,7 @@
       order = 100;
       options = {
         bootloader = lib.mkDefault true;
+        destination_cpu = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "a53-0");
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-3");
       };
       file = lib.mkDefault config.fsbl.package.elf;

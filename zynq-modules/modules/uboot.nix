@@ -119,6 +119,7 @@
     boot-image.partitions.uboot = {
       order = 600;
       options = lib.mkIf (config.plat == "zynqmp") {
+        destination_cpu = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "a53-0");
         exception_level = lib.mkIf (config.plat == "zynqmp") (lib.mkDefault "el-2");
       };
       file = lib.mkDefault config.uboot.package.elf;

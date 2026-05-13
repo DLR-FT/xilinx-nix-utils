@@ -34,9 +34,10 @@ zynq-modules.mkZynqFirmware {
           "CONFIG_LOG_CONSOLE=y"
         ];
 
-        boot-image.dualQspiMode = lib.mkDefault "parallel";
+        # todo: does not work
+        # boot-image.dualQspiMode = lib.mkDefault "parallel";
 
-        flash-qspi.flashPart = lib.mkDefault "mt25qu512-qspi-x8-parallel";
+        flash-qspi.flashPart = lib.mkDefault "mt25qu512-qspi-x8-dual_parallel";
       }
     )
   ];

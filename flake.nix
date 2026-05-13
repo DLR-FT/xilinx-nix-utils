@@ -40,6 +40,15 @@
             }
           )
 
+          # https://github.com/NixOS/nixpkgs/pull/42637
+          (final: prev: {
+            requireFile =
+              args:
+              (prev.requireFile args).overrideAttrs (_: {
+                allowSubstitutes = true;
+              });
+          })
+
           # Otherwise FSBL does not compile for Zynq7 Cortex-A9
           (final: prev: {
             pkgsCross = prev.pkgsCross // {

@@ -47,6 +47,7 @@ let
           shadowSupport = false;
           systemdSupport = false;
           writeSupport = false;
+          withLastlog = false;
         })
       ];
   };

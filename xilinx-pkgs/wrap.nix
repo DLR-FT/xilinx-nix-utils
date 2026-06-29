@@ -15,10 +15,6 @@ let
     targetPkgs =
       pkgs:
       with pkgs;
-      let
-        ncurses5' = callPackage ../nixpkgs/ncurses-patched-25-05.nix { abiVersion = "5"; };
-        ncurses6' = callPackage ../nixpkgs/ncurses-patched-25-05.nix { };
-      in
       [
         coreutils
         graphviz
@@ -34,23 +30,23 @@ let
         libyaml
         lsb-release
         zlib
-        (libtinfo.override { ncurses = ncurses5'; })
-        (libtinfo.override { ncurses = ncurses6'; })
+        (libtinfo.override { ncurses = ncurses5; })
+        (libtinfo.override { ncurses = ncurses6; })
 
         fontconfig
         freetype
         glib
         gtk2
         gtk3
-        xorg.libX11
-        xorg.libXext
-        xorg.libXft
-        xorg.libXi
-        xorg.libXrender
-        xorg.libXtst
-        xorg.libxcb
-        xorg.xlsclients
-        xorg.xorgserver
+        libX11
+        libXext
+        libXft
+        libXi
+        libXrender
+        libXtst
+        libxcb
+        xlsclients
+        xorgserver
       ]
       ++ extraTargetPkgs pkgs;
   };

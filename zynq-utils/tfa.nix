@@ -24,7 +24,14 @@ lib.makeOverridable (
     ];
 
     makeFlags = [
+      "HOSTCC=$(CC_FOR_BUILD)"
       "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+      # Make the new toolchain guessing (from 2.11+) happy
+      "CC=${stdenv.cc.targetPrefix}cc"
+      "LD=${stdenv.cc.targetPrefix}cc"
+      "AS=${stdenv.cc.targetPrefix}cc"
+      "OC=${stdenv.cc.targetPrefix}objcopy"
+      "OD=${stdenv.cc.targetPrefix}objdump"
       "PLAT=${plat}"
     ]
     ++ extraMakeFlags;
@@ -35,13 +42,6 @@ lib.makeOverridable (
 
     buildPhase = ''
       runHook preBuild
-
-      # These vars confuse the tf-a build system in newer versions (>=2025.1)
-      unset CC
-      unset LD
-      unset AS
-      unset OC
-      unset OD
 
       make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES bl31
 

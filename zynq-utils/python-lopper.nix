@@ -8,6 +8,7 @@
   packaging,
   pyyaml,
   ruamel-yaml,
+  setuptools,
   zynq-srcs,
 }:
 
@@ -30,6 +31,9 @@ buildPythonPackage rec {
   pythonImportsCheck = [ "lopper" ];
 
   doCheck = false;
+
+  pyproject = true;
+  build-system = [ setuptools ];
 
   meta = with lib; {
     description = "System device tree (S-DT) processor";

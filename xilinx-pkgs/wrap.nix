@@ -15,10 +15,6 @@ let
     targetPkgs =
       pkgs:
       with pkgs;
-      let
-        ncurses5' = callPackage ../nixpkgs/ncurses-patched-25-05.nix { abiVersion = "5"; };
-        ncurses6' = callPackage ../nixpkgs/ncurses-patched-25-05.nix { };
-      in
       [
         coreutils
         graphviz
@@ -34,8 +30,8 @@ let
         libyaml
         lsb-release
         zlib
-        (libtinfo.override { ncurses = ncurses5'; })
-        (libtinfo.override { ncurses = ncurses6'; })
+        (libtinfo.override { ncurses = ncurses5; })
+        (libtinfo.override { ncurses = ncurses6; })
 
         fontconfig
         freetype

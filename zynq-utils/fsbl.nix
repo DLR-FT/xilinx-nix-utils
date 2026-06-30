@@ -69,6 +69,8 @@ lib.makeOverridable (
 
       export ESW_REPO=$(realpath .)
 
+      echo "set(CMAKE_POLICY_VERSION_MINIMUM 3.5)" >> ./cmake/toolchainfiles/${toolchainFile}
+
       echo "set(CMAKE_C_COMPILER ${stdenv.cc.targetPrefix}gcc)" >> ./cmake/toolchainfiles/${toolchainFile}
       echo "set(CMAKE_CXX_COMPILER ${stdenv.cc.targetPrefix}g++)" >> ./cmake/toolchainfiles/${toolchainFile}
       echo "set(CMAKE_ASM_COMPILER ${stdenv.cc.targetPrefix}gcc)" >> ./cmake/toolchainfiles/${toolchainFile}

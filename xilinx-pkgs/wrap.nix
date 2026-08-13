@@ -43,15 +43,15 @@ let
         glib
         gtk2
         gtk3
-        xorg.libX11
-        xorg.libXext
-        xorg.libXft
-        xorg.libXi
-        xorg.libXrender
-        xorg.libXtst
-        xorg.libxcb
-        xorg.xlsclients
-        xorg.xorgserver
+        libx11
+        libxext
+        libxft
+        libxi
+        libxrender
+        libxtst
+        libxcb
+        xlsclients
+        xorg-server
       ]
       ++ extraTargetPkgs pkgs;
   };

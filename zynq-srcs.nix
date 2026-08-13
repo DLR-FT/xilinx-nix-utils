@@ -25,14 +25,14 @@ final: prev: {
       owner = "Xilinx";
       repo = "arm-trusted-firmware";
       rev = "xilinx-v2025.2";
-      hash = "sha256-HIqfsenTlAU+e3SmKfHZNLrPDcUZIWF222Ur0BYS7zc=";
+      hash = "sha256-fSLsn9R/qonjFbKk0MpRceDIAeqot5guckRUqaGUTYQ=";
     };
 
     optee-os-src = prev.fetchFromGitHub {
       owner = "Xilinx";
       repo = "optee_os";
-      rev = "xlnx_rebase_v4.5.0_2025.1";
-      hash = "sha256-VkGWxXMDSmmctZn8HlPCcUiFBOrlcZrtm40jauwuWK0=";
+      rev = "xlnx_rebase_v4.5.0_2025.2";
+      hash = "sha256-srRIKCHDRh3/pvWf04AHEavsybAk/jXCbWk3zXnJkUM=";
     };
 
     dt-src = prev.fetchFromGitHub {
@@ -46,7 +46,7 @@ final: prev: {
       owner = "Xilinx";
       repo = "u-boot-xlnx";
       rev = "xilinx-v2025.2";
-      hash = "sha256-RTcd7MR37E4yVGWP3RMruyKBI4tz8ex7mY1f5F2xd00=";
+      hash = "sha256-Onbe0LZ50LulRNzXKVzq10cZfxBCnhFVDVMP9wrlKxA=";
     };
 
     lopper-src = prev.fetchFromGitHub {

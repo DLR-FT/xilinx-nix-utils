@@ -2,11 +2,7 @@
   description = "A Nix wrapper for the Xilinx Unified Toolchain and additional utilities for using Nix as a build system for Zynq firmware";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-
-    # Just as a workaround
-    nixpkgs2505.url = "github:nixos/nixpkgs/nixos-25.05";
-
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     treefmt.url = "github:numtide/treefmt-nix";
@@ -17,7 +13,6 @@
     {
       self,
       nixpkgs,
-      nixpkgs2505,
       devshell,
       treefmt,
     }:
@@ -29,17 +24,6 @@
         config.allowUnfree = true;
 
         overlays = [
-          # https://github.com/NixOS/nixpkgs/pull/459393
-          (
-            final: prev:
-            let
-              pkgs = import nixpkgs2505 { inherit system; };
-            in
-            {
-              ratarmount = pkgs.ratarmount;
-            }
-          )
-
           # https://github.com/NixOS/nixpkgs/pull/42637
           (final: prev: {
             requireFile =

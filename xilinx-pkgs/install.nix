@@ -46,6 +46,7 @@ let
           pamSupport = false;
           shadowSupport = false;
           systemdSupport = false;
+          withLastlog = false;
           writeSupport = false;
         })
       ];

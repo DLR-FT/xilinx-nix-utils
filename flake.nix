@@ -90,11 +90,6 @@
             pre-commit.text = ''
               nix fmt
               nix flake check
-
-              zynq_opts=$(mktemp -d)
-              nix build .#zynq-options-md -o $zynq_opts/zynq-options.md
-              cp -f $zynq_opts/zynq-options.md ./docs/zynq-options.md
-              git add ./docs/zynq-options.md
             '';
           };
         };

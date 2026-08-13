@@ -4,7 +4,7 @@ This repo provides a Nix package for the Xilinx Unfied Toolchain (Vivado, Vitis,
 
 ## Getting Started
 
-- Download Xilinx Unified Offline installer (tar): [Xilinx Unfied 2025.2](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2025-2.html)
+- Download Xilinx Unified Offline installer (tar): [Xilinx Unfied 2025.2.1 (Update 1)](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/development-tools/2025-2.html)
 
 - Add archive to the Nix store:
 

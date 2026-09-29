@@ -68,6 +68,7 @@
         kria-kr260 = pkgs.zynq-boards.kria-kr260;
         trenz-arduzynq = pkgs.zynq-boards.trenz-arduzynq;
         trenz-te0706 = pkgs.zynq-boards.trenz-te0706;
+        trenz-te0705-4ev = pkgs.zynq-boards.trenz-te0705-4ev;
 
         zynq-options-md =
           let
